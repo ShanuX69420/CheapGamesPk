@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Local
     "apps.catalog",
     "apps.inventory",
+    "apps.orders",
 ]
 
 MIDDLEWARE = [
@@ -114,3 +115,9 @@ CORS_ALLOWED_ORIGINS = env_list(
 
 # Storefront currency. Prices are stored in this currency.
 STORE_CURRENCY = os.getenv("STORE_CURRENCY", "PKR")
+
+# Contact number for "Buy on WhatsApp", digits only with country code.
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
+
+# How long an unpaid order holds its stock before it returns to the pool.
+ORDER_HOLD_MINUTES = int(os.getenv("ORDER_HOLD_MINUTES", "120"))

@@ -1,9 +1,15 @@
 import type {
   Category,
+  CreatedOrder,
+  CreateOrderInput,
+  Order,
+  OutOfStockError,
   Paginated,
+  PaymentMethod,
   Platform,
   Product,
   ProductDetail,
+  StoreConfig,
 } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
@@ -76,4 +82,63 @@ export async function safely<T>(promise: Promise<T>, fallback: T): Promise<T> {
   } catch {
     return fallback;
   }
+}
+
+// --- orders -----------------------------------------------------------------
+
+/** Thrown when the server rejects an order because stock ran out (409). */
+export class StockConflictError extends Error {
+  constructor(readonly info: OutOfStockError) {
+    super(info.detail);
+    this.name = "StockConflictError";
+  }
+}
+
+/** Thrown for 400s so forms can surface per-field messages. */
+export class ValidationError extends Error {
+  constructor(readonly fields: Record<string, unknown>) {
+    super("Validation failed");
+    this.name = "ValidationError";
+  }
+}
+
+export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder> {
+  const response = await fetch(`${API_URL}/orders/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+    cache: "no-store",
+  });
+
+  if (response.status === 409) {
+    throw new StockConflictError((await response.json()) as OutOfStockError);
+  }
+  if (response.status === 400) {
+    throw new ValidationError((await response.json()) as Record<string, unknown>);
+  }
+  if (!response.ok) {
+    throw new ApiError("Could not place the order", response.status);
+  }
+  return (await response.json()) as CreatedOrder;
+}
+
+export async function getOrder(
+  number: string,
+  token: string,
+): Promise<Order | null> {
+  const url = new URL(`${API_URL}/orders/${number}/`);
+  url.searchParams.set("token", token);
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new ApiError("Could not load the order", response.status);
+  return (await response.json()) as Order;
+}
+
+export function getPaymentMethods() {
+  return get<PaymentMethod[]>("/payment-methods/");
+}
+
+export function getStoreConfig() {
+  return get<StoreConfig>("/config/");
 }

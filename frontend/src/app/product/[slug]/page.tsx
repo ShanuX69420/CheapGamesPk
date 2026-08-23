@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BuyActions } from "@/components/BuyActions";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
-import { getProduct, getProducts, safely } from "@/lib/api";
+import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
 import { money } from "@/lib/format";
 import type { Product, ProductDetail } from "@/lib/types";
 
@@ -34,10 +35,15 @@ export default async function ProductPage({ params }: Props) {
 
   /* Same account type reads as "more like this" better than genre would —
      a buyer shopping offline accounts wants other offline accounts. */
-  const related = await safely(
-    getProducts({ type: product.product_type, in_stock: "true" }),
-    { count: 0, next: null, previous: null, results: [] as Product[] },
-  );
+  const [related, config] = await Promise.all([
+    safely(getProducts({ type: product.product_type, in_stock: "true" }), {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [] as Product[],
+    }),
+    safely(getStoreConfig(), null),
+  ]);
   const alsoLike = related.results
     .filter((p) => p.id !== product.id)
     .slice(0, 6);
@@ -69,7 +75,10 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
 
-          <BuyBox product={product} />
+          <BuyBox
+            product={product}
+            whatsappEnabled={Boolean(config?.whatsapp_number)}
+          />
         </div>
 
         {alsoLike.length > 0 && (
@@ -195,7 +204,13 @@ function Chip({ children }: { children: React.ReactNode }) {
   );
 }
 
-function BuyBox({ product }: { product: ProductDetail }) {
+function BuyBox({
+  product,
+  whatsappEnabled,
+}: {
+  product: ProductDetail;
+  whatsappEnabled: boolean;
+}) {
   const low = product.stock_count > 0 && product.stock_count <= 3;
   const saving =
     product.compare_at_price !== null
@@ -243,13 +258,7 @@ function BuyBox({ product }: { product: ProductDetail }) {
           )}
         </div>
 
-        <button
-          type="button"
-          disabled={!product.in_stock}
-          className="mt-4 w-full rounded-lg bg-accent px-4 py-3 font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-bright disabled:cursor-not-allowed disabled:bg-ink-700 disabled:text-ink-400 disabled:shadow-none"
-        >
-          {product.in_stock ? "Add to cart" : "Out of stock"}
-        </button>
+        <BuyActions product={product} whatsappEnabled={whatsappEnabled} />
 
         <ul className="mt-5 space-y-2.5 border-t border-ink-800 pt-4 text-sm text-ink-200">
           <Perk>Instant automatic delivery</Perk>

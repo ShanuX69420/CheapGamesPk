@@ -66,3 +66,92 @@ export interface Paginated<T> {
   previous: string | null;
   results: T[];
 }
+
+export type OrderStatus =
+  | "awaiting_payment"
+  | "paid"
+  | "delivered"
+  | "cancelled"
+  | "refunded";
+
+export type OrderSource = "web" | "whatsapp";
+
+export interface PaymentMethod {
+  id: number;
+  name: string;
+  slug: string;
+  instructions: string;
+}
+
+export interface OrderCredential {
+  payload: string;
+  instructions: string;
+}
+
+export interface OrderItem {
+  id: number;
+  product_name: string;
+  product_slug: string;
+  unit_price: string;
+  quantity: number;
+  line_total: string;
+  /** Null until the order is delivered. */
+  credentials: OrderCredential[] | null;
+}
+
+export interface Order {
+  number: string;
+  status: OrderStatus;
+  status_display: string;
+  source: OrderSource;
+  customer_name: string;
+  email: string;
+  phone: string;
+  payment_method: PaymentMethod | null;
+  subtotal: string;
+  total: string;
+  currency: string;
+  hold_expires_at: string | null;
+  paid_at: string | null;
+  delivered_at: string | null;
+  customer_note: string;
+  items: OrderItem[];
+  whatsapp_url: string | null;
+  created_at: string;
+}
+
+/** Only present on the create response — store it, it is the key to the order. */
+export interface CreatedOrder extends Order {
+  access_token: string;
+}
+
+export interface StoreConfig {
+  currency: string;
+  whatsapp_number: string | null;
+  hold_minutes: number;
+  order_statuses: Record<string, string>;
+}
+
+export interface OrderLineInput {
+  slug: string;
+  quantity: number;
+}
+
+export interface CreateOrderInput {
+  items: OrderLineInput[];
+  email?: string;
+  phone?: string;
+  customer_name?: string;
+  customer_note?: string;
+  payment_method?: string;
+  source?: OrderSource;
+}
+
+/** Raised when stock ran out between browsing and checking out (HTTP 409). */
+export interface OutOfStockError {
+  detail: string;
+  product: string;
+  slug: string;
+  requested: number;
+  available: number;
+}

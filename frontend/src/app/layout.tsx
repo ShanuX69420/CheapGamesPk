@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { CartIndicator } from "@/components/CartIndicator";
+import { CartProvider } from "@/components/CartProvider";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -60,6 +63,8 @@ function Header() {
             />
           </div>
         </form>
+
+        <CartIndicator />
       </div>
     </header>
   );
@@ -122,9 +127,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

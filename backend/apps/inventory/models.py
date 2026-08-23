@@ -46,6 +46,15 @@ class StockItem(TimeStampedModel):
         "Treated as a secret — masked in list views."
     )
 
+    order_item = models.ForeignKey(
+        "orders.OrderItem",
+        on_delete=models.SET_NULL,
+        related_name="stock_items",
+        blank=True,
+        null=True,
+        help_text="The order line this unit was assigned to.",
+    )
+
     status = models.CharField(
         max_length=16,
         choices=StockStatus.choices,
