@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label='inventory' %}">Inventory</a>
+  &rsaquo; <a href="{% url 'admin:inventory_stockitem_changelist' %}">Stock items</a>
+  &rsaquo; Bulk import
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <form method="post">
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      {% for field in form %}
+      <div class="form-row">
+        {{ field.errors }}
+        <div>
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}
+          <div class="help">{{ field.help_text|safe }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </fieldset>
+    <div class="submit-row">
+      <input type="submit" value="Import stock" class="default">
+      <a href="{% url 'admin:inventory_stockitem_changelist' %}" class="button cancel-link">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
