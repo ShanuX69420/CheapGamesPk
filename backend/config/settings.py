@@ -107,6 +107,14 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ],
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        # Placing an order reserves real stock, so unlimited anonymous creates
+        # would let anyone lock the catalog out of sale.
+        "order_create": os.getenv("THROTTLE_ORDER_CREATE", "20/hour"),
+        # Recovery emails go to an address the requester may not own.
+        "order_recover": os.getenv("THROTTLE_ORDER_RECOVER", "5/hour"),
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env_list(
@@ -115,6 +123,32 @@ CORS_ALLOWED_ORIGINS = env_list(
 
 # Storefront currency. Prices are stored in this currency.
 STORE_CURRENCY = os.getenv("STORE_CURRENCY", "PKR")
+
+# Public URL of the storefront, used to build order links in emails.
+SITE_URL = os.getenv("SITE_URL", "http://localhost:3000").rstrip("/")
+
+# Email. Without EMAIL_HOST we print to the console instead of silently
+# dropping mail — a dev setup that looks like it sent is worse than no mail.
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+    EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "cheapgamespk <orders@example.com>")
+STORE_NAME = os.getenv("STORE_NAME", "cheapgamespk")
+STORE_SUPPORT_EMAIL = os.getenv("STORE_SUPPORT_EMAIL", "")
+
+# Email delivers a link to the order page by default. Turning this on also
+# pastes the account details into the message itself — convenient, but it puts
+# credentials in an inbox you do not control and cannot revoke.
+ORDER_EMAIL_INCLUDE_CREDENTIALS = env_bool("ORDER_EMAIL_INCLUDE_CREDENTIALS", False)
 
 # Contact number for "Buy on WhatsApp", digits only with country code.
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")

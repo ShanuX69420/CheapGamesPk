@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from .emails import send_order_confirmation, send_order_delivered
 from .models import (
     Order,
     OrderItem,
@@ -81,7 +82,12 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ["number", "email", "phone", "customer_name", "items__product_name"]
     date_hierarchy = "created_at"
     inlines = [OrderItemInline]
-    actions = ["action_mark_paid", "action_deliver", "action_cancel"]
+    actions = [
+        "action_mark_paid",
+        "action_deliver",
+        "action_cancel",
+        "action_resend_email",
+    ]
     list_select_related = ["payment_method"]
 
     readonly_fields = [
@@ -183,6 +189,25 @@ class OrderAdmin(admin.ModelAdmin):
             f"{done} order(s) cancelled. Unsold units returned to stock.",
             messages.WARNING,
         )
+
+    @admin.action(description="Resend the order email to the buyer")
+    def action_resend_email(self, request, queryset):
+        sent, skipped = 0, 0
+        for order in queryset:
+            if not order.email:
+                skipped += 1
+                continue
+            # Match the message to where the order actually is.
+            if order.status == OrderStatus.DELIVERED:
+                send_order_delivered(order)
+            else:
+                send_order_confirmation(order)
+            sent += 1
+
+        note = f"Re-sent {sent} email(s)."
+        if skipped:
+            note += f" {skipped} order(s) have no email address (WhatsApp orders)."
+        self.message_user(request, note)
 
     # --- maintenance -------------------------------------------------------
 

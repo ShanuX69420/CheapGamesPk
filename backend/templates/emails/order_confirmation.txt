@@ -1,0 +1,20 @@
+{{ store_name }} — order {{ order.number }} received
+
+We're holding your items until payment arrives.
+
+{% for item in items %}  {{ item.quantity }} x {{ item.product_name }} — {{ order.currency }} {{ item.line_total|floatformat:0 }}
+{% endfor %}
+  Total: {{ order.currency }} {{ order.total|floatformat:0 }}
+
+{% if order.payment_method %}HOW TO PAY — {{ order.payment_method.name }}
+
+{{ order.payment_method.instructions }}
+
+Quote {{ order.number }} as your payment reference.
+{% else %}Message us to arrange payment, quoting {{ order.number }}.
+{% endif %}
+Track your order:
+{{ order_url }}
+
+Keep this email — that link is the only way back to your order, and it carries
+an access code. Don't forward it to anyone.

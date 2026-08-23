@@ -10,5 +10,6 @@ urlpatterns = [
     path("", include(router.urls)),
     path("config/", views.StoreConfigView.as_view(), name="store-config"),
     path("orders/", views.OrderCreateView.as_view(), name="order-create"),
+    path("orders/recover/", views.OrderRecoverView.as_view(), name="order-recover"),
     path("orders/<str:number>/", views.OrderDetailView.as_view(), name="order-detail"),
 ]

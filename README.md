@@ -51,6 +51,12 @@ differ only in how the buyer pays.
 5. **Credentials appear** on the buyer's order page. Until delivery the API
    returns `null` for them, whatever the URL says.
 
+Emails go out automatically at steps 1 and 5 — a confirmation with the payment
+instructions, then a "ready" email once you deliver. Both link to the order
+page rather than pasting account details into the message; set
+`ORDER_EMAIL_INCLUDE_CREDENTIALS=True` if you would rather inline them, knowing
+that puts credentials in an inbox you cannot revoke.
+
 Unpaid orders release their stock automatically after `ORDER_HOLD_MINUTES`
 (default 120). Run the sweep from the admin ("Expire stale holds") or on a
 schedule:
@@ -67,6 +73,10 @@ There are no customer accounts. An order is reached at
 numbers alone are short and guessable, so a request without the right token
 returns 404 whether or not the order exists.
 
+Buyers who lose the link can request it at `/order/find`. That endpoint answers
+identically whether or not the address has orders, so it cannot be used to test
+which emails are customers, and it is rate limited.
+
 ## Configuration
 
 Backend `.env` (see `backend/.env.example`):
@@ -76,6 +86,12 @@ Backend `.env` (see `backend/.env.example`):
 | `WHATSAPP_NUMBER` | Digits with country code, e.g. `923001234567`. Empty hides every WhatsApp button. |
 | `ORDER_HOLD_MINUTES` | How long an unpaid order holds stock. |
 | `STORE_CURRENCY` | Currency prices are stored in. |
+| `SITE_URL` | Public storefront URL. Order links in emails are built from it — wrong value means dead links. |
+| `EMAIL_HOST` etc. | SMTP settings. **Leave blank and mail prints to the console instead of sending.** |
+| `DEFAULT_FROM_EMAIL` | From address on order emails. |
+| `ORDER_EMAIL_INCLUDE_CREDENTIALS` | `True` also pastes account details into the email body. Off by default. |
+| `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. Orders reserve stock, so this is what stops someone locking your catalog. |
+| `THROTTLE_ORDER_RECOVER` | Rate limit on recovery emails, default `5/hour`. |
 
 Payment instructions live in the admin under **Orders → Payment methods**. The
 seeded ones contain placeholder account numbers — edit them before taking real
@@ -91,7 +107,11 @@ python manage.py seed_payment_methods
 python manage.py seed_demo             # demo catalog + stock
 python manage.py fetch_artwork         # pull cover art from Steam's CDN
 python manage.py seed_payment_methods  # starter payment methods
+python manage.py send_test_email you@example.com --kind delivered
 ```
+
+`send_test_email` renders a real order through the real sending path — use it
+to confirm SMTP works before taking live orders.
 
 ```bash
 npm run shot           # screenshot desktop + mobile

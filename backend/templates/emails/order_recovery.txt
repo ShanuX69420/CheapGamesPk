@@ -1,0 +1,9 @@
+{{ store_name }} — your order links
+
+Someone asked us to resend the links for this email address. If that wasn't
+you, ignore this message — nothing has changed.
+{% for entry in orders %}
+  {{ entry.order.number }} — {{ entry.order.get_status_display }} — {{ entry.order.currency }} {{ entry.order.total|floatformat:0 }}
+  {{ entry.url }}
+{% endfor %}
+Each link carries its own access code. Don't forward them.

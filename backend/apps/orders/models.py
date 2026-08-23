@@ -167,6 +167,12 @@ class Order(TimeStampedModel):
             ]
         )
 
+        # Only mail once the delivery is actually committed — a rolled-back
+        # transaction must not leave the buyer holding a "ready" email.
+        from .emails import send_order_delivered
+
+        transaction.on_commit(lambda: send_order_delivered(self))
+
     @transaction.atomic
     def cancel(self, reason=""):
         """
