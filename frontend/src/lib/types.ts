@@ -48,6 +48,7 @@ export interface Product {
 export interface ProductDetail extends Product {
   categories: Category[];
   images: ProductImage[];
+  banner: string | null;
   short_description: string;
   description: string;
   limitations: string;

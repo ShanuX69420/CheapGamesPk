@@ -127,6 +127,17 @@ class Product(SluggedModel):
     )
     system_requirements = models.TextField(blank=True)
 
+    cover_url = models.URLField(
+        max_length=500,
+        blank=True,
+        help_text="External portrait cover (3:4). Used when no image is uploaded below.",
+    )
+    banner_url = models.URLField(
+        max_length=500,
+        blank=True,
+        help_text="External wide banner (16:9), shown at the top of the product page.",
+    )
+
     is_active = models.BooleanField(default=True, db_index=True)
     is_featured = models.BooleanField(default=False, db_index=True)
 
@@ -167,6 +178,17 @@ class Product(SluggedModel):
     @property
     def primary_image(self):
         return self.images.first()
+
+    def cover(self, request=None):
+        """Uploaded image wins; otherwise fall back to the external cover URL."""
+        uploaded = self.primary_image
+        if uploaded:
+            url = uploaded.image.url
+            return request.build_absolute_uri(url) if request else url
+        return self.cover_url or None
+
+    def banner(self, request=None):
+        return self.banner_url or self.cover(request)
 
 
 class ProductImage(TimeStampedModel):

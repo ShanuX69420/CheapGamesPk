@@ -64,12 +64,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         return self._available(obj) > 0
 
     def get_image(self, obj):
-        image = obj.primary_image
-        if not image:
-            return None
-        request = self.context.get("request")
-        url = image.image.url
-        return request.build_absolute_uri(url) if request else url
+        return obj.cover(self.context.get("request"))
 
 
 class ProductDetailSerializer(ProductListSerializer):
@@ -82,15 +77,20 @@ class ProductDetailSerializer(ProductListSerializer):
 
     categories = CategorySerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    banner = serializers.SerializerMethodField()
     stock_count = serializers.SerializerMethodField()
 
     def get_stock_count(self, obj):
         return self._available(obj)
 
+    def get_banner(self, obj):
+        return obj.banner(self.context.get("request"))
+
     class Meta(ProductListSerializer.Meta):
         fields = ProductListSerializer.Meta.fields + [
             "categories",
             "images",
+            "banner",
             "short_description",
             "description",
             "limitations",

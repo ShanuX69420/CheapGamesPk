@@ -64,6 +64,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     fieldsets = [
         (None, {"fields": ["name", "slug", "product_type", "platform", "categories"]}),
+        ("Artwork", {"fields": ["cover_url", "banner_url"]}),
         ("Pricing", {"fields": ["price", "compare_at_price"]}),
         ("Availability", {"fields": ["region", "release_date", "is_active", "is_featured"]}),
         (

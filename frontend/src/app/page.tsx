@@ -1,4 +1,5 @@
 import { CatalogFilters } from "@/components/CatalogFilters";
+import { Hero } from "@/components/Hero";
 import { ProductCard } from "@/components/ProductCard";
 import { getPlatforms, getProducts, safely, type ProductQuery } from "@/lib/api";
 import type { Paginated, Product } from "@/lib/types";
@@ -13,6 +14,13 @@ function scalars(raw: Record<string, string | string[] | undefined>) {
   }
   return out;
 }
+
+const EMPTY: Paginated<Product> = {
+  count: 0,
+  next: null,
+  previous: null,
+  results: [],
+};
 
 export default async function HomePage({
   searchParams,
@@ -31,55 +39,49 @@ export default async function HomePage({
     page: params.page,
   };
 
-  const empty: Paginated<Product> = {
-    count: 0,
-    next: null,
-    previous: null,
-    results: [],
-  };
-  const [page, platforms] = await Promise.all([
-    safely(getProducts(query), empty),
+  const isBrowsing = !Object.values(params).some(Boolean);
+
+  const [page, platforms, featured] = await Promise.all([
+    safely(getProducts(query), EMPTY),
     safely(getPlatforms(), []),
+    isBrowsing
+      ? safely(getProducts({ in_stock: "true", ordering: "-created_at" }), EMPTY)
+      : Promise.resolve(EMPTY),
   ]);
 
-  const isFiltered = Object.values(params).some(Boolean);
-
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      {!isFiltered && (
-        <section className="mb-10 rounded-2xl bg-gradient-to-br from-accent/20 via-ink-900 to-ink-900 p-8 ring-1 ring-accent/20 sm:p-12">
-          <h1 className="max-w-2xl text-3xl font-black leading-tight tracking-tight sm:text-4xl">
-            PC games at a fraction of store price.
-          </h1>
-          <p className="mt-3 max-w-xl text-ink-200">
-            Offline activations, online accounts and genuine keys — delivered
-            instantly, with support on every order.
-          </p>
-        </section>
-      )}
+    <div className="mx-auto max-w-[88rem] px-4 py-6 sm:px-6">
+      {isBrowsing && <Hero featured={featured.results} />}
 
-      <div className="mb-6">
-        <CatalogFilters params={params} platforms={platforms} />
-      </div>
+      <CatalogFilters params={params} platforms={platforms} />
 
-      <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="text-lg font-bold">
-          {params.search ? `Results for “${params.search}”` : "All products"}
+      <div className="mb-4 flex items-baseline justify-between gap-4">
+        <h2 className="text-base font-bold">
+          {params.search ? (
+            <>
+              Results for{" "}
+              <span className="text-accent-bright">
+                &ldquo;{params.search}&rdquo;
+              </span>
+            </>
+          ) : (
+            "All products"
+          )}
         </h2>
-        <span className="text-sm text-ink-400">
+        <span className="shrink-0 text-sm tabular-nums text-ink-400">
           {page.count} {page.count === 1 ? "product" : "products"}
         </span>
       </div>
 
       {page.results.length === 0 ? (
-        <div className="rounded-xl bg-ink-900 p-12 text-center ring-1 ring-ink-800">
-          <p className="font-semibold text-ink-200">Nothing matches that.</p>
-          <p className="mt-1 text-sm text-ink-400">
+        <div className="rounded-xl bg-ink-900 p-16 text-center ring-1 ring-ink-800">
+          <p className="text-lg font-bold text-ink-200">Nothing matches that.</p>
+          <p className="mt-1.5 text-sm text-ink-400">
             Try clearing a filter or searching a different title.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {page.results.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

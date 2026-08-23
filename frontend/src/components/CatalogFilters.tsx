@@ -4,23 +4,22 @@ import type { Platform } from "@/lib/types";
 
 const TYPES = [
   { value: "", label: "All" },
-  { value: "offline_account", label: "Offline account" },
-  { value: "online_account", label: "Online account" },
-  { value: "key", label: "Game key" },
-  { value: "subscription", label: "Subscription" },
+  { value: "offline_account", label: "Offline" },
+  { value: "online_account", label: "Online" },
+  { value: "key", label: "Keys" },
+  { value: "subscription", label: "Subscriptions" },
 ];
 
 const SORTS = [
   { value: "", label: "Featured" },
-  { value: "price", label: "Price: low to high" },
-  { value: "-price", label: "Price: high to low" },
-  { value: "-release_date", label: "Newest releases" },
-  { value: "name", label: "A–Z" },
+  { value: "price", label: "Cheapest" },
+  { value: "-price", label: "Priciest" },
+  { value: "-release_date", label: "Newest" },
 ];
 
 type Params = Record<string, string | undefined>;
 
-/** Build a catalog URL with one key changed, dropping pagination. */
+/** Build a catalog URL with one key changed, always resetting pagination. */
 function urlWith(current: Params, key: string, value: string) {
   const next = new URLSearchParams();
   for (const [k, v] of Object.entries(current)) {
@@ -33,7 +32,7 @@ function urlWith(current: Params, key: string, value: string) {
   return query ? `/?${query}` : "/";
 }
 
-function Chip({
+function Tab({
   href,
   active,
   children,
@@ -45,10 +44,34 @@ function Chip({
   return (
     <Link
       href={href}
-      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+      className={`relative px-1 pb-2.5 text-sm font-bold transition ${
+        active ? "text-ink-50" : "text-ink-400 hover:text-ink-200"
+      }`}
+    >
+      {children}
+      {active && (
+        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-accent" />
+      )}
+    </Link>
+  );
+}
+
+function Pill({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
         active
-          ? "bg-accent text-white shadow-lg shadow-accent/20"
-          : "bg-ink-800 text-ink-200 ring-1 ring-ink-700 hover:bg-ink-700 hover:text-ink-50"
+          ? "bg-accent text-white"
+          : "bg-ink-800 text-ink-200 hover:bg-ink-700 hover:text-ink-50"
       }`}
     >
       {children}
@@ -63,83 +86,68 @@ export function CatalogFilters({
   params: Params;
   platforms: Platform[];
 }) {
+  const activeType = params.type ?? "";
+
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-ink-900/60 p-4 ring-1 ring-ink-800">
-      <FilterRow label="Type">
+    <div className="mb-5">
+      {/* Product type is the store's primary axis — give it tab weight. */}
+      <div className="flex items-center gap-5 overflow-x-auto border-b border-ink-800">
         {TYPES.map((t) => (
-          <Chip
+          <Tab
             key={t.value}
             href={urlWith(params, "type", t.value)}
-            active={(params.type ?? "") === t.value}
+            active={activeType === t.value}
           >
             {t.label}
-          </Chip>
+          </Tab>
         ))}
-      </FilterRow>
+      </div>
 
-      {platforms.length > 0 && (
-        <FilterRow label="Platform">
-          <Chip
-            href={urlWith(params, "platform", "")}
-            active={!params.platform}
+      {/* Everything else is secondary: one quiet row. */}
+      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2">
+        <Pill href={urlWith(params, "platform", "")} active={!params.platform}>
+          All platforms
+        </Pill>
+        {platforms.map((p) => (
+          <Pill
+            key={p.slug}
+            href={urlWith(params, "platform", p.slug)}
+            active={params.platform === p.slug}
           >
-            All
-          </Chip>
-          {platforms.map((p) => (
-            <Chip
-              key={p.slug}
-              href={urlWith(params, "platform", p.slug)}
-              active={params.platform === p.slug}
-            >
-              {p.name}
-            </Chip>
-          ))}
-        </FilterRow>
-      )}
+            {p.name}
+          </Pill>
+        ))}
 
-      <FilterRow label="Show">
-        <Chip
+        <span className="mx-1 h-4 w-px bg-ink-700" aria-hidden />
+
+        <Pill
           href={urlWith(params, "in_stock", params.in_stock ? "" : "true")}
           active={params.in_stock === "true"}
         >
-          In stock only
-        </Chip>
-        <Chip
+          In stock
+        </Pill>
+        <Pill
           href={urlWith(params, "on_sale", params.on_sale ? "" : "true")}
           active={params.on_sale === "true"}
         >
           On sale
-        </Chip>
-      </FilterRow>
+        </Pill>
 
-      <FilterRow label="Sort">
-        {SORTS.map((s) => (
-          <Chip
-            key={s.value}
-            href={urlWith(params, "ordering", s.value)}
-            active={(params.ordering ?? "") === s.value}
-          >
-            {s.label}
-          </Chip>
-        ))}
-      </FilterRow>
-    </div>
-  );
-}
-
-function FilterRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="w-16 shrink-0 text-xs font-semibold uppercase tracking-wider text-ink-400">
-        {label}
-      </span>
-      {children}
+        <div className="ml-auto flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+            Sort
+          </span>
+          {SORTS.map((s) => (
+            <Pill
+              key={s.value}
+              href={urlWith(params, "ordering", s.value)}
+              active={(params.ordering ?? "") === s.value}
+            >
+              {s.label}
+            </Pill>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
