@@ -11,7 +11,7 @@ const TYPE_STYLES: Record<string, string> = {
   subscription: "bg-amber-400/90 text-ink-950",
 };
 
-/** Full labels collide with the discount badge on narrow cards. */
+/** Full labels are too wide for a narrow card. */
 const TYPE_SHORT: Record<string, string> = {
   offline_account: "Offline",
   online_account: "Online",
@@ -46,12 +46,6 @@ export function ProductCard({ product }: { product: Product }) {
             without dulling the artwork. Badges carry their own backgrounds. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/95 via-ink-950/45 to-transparent" />
 
-        {product.is_on_sale && (
-          <span className="absolute left-2 top-2 rounded-md bg-deal px-1.5 py-0.5 text-xs font-black tabular-nums text-white shadow-lg">
-            −{product.discount_percent}%
-          </span>
-        )}
-
         <span
           className={`absolute right-2 top-2 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm ${typeStyle}`}
         >
@@ -72,16 +66,9 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
 
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-base font-black tabular-nums text-ink-50">
-            {money(product.price)}
-          </span>
-          {product.is_on_sale && product.compare_at_price && (
-            <span className="text-[11px] tabular-nums text-ink-400 line-through">
-              {money(product.compare_at_price)}
-            </span>
-          )}
-        </div>
+        <span className="text-base font-black tabular-nums text-ink-50">
+          {money(product.price)}
+        </span>
       </div>
     </Link>
   );
