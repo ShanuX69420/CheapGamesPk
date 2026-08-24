@@ -287,7 +287,7 @@ function NotFound({ reason }: { reason: string }) {
           href="/order/find"
           className="rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white transition hover:bg-accent-bright"
         >
-          Email me my order link
+          Find your order
         </Link>
         <Link
           href="/"

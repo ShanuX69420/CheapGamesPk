@@ -1,13 +1,9 @@
-from datetime import timedelta
-
 from django.conf import settings
 from django.db import transaction
-from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .emails import send_order_confirmation, send_order_recovery
 from .models import Order, OrderStatus, PaymentMethod
 from .serializers import (
     OrderCreateSerializer,
@@ -58,8 +54,6 @@ class OrderCreateView(APIView):
                 payment_method=method,
             )
 
-        transaction.on_commit(lambda: send_order_confirmation(order))
-
         payload = OrderCreatedSerializer(order, context={"request": request}).data
         return Response(payload, status=status.HTTP_201_CREATED)
 
@@ -98,44 +92,5 @@ class StoreConfigView(APIView):
                 "currency": settings.STORE_CURRENCY,
                 "whatsapp_number": getattr(settings, "WHATSAPP_NUMBER", "") or None,
                 "order_statuses": dict(OrderStatus.choices),
-            }
-        )
-
-
-class OrderRecoverView(APIView):
-    """
-    Email a buyer the links to their recent orders.
-
-    Always answers the same way whether or not the address has orders — a
-    differing response would turn this into an email-enumeration oracle.
-    """
-
-    throttle_scope = "order_recover"
-
-    LOOKBACK_DAYS = 120
-    MAX_ORDERS = 20
-
-    def post(self, request):
-        email = str(request.data.get("email", "")).strip()
-        if not email or "@" not in email:
-            return Response(
-                {"email": "Enter a valid email address."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        orders = list(
-            Order.objects.filter(
-                email__iexact=email,
-                created_at__gte=timezone.now() - timedelta(days=self.LOOKBACK_DAYS),
-            ).exclude(status=OrderStatus.CANCELLED)[: self.MAX_ORDERS]
-        )
-
-        if orders:
-            send_order_recovery(email, orders)
-
-        return Response(
-            {
-                "detail": "If we have orders for that address, we've just emailed "
-                "the links. Check your spam folder too."
             }
         )

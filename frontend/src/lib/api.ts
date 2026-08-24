@@ -132,34 +132,3 @@ export async function getOrder(
 export function getStoreConfig() {
   return get<StoreConfig>("/config/");
 }
-
-/**
- * Ask for order links to be emailed.
- *
- * The server answers identically whether or not the address has orders, so
- * there is nothing here for the UI to branch on — just show the message.
- */
-export async function recoverOrders(email: string): Promise<string> {
-  const response = await fetch(`${API_URL}/orders/recover/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-    cache: "no-store",
-  });
-
-  const data = (await response.json().catch(() => ({}))) as {
-    detail?: string;
-    email?: string;
-  };
-
-  if (response.status === 429) {
-    throw new Error("Too many requests. Wait a little while and try again.");
-  }
-  if (response.status === 400) {
-    throw new Error(data.email ?? "Enter a valid email address.");
-  }
-  if (!response.ok) {
-    throw new Error("Could not send the email. Please try again.");
-  }
-  return data.detail ?? "If we have orders for that address, we've emailed the links.";
-}

@@ -57,12 +57,12 @@ always sellable and fulfilment is manual. Stock items are a credential
 library for staff, not a pool that orders draw down — hide a listing with
 `is_active` if you need it off the shelf.
 
-Emails are opt-in by accident of the flow: a WhatsApp order carries no address,
-so nothing is sent unless you put one on the order in the admin. Once an order
-has an email, a confirmation goes out at step 1 and a "ready" email at step 3.
-Both link to the order page rather than pasting account details into the
-message; set `ORDER_EMAIL_INCLUDE_CREDENTIALS=True` if you would rather inline
-them, knowing that puts credentials in an inbox you cannot revoke.
+The store sends no email at all — there is no SMTP config, no from-address and
+no mail templates. Nothing on the site ever asks for an address, so there would
+be nobody to write to. Confirmation, payment, delivery and support all happen in
+the one WhatsApp chat, which doubles as the buyer's receipt. `Order.email` stays
+on the model so you can note an address a buyer volunteers in the chat; it is
+never used to contact them.
 
 ### Order links
 
@@ -71,9 +71,13 @@ There are no customer accounts. An order is reached at
 numbers alone are short and guessable, so a request without the right token
 returns 404 whether or not the order exists.
 
-Buyers who lose the link can request it at `/order/find`. That endpoint answers
-identically whether or not the address has orders, so it cannot be used to test
-which emails are customers, and it is rate limited.
+`/order/find` lists the orders placed from that browser, which it remembers
+locally — there is no server-side lookup, because we hold nothing to match a
+buyer against. A buyer on a new phone has their order number in the chat, so
+that is where they ask.
+
+The admin shows each order's full link (built from `SITE_URL`) ready to paste
+into the conversation.
 
 ## Configuration
 
@@ -83,17 +87,12 @@ Backend `.env` (see `backend/.env.example`):
 |---|---|
 | `WHATSAPP_NUMBER` | Digits with country code, e.g. `923001234567`. Empty hides every WhatsApp button. |
 | `STORE_CURRENCY` | Currency prices are stored in. |
-| `SITE_URL` | Public storefront URL. Order links in emails are built from it — wrong value means dead links. |
-| `EMAIL_HOST` etc. | SMTP settings. **Leave blank and mail prints to the console instead of sending.** |
-| `DEFAULT_FROM_EMAIL` | From address on order emails. |
-| `ORDER_EMAIL_INCLUDE_CREDENTIALS` | `True` also pastes account details into the email body. Off by default. |
+| `SITE_URL` | Public storefront URL. The order link the admin hands you is built from it — wrong value means dead links. |
 | `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. |
-| `THROTTLE_ORDER_RECOVER` | Rate limit on recovery emails, default `5/hour`. |
 
 Payment instructions live in the admin under **Orders → Payment methods**.
 Nothing on the storefront asks the buyer to pick one — you quote them in the
-chat, and they appear on the order page and in emails once you set one on an
-order. The seeded ones contain placeholder account numbers — edit them before
+chat, and they appear on the order page once you set one on an order. The seeded ones contain placeholder account numbers — edit them before
 taking real orders:
 
 ```bash
@@ -106,11 +105,11 @@ python manage.py seed_payment_methods
 python manage.py seed_demo             # demo catalog + credentials
 python manage.py fetch_artwork         # pull cover art from Steam's CDN
 python manage.py seed_payment_methods  # starter payment methods
-python manage.py send_test_email you@example.com --kind delivered
 ```
 
-`send_test_email` renders a real order through the real sending path — use it
-to confirm SMTP works before taking live orders.
+Staff passwords are reset with `python manage.py changepassword <user>`. The
+admin's "forgot password" flow needs SMTP and there is none, so that is the
+only way in if you lock yourself out.
 
 ```bash
 npm run shot           # screenshot desktop + mobile

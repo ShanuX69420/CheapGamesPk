@@ -26,6 +26,10 @@ class OrderCreateSerializer(serializers.Serializer):
     Quantities are capped per line and per order — this is a shared-account
     store, so a request for fifty units is far more likely to be abuse than
     a real customer.
+
+    Every contact field is optional. The whole sale happens in the WhatsApp
+    chat, so the buyer identifies themselves there and we never need a way to
+    reach them from here.
     """
 
     MAX_TOTAL_UNITS = 20
@@ -54,18 +58,6 @@ class OrderCreateSerializer(serializers.Serializer):
                 "Each product may only appear once — combine them into one line."
             )
         return value
-
-    def validate(self, attrs):
-        # WhatsApp orders arrive without an email; we need some way to reply.
-        if attrs.get("source") == OrderSource.WHATSAPP:
-            if not (attrs.get("phone") or attrs.get("email")):
-                # The buyer identifies themselves in the chat, so this is fine.
-                pass
-        elif not attrs.get("email"):
-            raise serializers.ValidationError(
-                {"email": "An email address is required so we can send your order."}
-            )
-        return attrs
 
     def resolve_products(self):
         """Map validated lines to (Product, quantity), rejecting inactive products."""

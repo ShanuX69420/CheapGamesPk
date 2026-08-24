@@ -1,49 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
-import { recoverOrders } from "@/lib/api";
 import { orderUrl, rememberedOrdersStore } from "@/lib/orderStore";
 import { money } from "@/lib/format";
 
 export default function FindOrderPage() {
-  const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  // Orders placed from this browser are already known locally — show them
-  // before making anyone wait on an email.
+  /* Orders placed from this browser are remembered locally. That is the only
+     lookup there is — we hold no email address to match anyone against. */
   const recent = useSyncExternalStore(
     rememberedOrdersStore.subscribe,
     rememberedOrdersStore.getSnapshot,
     rememberedOrdersStore.getServerSnapshot,
   );
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setError(null);
-    setSent(null);
-    setBusy(true);
-    try {
-      setSent(await recoverOrders(email));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <div className="mx-auto max-w-xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-black tracking-tight">Find your order</h1>
       <p className="mt-2 text-sm leading-relaxed text-ink-400">
-        Order links contain a private access code. Orders you placed on this
-        device are listed below; otherwise we can only email the link to the
-        address on the order.
+        Order links contain a private access code, so we can&rsquo;t look one up
+        from a name. Orders you placed on this device are listed below.
       </p>
 
-      {recent.length > 0 && (
+      {recent.length > 0 ? (
         <section className="mt-7 rounded-xl bg-ink-900 p-5 ring-1 ring-ink-800">
           <h2 className="text-sm font-bold">Orders from this device</h2>
           <ul className="mt-3 space-y-2">
@@ -64,52 +44,26 @@ export default function FindOrderPage() {
             ))}
           </ul>
         </section>
+      ) : (
+        <section className="mt-7 rounded-xl bg-ink-900 p-5 ring-1 ring-ink-800">
+          <h2 className="text-sm font-bold">No orders on this device</h2>
+          <p className="mt-2 text-sm leading-relaxed text-ink-400">
+            You either ordered from another phone or browser, or cleared its
+            history.
+          </p>
+        </section>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-7 rounded-xl bg-ink-900 p-5 ring-1 ring-ink-800"
-      >
-        <h2 className="text-sm font-bold">Email me my order links</h2>
-
-        <label className="mt-3 block">
-          <span className="mb-1.5 block text-xs font-semibold text-ink-200">
-            Email on your order
-          </span>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full rounded-lg bg-ink-800 px-3 py-2.5 text-sm text-ink-50 ring-1 ring-ink-700 outline-none transition placeholder:text-ink-400 focus:ring-accent"
-          />
-        </label>
-
-        <button
-          type="submit"
-          disabled={busy}
-          className="mt-4 w-full rounded-lg bg-accent px-4 py-3 font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-bright disabled:cursor-wait disabled:opacity-70"
-        >
-          {busy ? "Sending…" : "Send my order links"}
-        </button>
-
-        {sent && (
-          <p className="mt-3 rounded-lg bg-good/10 px-3 py-2.5 text-sm leading-relaxed text-good ring-1 ring-good/25">
-            {sent}
-          </p>
-        )}
-        {error && (
-          <p className="mt-3 rounded-lg bg-deal/10 px-3 py-2.5 text-sm text-deal ring-1 ring-deal/25">
-            {error}
-          </p>
-        )}
-      </form>
-
-      <p className="mt-6 text-xs leading-relaxed text-ink-400">
-        Ordered over WhatsApp and never gave us an email? Message us in the same
-        chat — your order number is in the conversation.
-      </p>
+      <section className="mt-6 rounded-xl bg-[#25D366]/[0.07] p-5 ring-1 ring-[#25D366]/25">
+        <h2 className="text-sm font-bold text-[#3ae07a]">
+          Can&rsquo;t find it? Just message us
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-ink-200">
+          Every order runs through WhatsApp, so the whole thing is in your chat
+          with us — your order number, what you bought and your details. Open
+          that chat and we&rsquo;ll sort it out there.
+        </p>
+      </section>
     </div>
   );
 }

@@ -1,9 +1,9 @@
+from django.conf import settings
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .emails import send_order_confirmation, send_order_delivered
 from .models import Order, OrderItem, OrderStatus, PaymentMethod
 
 STATUS_COLOURS = {
@@ -76,12 +76,7 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ["number", "email", "phone", "customer_name", "items__product_name"]
     date_hierarchy = "created_at"
     inlines = [OrderItemInline]
-    actions = [
-        "action_mark_paid",
-        "action_deliver",
-        "action_cancel",
-        "action_resend_email",
-    ]
+    actions = ["action_mark_paid", "action_deliver", "action_cancel"]
     list_select_related = ["payment_method"]
 
     readonly_fields = [
@@ -140,11 +135,17 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.display(description="Order status link")
     def customer_link(self, obj):
-        """The URL the buyer uses to track this order and collect credentials."""
+        """
+        The URL the buyer uses to track this order and collect credentials.
+
+        Absolute, because the point of it is to be pasted into the WhatsApp
+        chat — a relative path would be useless there. Built from SITE_URL, so
+        a stale value hands out dead links.
+        """
         if not obj.pk:
             return "—"
-        url = f"/order/{obj.number}?token={obj.access_token}"
-        return format_html('<code>{}</code>', url)
+        url = f"{settings.SITE_URL}/order/{obj.number}?token={obj.access_token}"
+        return format_html('<a href="{}" target="_blank"><code>{}</code></a>', url, url)
 
     # --- actions -----------------------------------------------------------
 
@@ -161,9 +162,9 @@ class OrderAdmin(admin.ModelAdmin):
         """
         Close an order out once you have actually delivered it.
 
-        Delivery itself happens wherever you talk to the buyer — usually the
-        WhatsApp chat. This marks the order done, reveals any credentials you
-        attached to it by hand, and emails the buyer if we have an address.
+        Delivery itself happens in the WhatsApp chat — that is where you send
+        the account details. This only records that it happened, and reveals
+        any credentials you attached to the order by hand.
         """
         done, skipped = 0, 0
         for order in queryset:
@@ -187,23 +188,3 @@ class OrderAdmin(admin.ModelAdmin):
         self.message_user(
             request, f"{done} order(s) cancelled.", messages.WARNING
         )
-
-    @admin.action(description="Resend the order email to the buyer")
-    def action_resend_email(self, request, queryset):
-        sent, skipped = 0, 0
-        for order in queryset:
-            if not order.email:
-                skipped += 1
-                continue
-            # Match the message to where the order actually is.
-            if order.status == OrderStatus.DELIVERED:
-                send_order_delivered(order)
-            else:
-                send_order_confirmation(order)
-            sent += 1
-
-        note = f"Re-sent {sent} email(s)."
-        if skipped:
-            note += f" {skipped} order(s) have no email address (WhatsApp orders)."
-        self.message_user(request, note)
-

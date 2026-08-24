@@ -1,7 +1,7 @@
 /**
- * Checks the "find your order" flow: orders placed on this device show up in
- * the local history, and the email form reports success without revealing
- * whether the address has any orders.
+ * Checks the "find your order" flow: an order placed on this device shows up in
+ * the local history, which is the only lookup the store has now that nothing
+ * collects an email address.
  */
 import { chromium } from "playwright";
 import path from "node:path";
@@ -19,16 +19,25 @@ const check = (label, ok, detail = "") => {
   if (!ok) problems.push(label);
 };
 
-// A fresh browser has no remembered orders.
+// A fresh browser has no remembered orders, and must say so rather than
+// leaving the page looking broken.
 await page.goto(`${BASE}/order/find`, { waitUntil: "networkidle" });
 check("find page renders", await page.getByRole("heading", { name: /find your order/i }).isVisible());
 check(
-  "no device history on a fresh browser",
-  !(await page.getByText(/orders from this device/i).isVisible().catch(() => false)),
+  "a fresh browser is told there is nothing here",
+  await page.getByText(/no orders on this device/i).isVisible(),
+);
+check(
+  "no order lookup form survives",
+  (await page.locator('input[type="email"]').count()) === 0,
+);
+check(
+  "the chat is offered as the way back in",
+  await page.getByText(/message us/i).first().isVisible(),
 );
 
 /* Place an order so the browser remembers one, then come back. WhatsApp is the
-   only way to order now, so the number has to come out of the chat link. */
+   only way to order, so the number has to come out of the chat link. */
 await ctx.route("https://wa.me/**", (route) =>
   route.fulfill({ status: 200, contentType: "text/html", body: "<p>stub</p>" }),
 );
@@ -57,27 +66,16 @@ check(
   placed,
 );
 
-/* The email form must answer the same way whatever it is given — a WhatsApp
-   order carries no email, so nothing here should hint at what we hold. */
-await page.locator('input[type="email"]').fill("recovery@buyer.pk");
-await page.getByRole("button", { name: /send my order links/i }).click();
-const first = await page
-  .getByText(/if we have orders for that address/i)
-  .textContent({ timeout: 15000 })
-  .catch(() => null);
-check("the email form replies generically", Boolean(first), first?.slice(0, 46));
+// The listed order has to actually open — the token is carried in the link.
+await page.getByText(placed).first().click();
+await page.waitForURL(/\/order\/CGP-/, { timeout: 20000 }).catch(() => {});
+check(
+  "the remembered link opens the order",
+  await page.getByRole("heading", { name: placed }).isVisible().catch(() => false),
+);
 
+await page.goto(`${BASE}/order/find`, { waitUntil: "networkidle" });
 await page.screenshot({ path: path.join(SHOTS, "flow-find-order.png"), fullPage: true });
-
-// A different address must produce the identical message.
-await page.reload({ waitUntil: "networkidle" });
-await page.locator('input[type="email"]').fill("nobody-here@buyer.pk");
-await page.getByRole("button", { name: /send my order links/i }).click();
-const second = await page
-  .getByText(/if we have orders for that address/i)
-  .textContent({ timeout: 15000 })
-  .catch(() => null);
-check("a second address gets the same reply", first === second, second ? "identical" : "missing");
 
 await browser.close();
 console.log(problems.length ? `\nFAILURES: ${problems.join(", ")}` : "\nAll checks passed.");
