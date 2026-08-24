@@ -100,7 +100,7 @@ export function BuyActions({
             type="button"
             onClick={handleWhatsApp}
             disabled={busy}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] shadow-lg shadow-[#25D366]/20 transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-3 font-semibold text-[#04301c] transition-colors hover:bg-[#1fb955] disabled:cursor-wait disabled:opacity-70"
           >
             <WhatsAppIcon className="h-5 w-5" />
             {busy ? "Starting…" : "Buy now on WhatsApp"}
@@ -110,13 +110,13 @@ export function BuyActions({
       <button
         type="button"
         onClick={handleAdd}
-        className="w-full rounded-lg bg-ink-800 px-4 py-3 font-bold text-ink-100 ring-1 ring-ink-700 transition hover:bg-ink-700 hover:text-ink-50"
+        className="w-full rounded-md border border-ink-700 bg-ink-800 px-4 py-3 font-semibold text-ink-100 transition-colors hover:border-ink-600 hover:text-ink-50"
       >
         {added ? "Added to cart ✓" : "Add to cart"}
       </button>
 
       {error && (
-        <p className="rounded-lg bg-deal/10 px-3 py-2 text-xs text-deal ring-1 ring-deal/25">
+        <p className="rounded-md border border-deal/30 bg-deal/10 px-3 py-2 text-xs text-deal">
           {error}
         </p>
       )}

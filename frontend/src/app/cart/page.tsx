@@ -90,7 +90,7 @@ export default function CartPage() {
           <WhatsAppHandoff {...placed} />
           <Link
             href="/"
-            className="mt-4 block rounded-lg bg-ink-800 px-5 py-2.5 text-center text-sm font-bold text-ink-200 ring-1 ring-ink-700 transition hover:bg-ink-700"
+            className="mt-4 block rounded-md border border-ink-700 bg-ink-800 px-5 py-2.5 text-center text-sm font-semibold text-ink-200 transition-colors hover:border-ink-600 hover:text-ink-50"
           >
             Keep browsing
           </Link>
@@ -102,14 +102,14 @@ export default function CartPage() {
   if (count === 0) {
     return (
       <Shell>
-        <div className="rounded-xl bg-ink-900 p-16 text-center ring-1 ring-ink-800">
-          <p className="text-lg font-bold text-ink-200">Your cart is empty.</p>
+        <div className="rounded-lg border border-ink-800 bg-ink-900 p-16 text-center">
+          <p className="text-base font-semibold text-ink-50">Your cart is empty.</p>
           <p className="mt-1.5 text-sm text-ink-400">
             Find something to play and it will show up here.
           </p>
           <Link
             href="/"
-            className="mt-6 inline-block rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white transition hover:bg-accent-bright"
+            className="mt-6 inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-bright hover:text-ink-950"
           >
             Browse the catalog
           </Link>
@@ -125,11 +125,11 @@ export default function CartPage() {
           {lines.map((line) => (
             <li
               key={line.slug}
-              className="flex gap-4 rounded-xl bg-ink-900 p-3 ring-1 ring-ink-800"
+              className="flex gap-4 rounded-lg border border-ink-800 bg-ink-900 p-3"
             >
               <Link
                 href={`/product/${line.slug}`}
-                className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800"
+                className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-ink-800"
               >
                 {line.image ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -144,7 +144,7 @@ export default function CartPage() {
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/product/${line.slug}`}
-                  className="line-clamp-2 text-sm font-semibold transition hover:text-accent-bright"
+                  className="line-clamp-2 text-sm font-medium text-ink-100 transition-colors hover:text-ink-50"
                 >
                   {line.name}
                 </Link>
@@ -161,7 +161,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={() => remove(line.slug)}
-                    className="text-xs text-ink-400 underline-offset-2 transition hover:text-deal hover:underline"
+                    className="text-xs text-ink-400 underline-offset-2 transition-colors hover:text-deal hover:underline"
                   >
                     Remove
                   </button>
@@ -169,7 +169,7 @@ export default function CartPage() {
               </div>
 
               <div className="shrink-0 text-right">
-                <p className="font-bold tabular-nums">
+                <p className="font-semibold tabular-nums">
                   {money(Number(line.price) * line.quantity)}
                 </p>
                 {line.quantity > 1 && (
@@ -183,18 +183,18 @@ export default function CartPage() {
         </ul>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
-          <div className="rounded-xl bg-ink-900 p-5 ring-1 ring-ink-700">
+          <div className="rounded-lg border border-ink-800 bg-ink-900 p-5">
             <div className="flex items-baseline justify-between">
               <span className="text-sm text-ink-200">
                 Subtotal ({count} {count === 1 ? "item" : "items"})
               </span>
-              <span className="text-2xl font-black tabular-nums">
+              <span className="text-2xl font-semibold tabular-nums">
                 {money(subtotal)}
               </span>
             </div>
 
             {whatsappEnabled === false ? (
-              <p className="mt-4 rounded-lg bg-ink-800/60 px-3.5 py-3 text-sm leading-relaxed text-ink-200 ring-1 ring-ink-700">
+              <p className="mt-4 rounded-md border border-ink-700 bg-ink-800/60 px-3.5 py-3 text-sm leading-relaxed text-ink-200">
                 Ordering runs on WhatsApp and the number isn&apos;t set up yet.
                 Please check back shortly.
               </p>
@@ -204,7 +204,7 @@ export default function CartPage() {
                   type="button"
                   onClick={handleWhatsApp}
                   disabled={busy || whatsappEnabled === null}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] shadow-lg shadow-[#25D366]/20 transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-3 font-semibold text-[#04301c] transition-colors hover:bg-[#1fb955] disabled:cursor-wait disabled:opacity-70"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
                   {busy ? "Starting…" : "Order on WhatsApp"}
@@ -217,7 +217,7 @@ export default function CartPage() {
             )}
 
             {error && (
-              <p className="mt-3 rounded-lg bg-deal/10 px-3 py-2 text-xs text-deal ring-1 ring-deal/25">
+              <p className="mt-3 rounded-md border border-deal/30 bg-deal/10 px-3 py-2 text-xs text-deal">
                 {error}
               </p>
             )}
@@ -231,7 +231,7 @@ export default function CartPage() {
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      <h1 className="mb-6 text-2xl font-black tracking-tight">Your cart</h1>
+      <h1 className="mb-6 text-2xl font-bold tracking-tight">Your cart</h1>
       {children}
     </div>
   );
@@ -245,16 +245,16 @@ function Stepper({
   onChange: (next: number) => void;
 }) {
   return (
-    <div className="flex items-center rounded-lg ring-1 ring-ink-700">
+    <div className="flex items-center rounded-md border border-ink-700">
       <button
         type="button"
         aria-label="Decrease quantity"
         onClick={() => onChange(value - 1)}
-        className="px-2.5 py-1 text-ink-200 transition hover:text-accent-bright"
+        className="px-2.5 py-1 text-ink-200 transition-colors hover:text-ink-50"
       >
         −
       </button>
-      <span className="min-w-7 text-center text-sm font-bold tabular-nums">
+      <span className="min-w-7 text-center text-sm font-semibold tabular-nums">
         {value}
       </span>
       <button
@@ -262,7 +262,7 @@ function Stepper({
         aria-label="Increase quantity"
         onClick={() => onChange(value + 1)}
         disabled={value >= 10}
-        className="px-2.5 py-1 text-ink-200 transition hover:text-accent-bright disabled:opacity-30"
+        className="px-2.5 py-1 text-ink-200 transition-colors hover:text-ink-50 disabled:opacity-30"
       >
         +
       </button>

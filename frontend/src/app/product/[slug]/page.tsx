@@ -13,11 +13,13 @@ import type { Product, ProductDetail } from "@/lib/types";
 
 type Props = { params: Promise<{ slug: string }> };
 
+/* Same tinted-text chip as the listing card, so a type reads the same on
+   both pages. */
 const TYPE_STYLES: Record<string, string> = {
-  offline_account: "bg-accent text-white",
-  online_account: "bg-good text-ink-950",
-  key: "bg-ink-50 text-ink-950",
-  subscription: "bg-amber-400 text-ink-950",
+  offline_account: "text-accent-bright",
+  online_account: "text-good",
+  key: "text-ink-100",
+  subscription: "text-amber-300",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -115,7 +117,7 @@ function RelatedProducts({
 }) {
   return (
     <section className="mt-12 border-t border-ink-800 pt-8">
-      <h2 className="mb-4 text-base font-bold">{heading}</h2>
+      <h2 className="mb-4 text-base font-semibold">{heading}</h2>
       <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
@@ -138,24 +140,25 @@ function Banner({ product }: { product: ProductDetail }) {
             src={backdrop}
             alt=""
             aria-hidden
-            className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl saturate-[1.7]"
+            className="absolute inset-0 h-full w-full scale-110 object-cover blur-3xl"
           />
-          {/* Enough veil for text contrast, but the artwork still carries colour. */}
-          <div className="absolute inset-0 bg-ink-950/45" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/60 to-transparent" />
+          {/* Heavy veil: the backdrop is a hint of the cover's palette, not a
+              light show. Text sits on near-flat ink either way. */}
+          <div className="absolute inset-0 bg-ink-950/75" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/80 to-ink-950/50" />
         </>
       )}
 
       <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-5 sm:px-6">
         <Link
           href="/"
-          className="inline-block text-sm text-ink-200 transition hover:text-accent-bright"
+          className="inline-block text-sm text-ink-200 transition-colors hover:text-ink-50"
         >
           &larr; Back to catalog
         </Link>
 
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end">
-          <div className="w-40 shrink-0 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 sm:w-48">
+          <div className="w-40 shrink-0 overflow-hidden rounded-lg ring-1 ring-white/10 sm:w-48">
             <div className="aspect-square">
               {product.image ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -173,8 +176,8 @@ function Banner({ product }: { product: ProductDetail }) {
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex flex-wrap items-center gap-1.5">
               <span
-                className={`rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${
-                  TYPE_STYLES[product.product_type] ?? "bg-ink-600 text-ink-50"
+                className={`rounded border border-ink-700 bg-ink-800 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
+                  TYPE_STYLES[product.product_type] ?? "text-ink-200"
                 }`}
               >
                 {product.product_type_display}
@@ -186,7 +189,7 @@ function Banner({ product }: { product: ProductDetail }) {
               )}
             </div>
 
-            <h1 className="mt-3 text-2xl font-black leading-[1.15] tracking-tight sm:text-4xl">
+            <h1 className="mt-3 text-2xl font-bold leading-[1.15] tracking-tight sm:text-[2.1rem]">
               {product.name}
             </h1>
 
@@ -212,7 +215,7 @@ function Banner({ product }: { product: ProductDetail }) {
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-md bg-ink-50/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-200 ring-1 ring-inset ring-white/10 backdrop-blur-sm">
+    <span className="rounded border border-ink-700 bg-ink-800/80 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-200 backdrop-blur-sm">
       {children}
     </span>
   );
@@ -227,8 +230,8 @@ function BuyBox({
 }) {
   return (
     <aside className="lg:sticky lg:top-20 lg:self-start lg:pt-8">
-      <div className="rounded-xl bg-ink-900 p-5 ring-1 ring-ink-700">
-        <span className="text-3xl font-black tabular-nums">
+      <div className="rounded-lg border border-ink-800 bg-ink-900 p-5">
+        <span className="text-3xl font-semibold tabular-nums">
           {money(product.price)}
         </span>
 
@@ -268,8 +271,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-5 rounded-xl bg-ink-900/70 p-5 ring-1 ring-ink-800">
-      <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-ink-400">
+    <section className="mb-5 rounded-lg border border-ink-800 bg-ink-900 p-5">
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
         {title}
       </h2>
       {children}

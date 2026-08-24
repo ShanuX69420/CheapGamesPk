@@ -59,11 +59,11 @@ export default async function HomePage({
       <CatalogFilters params={params} platforms={platforms} />
 
       <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 className="text-base font-bold">
+        <h2 className="text-base font-semibold">
           {params.search ? (
             <>
               Results for{" "}
-              <span className="text-accent-bright">
+              <span className="text-ink-50">
                 &ldquo;{params.search}&rdquo;
               </span>
             </>
@@ -79,8 +79,8 @@ export default async function HomePage({
       </div>
 
       {page.results.length === 0 ? (
-        <div className="rounded-xl bg-ink-900 p-16 text-center ring-1 ring-ink-800">
-          <p className="text-lg font-bold text-ink-200">Nothing matches that.</p>
+        <div className="rounded-lg border border-ink-800 bg-ink-900 p-16 text-center">
+          <p className="text-base font-semibold text-ink-50">Nothing matches that.</p>
           <p className="mt-1.5 text-sm text-ink-400">
             Try clearing a filter or searching a different title.
           </p>

@@ -44,18 +44,20 @@ function Tab({
   return (
     <Link
       href={href}
-      className={`relative px-1 pb-2.5 text-sm font-bold transition ${
+      className={`relative px-1 pb-2.5 text-sm font-medium transition-colors ${
         active ? "text-ink-50" : "text-ink-400 hover:text-ink-200"
       }`}
     >
       {children}
       {active && (
-        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-accent" />
+        <span className="absolute inset-x-0 -bottom-px h-px bg-ink-50" />
       )}
     </Link>
   );
 }
 
+/* Selected reads as a light chip throughout the site; colour is saved for
+   things that take you somewhere. */
 function Pill({
   href,
   active,
@@ -68,10 +70,10 @@ function Pill({
   return (
     <Link
       href={href}
-      className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+      className={`rounded border px-2.5 py-1 text-xs font-medium transition-colors ${
         active
-          ? "bg-accent text-white"
-          : "bg-ink-800 text-ink-200 hover:bg-ink-700 hover:text-ink-50"
+          ? "border-ink-50 bg-ink-50 text-ink-950"
+          : "border-ink-700 text-ink-200 hover:border-ink-600 hover:text-ink-50"
       }`}
     >
       {children}
@@ -128,7 +130,7 @@ export function CatalogFilters({
         </Pill>
 
         <div className="ml-auto flex items-center gap-1.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-ink-400">
             Sort
           </span>
           {SORTS.map((s) => (

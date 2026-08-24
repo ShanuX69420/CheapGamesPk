@@ -17,19 +17,21 @@ const WARNING =
 
 export function OfflineTerms() {
   return (
-    <section className="mb-5 rounded-xl bg-deal/[0.06] p-5 ring-1 ring-deal/25">
-      <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-deal">
-        <span aria-hidden>&#128276;</span> Important information
+    <section className="mb-5 rounded-lg border border-ink-800 bg-ink-900 p-5">
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
+        Terms of use
       </h2>
       <ul className="space-y-1.5 text-sm leading-relaxed text-ink-200">
         {TERMS.map((term) => (
-          <li key={term} className="flex items-start gap-2">
-            <span aria-hidden className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-deal" />
+          <li key={term} className="flex items-start gap-2.5">
+            <span aria-hidden className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-ink-600" />
             <span>{term}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-4 border-t border-deal/20 pt-3 text-sm font-semibold text-deal">
+      {/* The one line a buyer must not skim, so it is the only coloured thing
+          in the panel. */}
+      <p className="mt-4 border-t border-ink-800 pt-3 text-sm font-medium text-deal">
         {WARNING}
       </p>
     </section>

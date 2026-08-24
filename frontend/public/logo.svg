@@ -1,0 +1,15 @@
+<!-- Full lockup for dark backgrounds — OG images, invoices, anywhere outside
+     the app. In the app itself use <Logo> so the wordmark picks up the page
+     font. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232 48" width="232" height="48" role="img" aria-label="cheapgames.pk">
+  <g transform="translate(0 4) scale(1.25)">
+    <rect width="32" height="32" rx="7" fill="#2f6fed"/>
+    <g fill="#fff">
+      <rect x="7.3" y="14.3" width="9" height="3.4" rx="1.7"/>
+      <rect x="10.1" y="11.5" width="3.4" height="9" rx="1.7"/>
+      <circle cx="23.6" cy="13.2" r="2.2"/>
+      <circle cx="20.4" cy="19.4" r="2.2"/>
+    </g>
+  </g>
+  <text x="53" y="33" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="-0.6" fill="#f1f2f4">cheapgames<tspan fill="#797d85">.pk</tspan></text>
+</svg>

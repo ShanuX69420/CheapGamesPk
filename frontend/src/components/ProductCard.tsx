@@ -3,12 +3,16 @@ import Link from "next/link";
 import { money } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
-/** Offline and online accounts carry different expectations — colour-code them. */
+/**
+ * Offline and online accounts carry different expectations, so the type is
+ * colour-coded — but as tinted text on a dark chip, not a block of colour
+ * sitting on the artwork.
+ */
 const TYPE_STYLES: Record<string, string> = {
-  offline_account: "bg-accent/90 text-white",
-  online_account: "bg-good/90 text-ink-950",
-  key: "bg-ink-50/90 text-ink-950",
-  subscription: "bg-amber-400/90 text-ink-950",
+  offline_account: "text-accent-bright",
+  online_account: "text-good",
+  key: "text-ink-100",
+  subscription: "text-amber-300",
 };
 
 /** Full labels are too wide for a narrow card. */
@@ -20,12 +24,12 @@ const TYPE_SHORT: Record<string, string> = {
 };
 
 export function ProductCard({ product }: { product: Product }) {
-  const typeStyle = TYPE_STYLES[product.product_type] ?? "bg-ink-600 text-ink-50";
+  const typeStyle = TYPE_STYLES[product.product_type] ?? "text-ink-200";
 
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl bg-ink-900 ring-1 ring-ink-800 transition duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/10 hover:ring-accent/50"
+      className="group flex flex-col overflow-hidden rounded-lg border border-ink-800 bg-ink-900 transition-colors duration-150 hover:border-ink-600"
     >
       <div className="relative aspect-square overflow-hidden bg-ink-800">
         {product.image ? (
@@ -36,37 +40,36 @@ export function ProductCard({ product }: { product: Product }) {
             src={product.image}
             alt=""
             loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.06]"
+            className="h-full w-full object-cover"
           />
         ) : (
           <FallbackArt name={product.name} />
         )}
 
         {/* Scrim only across the bottom strip, so it backs the platform label
-            without dulling the artwork. Badges carry their own backgrounds. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/95 via-ink-950/45 to-transparent" />
+            without dulling the artwork. The type chip carries its own. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/90 via-ink-950/40 to-transparent" />
 
         <span
-          className={`absolute right-2 top-2 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm ${typeStyle}`}
+          className={`absolute right-2 top-2 rounded border border-white/10 bg-ink-950/80 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm ${typeStyle}`}
         >
           {TYPE_SHORT[product.product_type] ?? product.product_type_display}
         </span>
 
         {product.platform && (
-          <span className="absolute bottom-2 left-2.5 text-[11px] font-semibold text-ink-200 drop-shadow">
+          <span className="absolute bottom-2 left-2.5 text-[11px] font-medium text-ink-200">
             {product.platform.name}
           </span>
         )}
-
       </div>
 
       {/* Fixed height keeps the grid rows aligned regardless of title length. */}
-      <div className="flex h-[5.75rem] flex-col justify-between p-3">
-        <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-ink-50 transition group-hover:text-accent-bright">
+      <div className="flex h-[5.5rem] flex-col justify-between border-t border-ink-800 p-3">
+        <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-ink-100 transition-colors group-hover:text-ink-50">
           {product.name}
         </h3>
 
-        <span className="text-base font-black tabular-nums text-ink-50">
+        <span className="text-[15px] font-semibold tabular-nums text-ink-50">
           {money(product.price)}
         </span>
       </div>
@@ -77,14 +80,14 @@ export function ProductCard({ product }: { product: Product }) {
 /** Products without artwork still need to look deliberate, not broken. */
 export function FallbackArt({ name }: { name: string }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_25%_15%,var(--color-ink-700),var(--color-ink-950))] p-4">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-ink-800 p-4">
       <span
         aria-hidden
-        className="absolute -right-6 -top-8 text-[7rem] font-black leading-none text-white/[0.04] select-none"
+        className="absolute -right-5 -top-7 text-[7rem] font-bold leading-none text-white/[0.04] select-none"
       >
         {name.charAt(0)}
       </span>
-      <span className="relative text-center text-sm font-bold leading-tight text-balance text-ink-200">
+      <span className="relative text-center text-sm font-medium leading-tight text-balance text-ink-200">
         {name}
       </span>
     </div>

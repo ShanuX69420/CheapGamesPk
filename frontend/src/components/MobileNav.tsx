@@ -37,7 +37,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
         aria-expanded={open}
         aria-controls="mobile-nav"
         aria-label={open ? "Close menu" : "Open menu"}
-        className="-ml-1 shrink-0 rounded-lg p-2 text-ink-200 transition hover:bg-ink-800 hover:text-ink-50 md:hidden"
+        className="-ml-1 shrink-0 rounded-md p-2 text-ink-200 transition-colors hover:bg-ink-800 hover:text-ink-50 md:hidden"
       >
         <svg
           viewBox="0 0 24 24"
@@ -73,7 +73,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
             aria-hidden
             tabIndex={-1}
             onClick={() => setOpen(false)}
-            className="absolute inset-x-0 top-full z-40 h-screen cursor-default bg-ink-950/70 backdrop-blur-sm md:hidden"
+            className="absolute inset-x-0 top-full z-40 h-screen cursor-default bg-ink-950/80 md:hidden"
           />
 
           <nav
@@ -86,7 +86,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                   <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-[15px] font-semibold text-ink-100 transition hover:bg-ink-800 hover:text-accent-bright"
+                    className="block rounded-md px-3 py-3 text-[15px] font-medium text-ink-100 transition-colors hover:bg-ink-800 hover:text-ink-50"
                   >
                     {item.label}
                   </Link>

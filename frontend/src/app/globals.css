@@ -1,19 +1,28 @@
 @import "tailwindcss";
 
+/*
+ * A neutral, near-black surface scale — no blue or violet cast, so the cover
+ * art is the only saturated thing on the page. Steps are deliberately close
+ * together: on a dark UI, separation comes from hairline borders, not from
+ * stacking ever-lighter grey panels.
+ */
 @theme {
-  --color-ink-950: #08090d;
-  --color-ink-900: #0d0f16;
-  --color-ink-800: #141822;
-  --color-ink-700: #1d2230;
-  --color-ink-600: #2a3142;
-  --color-ink-400: #6b7691;
-  --color-ink-200: #aab3c7;
-  --color-ink-50: #eef1f7;
+  --color-ink-950: #0a0a0b;
+  --color-ink-900: #101012;
+  --color-ink-800: #17181a;
+  --color-ink-700: #232427;
+  --color-ink-600: #303236;
+  --color-ink-400: #797d85;
+  --color-ink-200: #b2b5bc;
+  --color-ink-100: #d7d9de;
+  --color-ink-50: #f1f2f4;
 
-  --color-accent: #7c5cff;
-  --color-accent-bright: #9b82ff;
-  --color-deal: #ff4d6d;
-  --color-good: #2fd48f;
+  /* One accent, and it earns its place: links, active filters, focus. Never
+     a background wash, never a glow. */
+  --color-accent: #2f6fed;
+  --color-accent-bright: #6a9bff;
+  --color-deal: #e5565b;
+  --color-good: #35b880;
 }
 
 :root {
@@ -21,16 +30,20 @@
 }
 
 body {
-  background:
-    radial-gradient(60rem 40rem at 15% -10%, rgba(124, 92, 255, 0.16), transparent 60%),
-    radial-gradient(50rem 35rem at 90% 0%, rgba(47, 212, 143, 0.08), transparent 55%),
-    var(--color-ink-950);
+  background: var(--color-ink-950);
   color: var(--color-ink-50);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
+/* One visible focus treatment for everything, so keyboard users get the same
+   ring on a link, a button and an input. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-bright);
+  outline-offset: 2px;
+}
+
 ::selection {
-  background: var(--color-accent);
-  color: white;
+  background: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  color: var(--color-ink-50);
 }

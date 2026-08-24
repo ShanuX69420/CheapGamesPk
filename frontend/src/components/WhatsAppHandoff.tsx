@@ -20,8 +20,8 @@ export function WhatsAppHandoff({
   opened: boolean;
 }) {
   return (
-    <div className="rounded-lg bg-[#25D366]/[0.08] p-4 ring-1 ring-[#25D366]/30">
-      <p className="text-sm font-bold text-[#3ae07a]">
+    <div className="rounded-md border border-ink-700 bg-ink-800/60 p-4">
+      <p className="text-sm font-semibold text-good">
         Order {number} is with us
       </p>
       <p className="mt-1.5 text-xs leading-relaxed text-ink-200">
@@ -35,7 +35,7 @@ export function WhatsAppHandoff({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-2.5 text-sm font-bold text-[#04301c] transition hover:bg-[#3ae07a]"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-[#04301c] transition-colors hover:bg-[#1fb955]"
         >
           <WhatsAppIcon className="h-4 w-4" />
           {opened ? "Open the chat again" : "Open WhatsApp"}

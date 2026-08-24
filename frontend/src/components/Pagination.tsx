@@ -44,7 +44,12 @@ function hrefFor(params: Params, page: number) {
 }
 
 const BASE =
-  "flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-semibold transition";
+  "flex h-9 min-w-9 items-center justify-center rounded border px-3 text-sm font-medium transition-colors";
+
+/* Every idle control looks the same: hairline box, muted label. The current
+   page is the only one that inverts. */
+const IDLE = "border-ink-700 text-ink-200 hover:border-ink-600 hover:text-ink-50";
+const OFF = "border-ink-800 text-ink-600";
 
 export function Pagination({
   params,
@@ -68,26 +73,26 @@ export function Pagination({
         <Link
           href={hrefFor(params, page - 1)}
           rel="prev"
-          className={`${BASE} bg-ink-800 text-ink-200 ring-1 ring-ink-700 hover:bg-ink-700 hover:text-ink-50`}
+          className={`${BASE} ${IDLE}`}
         >
           ← Prev
         </Link>
       ) : (
-        <span className={`${BASE} cursor-not-allowed bg-ink-900 text-ink-600`}>
+        <span className={`${BASE} cursor-not-allowed ${OFF}`}>
           ← Prev
         </span>
       )}
 
       {pages.map((entry, i) =>
         entry === null ? (
-          <span key={`gap-${i}`} className={`${BASE} text-ink-600`} aria-hidden>
+          <span key={`gap-${i}`} className={`${BASE} border-transparent text-ink-600`} aria-hidden>
             …
           </span>
         ) : entry === page ? (
           <span
             key={entry}
             aria-current="page"
-            className={`${BASE} bg-accent text-white shadow-lg shadow-accent/20`}
+            className={`${BASE} border-ink-50 bg-ink-50 text-ink-950`}
           >
             {entry}
           </span>
@@ -95,7 +100,7 @@ export function Pagination({
           <Link
             key={entry}
             href={hrefFor(params, entry)}
-            className={`${BASE} bg-ink-800 text-ink-200 ring-1 ring-ink-700 hover:bg-ink-700 hover:text-ink-50`}
+            className={`${BASE} ${IDLE}`}
           >
             {entry}
           </Link>
@@ -106,12 +111,12 @@ export function Pagination({
         <Link
           href={hrefFor(params, page + 1)}
           rel="next"
-          className={`${BASE} bg-ink-800 text-ink-200 ring-1 ring-ink-700 hover:bg-ink-700 hover:text-ink-50`}
+          className={`${BASE} ${IDLE}`}
         >
           Next →
         </Link>
       ) : (
-        <span className={`${BASE} cursor-not-allowed bg-ink-900 text-ink-600`}>
+        <span className={`${BASE} cursor-not-allowed ${OFF}`}>
           Next →
         </span>
       )}
