@@ -100,13 +100,58 @@ export default async function OrderPage({ params, searchParams }: Props) {
 }
 
 function StatusPanel({ order }: { order: Order }) {
+  const onWhatsApp = order.source === "whatsapp";
+
   if (order.status === "delivered") {
     return (
-      <Panel tone="good" title="Your order is ready">
+      <Panel tone="good" title="Your order is complete">
+        {onWhatsApp ? (
+          <p>
+            We sent your details in the WhatsApp chat. Message us there if
+            anything needs sorting.
+          </p>
+        ) : (
+          <p>
+            Your details are below. Follow the setup steps exactly — especially
+            switching the client to offline mode before launching.
+          </p>
+        )}
+      </Panel>
+    );
+  }
+
+  if (order.status === "cancelled" || order.status === "refunded") {
+    return (
+      <Panel tone="muted" title={`Order ${order.status}`}>
         <p>
-          Your details are below. Follow the setup steps exactly — especially
-          switching the client to offline mode before launching.
+          This order is no longer active. Get in touch if you think that&rsquo;s
+          wrong.
         </p>
+      </Panel>
+    );
+  }
+
+  /* A WhatsApp order is agreed, paid and delivered in the chat, so there is
+     no payment step on the site to describe. */
+  if (onWhatsApp) {
+    return (
+      <Panel tone="accent" title="We’re handling this on WhatsApp">
+        <p>
+          Everything for this order happens in the chat — we&rsquo;ll confirm
+          it, take payment and send your details there.
+        </p>
+
+        {order.whatsapp_url && (
+          <a
+            href={order.whatsapp_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-4 py-2.5 text-sm font-bold text-[#04301c] transition hover:bg-[#3ae07a]"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            Open the chat
+          </a>
+        )}
       </Panel>
     );
   }
@@ -117,17 +162,6 @@ function StatusPanel({ order }: { order: Order }) {
         <p>
           We&rsquo;re preparing your order now. Refresh this page in a few
           minutes and your details will appear here.
-        </p>
-      </Panel>
-    );
-  }
-
-  if (order.status === "cancelled" || order.status === "refunded") {
-    return (
-      <Panel tone="muted" title={`Order ${order.status}`}>
-        <p>
-          This order is no longer active and the items have been returned to
-          stock. Get in touch if you think that&rsquo;s wrong.
         </p>
       </Panel>
     );
@@ -153,7 +187,7 @@ function StatusPanel({ order }: { order: Order }) {
       <p className="mt-3">
         Quote your order number{" "}
         <strong className="tabular-nums text-ink-50">{order.number}</strong> when
-        you pay. Your items are reserved until then.
+        you pay.
       </p>
 
       {order.whatsapp_url && (

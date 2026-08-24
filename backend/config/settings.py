@@ -154,4 +154,3 @@ ORDER_EMAIL_INCLUDE_CREDENTIALS = env_bool("ORDER_EMAIL_INCLUDE_CREDENTIALS", Fa
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
 
 # How long an unpaid order holds its stock before it returns to the pool.
-ORDER_HOLD_MINUTES = int(os.getenv("ORDER_HOLD_MINUTES", "120"))

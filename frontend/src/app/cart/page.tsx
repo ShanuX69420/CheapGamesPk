@@ -1,22 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useCart } from "@/components/CartProvider";
 import { WhatsAppIcon } from "@/components/icons";
-import { createOrder, getStoreConfig, StockConflictError } from "@/lib/api";
+import { WhatsAppHandoff } from "@/components/WhatsAppHandoff";
+import { createOrder, getStoreConfig } from "@/lib/api";
 import { money } from "@/lib/format";
-import { orderUrl, rememberOrder } from "@/lib/orderStore";
+import { rememberOrder } from "@/lib/orderStore";
 
 export default function CartPage() {
-  const router = useRouter();
   const { lines, subtotal, count, ready, setQuantity, remove, clear } = useCart();
 
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [placed, setPlaced] = useState<{
+    number: string;
+    url: string | null;
+    opened: boolean;
+  } | null>(null);
 
   useEffect(() => {
     getStoreConfig()
@@ -44,26 +48,41 @@ export default function CartPage() {
       });
       clear();
 
-      if (order.whatsapp_url) {
-        if (tab) tab.location.href = order.whatsapp_url;
-        else window.location.href = order.whatsapp_url;
-      } else {
-        tab?.close();
-      }
-      router.push(orderUrl(order.number, order.access_token));
-    } catch (err) {
+      if (order.whatsapp_url && tab) tab.location.href = order.whatsapp_url;
+      else tab?.close();
+
+      /* No redirect: the rest of this sale happens in the chat. */
+      setPlaced({
+        number: order.number,
+        url: order.whatsapp_url,
+        opened: Boolean(tab && order.whatsapp_url),
+      });
+    } catch {
       tab?.close();
-      setError(
-        err instanceof StockConflictError
-          ? `${err.info.product} — only ${err.info.available} left. Adjust the quantity and try again.`
-          : "Could not start the order. Please try again.",
-      );
+      setError("Could not start the order. Please try again.");
       setBusy(false);
     }
   }
 
   if (!ready) {
     return <Shell>{null}</Shell>;
+  }
+
+  /* Ordering empties the cart, so this has to win over the empty state. */
+  if (placed) {
+    return (
+      <Shell>
+        <div className="mx-auto max-w-md">
+          <WhatsAppHandoff {...placed} />
+          <Link
+            href="/"
+            className="mt-4 block rounded-lg bg-ink-800 px-5 py-2.5 text-center text-sm font-bold text-ink-200 ring-1 ring-ink-700 transition hover:bg-ink-700"
+          >
+            Keep browsing
+          </Link>
+        </div>
+      </Shell>
+    );
   }
 
   if (count === 0) {
@@ -185,7 +204,7 @@ export default function CartPage() {
                   {busy ? "Starting…" : "Order on WhatsApp"}
                 </button>
                 <p className="mt-2 text-center text-xs text-ink-400">
-                  We reserve your items and open a chat with your order number.
+                  We create your order and open a chat with the details.
                 </p>
               </>
             )}

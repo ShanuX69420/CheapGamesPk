@@ -5,12 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useCart } from "@/components/CartProvider";
-import {
-  createOrder,
-  getPaymentMethods,
-  StockConflictError,
-  ValidationError,
-} from "@/lib/api";
+import { createOrder, getPaymentMethods, ValidationError } from "@/lib/api";
 import { money } from "@/lib/format";
 import { orderUrl, rememberOrder } from "@/lib/orderStore";
 import type { PaymentMethod } from "@/lib/types";
@@ -69,11 +64,7 @@ export default function CheckoutPage() {
       clear();
       router.push(orderUrl(order.number, order.access_token));
     } catch (err) {
-      if (err instanceof StockConflictError) {
-        setErrors({
-          form: `${err.info.product} — only ${err.info.available} left. Go back to your cart and lower the quantity.`,
-        });
-      } else if (err instanceof ValidationError) {
+      if (err instanceof ValidationError) {
         const flat: Record<string, string> = {};
         for (const [field, value] of Object.entries(err.fields)) {
           flat[field] = Array.isArray(value) ? String(value[0]) : String(value);

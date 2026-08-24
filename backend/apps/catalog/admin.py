@@ -114,14 +114,18 @@ class ProductAdmin(admin.ModelAdmin):
             )
         return obj.price
 
-    @admin.display(description="In stock", ordering="available")
+    @admin.display(description="Credentials on file", ordering="available")
     def stock_display(self, obj):
+        """
+        How many units sit in the library for this listing.
+
+        Informational only — it does not cap sales. Every active listing is
+        sellable however many units are filed against it.
+        """
         url = reverse("admin:inventory_stockitem_changelist")
-        colour = "#27ae60" if obj.available > 3 else "#e67e22" if obj.available else "#c0392b"
         return format_html(
-            '<a href="{}?product__id__exact={}" style="color:{};font-weight:600">{}</a>',
+            '<a href="{}?product__id__exact={}" style="font-weight:600">{}</a>',
             url,
             obj.pk,
-            colour,
             obj.available,
         )

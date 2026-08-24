@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Count, Q
 from django.utils import timezone
 
@@ -7,7 +7,6 @@ from apps.catalog.models import Product, TimeStampedModel
 
 class StockStatus(models.TextChoices):
     AVAILABLE = "available", "Available"
-    RESERVED = "reserved", "Reserved"
     SOLD = "sold", "Sold"
     BURNED = "burned", "Burned"          # account reclaimed / key revoked
     DISABLED = "disabled", "Disabled"    # pulled from sale manually
@@ -17,20 +16,15 @@ class StockItemQuerySet(models.QuerySet):
     def available(self):
         return self.filter(status=StockStatus.AVAILABLE)
 
-    def expired_reservations(self):
-        return self.filter(
-            status=StockStatus.RESERVED,
-            reserved_until__lt=timezone.now(),
-        )
-
 
 class StockItem(TimeStampedModel):
     """
-    One sellable unit: a set of account credentials or a single key.
+    A set of credentials or a key, kept so staff can find it at fulfilment time.
 
-    Stock is a finite pool, not a counter — handing the same account to two
-    buyers is the failure mode that kills this kind of store, so allocation
-    goes through `allocate()`, which locks rows before claiming them.
+    This is a library, not a pool. Nothing here limits what can be sold — an
+    offline activation goes out as many times as we like — and orders never
+    draw it down on their own. Staff attach a unit to an order line by hand
+    when they want the buyer to collect it from the site.
     """
 
     product = models.ForeignKey(
@@ -61,7 +55,6 @@ class StockItem(TimeStampedModel):
         default=StockStatus.AVAILABLE,
         db_index=True,
     )
-    reserved_until = models.DateTimeField(blank=True, null=True)
     sold_at = models.DateTimeField(blank=True, null=True)
     notes = models.TextField(blank=True)
 
@@ -82,48 +75,15 @@ class StockItem(TimeStampedModel):
         first = self.payload.strip().splitlines()[0] if self.payload.strip() else ""
         return f"{first[:4]}…{first[-2:]}" if len(first) > 8 else "••••"
 
-    @classmethod
-    @transaction.atomic
-    def allocate(cls, product, quantity=1, hold_minutes=15):
-        """
-        Claim `quantity` units for `product` and return them as RESERVED.
-
-        Returns fewer items than requested if stock ran out — callers must
-        check the length before taking payment.
-        """
-        rows = cls.objects.select_for_update(
-            **cls._lock_kwargs()
-        ).filter(product=product, status=StockStatus.AVAILABLE)[:quantity]
-
-        items = list(rows)
-        if items:
-            cls.objects.filter(pk__in=[i.pk for i in items]).update(
-                status=StockStatus.RESERVED,
-                reserved_until=timezone.now() + timezone.timedelta(minutes=hold_minutes),
-                updated_at=timezone.now(),
-            )
-        return items
-
-    @staticmethod
-    def _lock_kwargs():
-        """`skip_locked` where the database supports it (Postgres), plain lock on SQLite."""
-        from django.db import connection
-
-        if connection.features.has_select_for_update_skip_locked:
-            return {"skip_locked": True}
-        return {}
-
     def mark_sold(self):
         self.status = StockStatus.SOLD
         self.sold_at = timezone.now()
-        self.reserved_until = None
-        self.save(update_fields=["status", "sold_at", "reserved_until", "updated_at"])
+        self.save(update_fields=["status", "sold_at", "updated_at"])
 
     def release(self):
-        """Return an unsold reservation to the pool."""
+        """Put a unit back in circulation."""
         self.status = StockStatus.AVAILABLE
-        self.reserved_until = None
-        self.save(update_fields=["status", "reserved_until", "updated_at"])
+        self.save(update_fields=["status", "updated_at"])
 
     def burn(self, reason=""):
         """Account reclaimed or key dead — never hand it out again."""
@@ -133,17 +93,8 @@ class StockItem(TimeStampedModel):
         self.save(update_fields=["status", "notes", "updated_at"])
 
 
-def release_expired_reservations():
-    """Sweep abandoned carts back into available stock. Call from a cron/task."""
-    return StockItem.objects.expired_reservations().update(
-        status=StockStatus.AVAILABLE,
-        reserved_until=None,
-        updated_at=timezone.now(),
-    )
-
-
 def stock_summary():
-    """Per-product counts, for the admin dashboard and low-stock alerts."""
+    """Per-product counts, for the admin dashboard."""
     return Product.objects.annotate(
         available=Count("stock_items", filter=Q(stock_items__status=StockStatus.AVAILABLE)),
         sold=Count("stock_items", filter=Q(stock_items__status=StockStatus.SOLD)),

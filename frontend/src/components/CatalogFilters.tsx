@@ -121,12 +121,6 @@ export function CatalogFilters({
         <span className="mx-1 h-4 w-px bg-ink-700" aria-hidden />
 
         <Pill
-          href={urlWith(params, "in_stock", params.in_stock ? "" : "true")}
-          active={params.in_stock === "true"}
-        >
-          In stock
-        </Pill>
-        <Pill
           href={urlWith(params, "on_sale", params.on_sale ? "" : "true")}
           active={params.on_sale === "true"}
         >

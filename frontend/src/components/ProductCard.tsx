@@ -64,13 +64,6 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         )}
 
-        {!product.in_stock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-ink-950/80 backdrop-blur-[2px]">
-            <span className="rounded-md bg-ink-800/90 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-ink-200 ring-1 ring-ink-600">
-              Out of stock
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Fixed height keeps the grid rows aligned regardless of title length. */}

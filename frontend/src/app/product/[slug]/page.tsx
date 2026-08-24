@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: Props) {
   /* Same account type reads as "more like this" better than genre would —
      a buyer shopping offline accounts wants other offline accounts. */
   const [related, config] = await Promise.all([
-    safely(getProducts({ type: product.product_type, in_stock: "true" }), {
+    safely(getProducts({ type: product.product_type }), {
       count: 0,
       next: null,
       previous: null,
@@ -214,7 +214,6 @@ function BuyBox({
   product: ProductDetail;
   whatsappEnabled: boolean;
 }) {
-  const low = product.stock_count > 0 && product.stock_count <= 3;
   const saving =
     product.compare_at_price !== null
       ? Number(product.compare_at_price) - Number(product.price)
@@ -244,27 +243,14 @@ function BuyBox({
         )}
 
         <div className="mt-3 flex items-center gap-1.5 text-sm">
-          <span
-            aria-hidden
-            className={`h-1.5 w-1.5 rounded-full ${
-              product.in_stock ? (low ? "bg-deal" : "bg-good") : "bg-ink-600"
-            }`}
-          />
-          {product.in_stock ? (
-            <span className={low ? "text-deal" : "text-good"}>
-              {low
-                ? `Only ${product.stock_count} left`
-                : `In stock — ${product.stock_count} available`}
-            </span>
-          ) : (
-            <span className="text-ink-400">Out of stock</span>
-          )}
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-good" />
+          <span className="text-good">In stock</span>
         </div>
 
         <BuyActions product={product} whatsappEnabled={whatsappEnabled} />
 
         <ul className="mt-5 space-y-2.5 border-t border-ink-800 pt-4 text-sm text-ink-200">
-          <Perk>Instant automatic delivery</Perk>
+          <Perk>Fast delivery after payment</Perk>
           <Perk>Setup instructions included</Perk>
           <Perk>Support on activation issues</Perk>
         </ul>

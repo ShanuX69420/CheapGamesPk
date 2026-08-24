@@ -37,7 +37,6 @@ export default async function HomePage({
     type: params.type,
     platform: params.platform,
     category: params.category,
-    in_stock: params.in_stock,
     on_sale: params.on_sale,
     ordering: params.ordering,
     page: params.page,
@@ -49,7 +48,7 @@ export default async function HomePage({
     safely(getProducts(query), EMPTY),
     safely(getPlatforms(), []),
     isBrowsing
-      ? safely(getProducts({ in_stock: "true", ordering: "-created_at" }), EMPTY)
+      ? safely(getProducts({ ordering: "-created_at" }), EMPTY)
       : Promise.resolve(EMPTY),
   ]);
 

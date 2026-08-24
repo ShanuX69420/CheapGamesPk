@@ -32,3 +32,6 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Screenshots written by the e2e/shot scripts
+/frontend/*.png

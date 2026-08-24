@@ -21,7 +21,7 @@ class OrderLineInputSerializer(serializers.Serializer):
 
 class OrderCreateSerializer(serializers.Serializer):
     """
-    Validates a basket before anything is reserved.
+    Validates a basket before an order is written.
 
     Quantities are capped per line and per order — this is a shared-account
     store, so a request for fifty units is far more likely to be abuse than
@@ -139,7 +139,6 @@ class OrderSerializer(serializers.ModelSerializer):
             "subtotal",
             "total",
             "currency",
-            "hold_expires_at",
             "paid_at",
             "delivered_at",
             "customer_note",

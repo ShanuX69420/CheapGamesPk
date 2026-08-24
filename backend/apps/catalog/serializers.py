@@ -33,7 +33,6 @@ class ProductListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     discount_percent = serializers.IntegerField(read_only=True)
     is_on_sale = serializers.BooleanField(read_only=True)
-    in_stock = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -49,19 +48,9 @@ class ProductListSerializer(serializers.ModelSerializer):
             "compare_at_price",
             "discount_percent",
             "is_on_sale",
-            "in_stock",
             "is_featured",
             "image",
         ]
-
-    @staticmethod
-    def _available(obj):
-        """Use the viewset's annotation when present; fall back to a query."""
-        annotated = getattr(obj, "available_count", None)
-        return annotated if annotated is not None else obj.stock_count
-
-    def get_in_stock(self, obj):
-        return self._available(obj) > 0
 
     def get_image(self, obj):
         return obj.cover(self.context.get("request"))
@@ -78,10 +67,6 @@ class ProductDetailSerializer(ProductListSerializer):
     categories = CategorySerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     banner = serializers.SerializerMethodField()
-    stock_count = serializers.SerializerMethodField()
-
-    def get_stock_count(self, obj):
-        return self._available(obj)
 
     def get_banner(self, obj):
         return obj.banner(self.context.get("request"))
@@ -96,7 +81,6 @@ class ProductDetailSerializer(ProductListSerializer):
             "limitations",
             "system_requirements",
             "release_date",
-            "stock_count",
             "meta_title",
             "meta_description",
             "created_at",

@@ -40,7 +40,6 @@ export interface Product {
   compare_at_price: string | null;
   discount_percent: number;
   is_on_sale: boolean;
-  in_stock: boolean;
   is_featured: boolean;
   image: string | null;
 }
@@ -54,7 +53,6 @@ export interface ProductDetail extends Product {
   limitations: string;
   system_requirements: string;
   release_date: string | null;
-  stock_count: number;
   meta_title: string;
   meta_description: string;
   created_at: string;
@@ -114,7 +112,6 @@ export interface Order {
   subtotal: string;
   total: string;
   currency: string;
-  hold_expires_at: string | null;
   paid_at: string | null;
   delivered_at: string | null;
   customer_note: string;
@@ -131,7 +128,6 @@ export interface CreatedOrder extends Order {
 export interface StoreConfig {
   currency: string;
   whatsapp_number: string | null;
-  hold_minutes: number;
   order_statuses: Record<string, string>;
 }
 
@@ -148,13 +144,4 @@ export interface CreateOrderInput {
   customer_note?: string;
   payment_method?: string;
   source?: OrderSource;
-}
-
-/** Raised when stock ran out between browsing and checking out (HTTP 409). */
-export interface OutOfStockError {
-  detail: string;
-  product: string;
-  slug: string;
-  requested: number;
-  available: number;
 }

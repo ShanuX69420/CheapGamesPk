@@ -154,17 +154,6 @@ class Product(SluggedModel):
         return self.name
 
     @property
-    def stock_count(self):
-        """Units currently sellable."""
-        from apps.inventory.models import StockStatus
-
-        return self.stock_items.filter(status=StockStatus.AVAILABLE).count()
-
-    @property
-    def in_stock(self):
-        return self.stock_count > 0
-
-    @property
     def is_on_sale(self):
         return bool(self.compare_at_price and self.compare_at_price > self.price)
 

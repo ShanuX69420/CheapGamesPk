@@ -39,8 +39,8 @@ check("count reflects the filter", /Page 2 of/.test(heading ?? ""), heading?.tri
 
 // Changing a filter must reset to page 1.
 // networkidle does not reliably settle after a client-side route change.
-await page.getByRole("link", { name: "In stock", exact: true }).click();
-await page.waitForURL(/in_stock=true/, { timeout: 15000 });
+await page.getByRole("link", { name: "On sale", exact: true }).click();
+await page.waitForURL(/on_sale=true/, { timeout: 15000 });
 check("changing a filter drops page param", !page.url().includes("page="), page.url());
 
 await browser.close();

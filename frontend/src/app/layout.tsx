@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s — cheapgamespk",
   },
   description:
-    "Offline activations, online accounts and genuine keys for PC games. Instant delivery, priced for Pakistan.",
+    "Offline activations, online accounts and genuine keys for PC games. Fast delivery, priced for Pakistan.",
 };
 
 const NAV = [
@@ -100,7 +100,7 @@ function Footer() {
           </p>
           <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-400">
             Offline activations, online accounts and genuine keys for PC —
-            delivered instantly.
+            delivered fast.
           </p>
         </div>
 
@@ -132,7 +132,7 @@ function Footer() {
                 Find your order
               </Link>
             </li>
-            <li>Instant delivery, 24/7</li>
+            <li>Fast delivery, 24/7</li>
             <li>Setup guide with every order</li>
             <li>Help with activation issues</li>
           </ul>

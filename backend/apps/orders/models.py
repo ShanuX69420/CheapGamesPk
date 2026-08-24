@@ -7,22 +7,10 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from apps.catalog.models import Product, TimeStampedModel
-from apps.inventory.models import StockItem, StockStatus
+from apps.inventory.models import StockItem
 
 ORDER_NUMBER_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # no look-alikes
 ORDER_NUMBER_PREFIX = "CGP"
-
-
-class OutOfStock(Exception):
-    """Raised when an order asks for more units than the pool can supply."""
-
-    def __init__(self, product, requested, available):
-        self.product = product
-        self.requested = requested
-        self.available = available
-        super().__init__(
-            f"{product.name}: asked for {requested}, only {available} available"
-        )
 
 
 class OrderStatus(models.TextChoices):
@@ -97,7 +85,6 @@ class Order(TimeStampedModel):
     total = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0"))
     currency = models.CharField(max_length=8, default="PKR")
 
-    hold_expires_at = models.DateTimeField(blank=True, null=True)
     paid_at = models.DateTimeField(blank=True, null=True)
     delivered_at = models.DateTimeField(blank=True, null=True)
     cancelled_at = models.DateTimeField(blank=True, null=True)
@@ -142,27 +129,21 @@ class Order(TimeStampedModel):
     def mark_paid(self):
         self.status = OrderStatus.PAID
         self.paid_at = timezone.now()
-        self.hold_expires_at = None
-        self.save(update_fields=["status", "paid_at", "hold_expires_at", "updated_at"])
+        self.save(update_fields=["status", "paid_at", "updated_at"])
 
     @transaction.atomic
     def mark_delivered(self):
-        """Consume the reserved units and hand the credentials over."""
+        """Mark the order fulfilled and reveal any credentials attached to it."""
         now = timezone.now()
-        self.stock_items.exclude(status=StockStatus.SOLD).update(
-            status=StockStatus.SOLD, sold_at=now, reserved_until=None, updated_at=now
-        )
         if not self.paid_at:
             self.paid_at = now
         self.status = OrderStatus.DELIVERED
         self.delivered_at = now
-        self.hold_expires_at = None
         self.save(
             update_fields=[
                 "status",
                 "paid_at",
                 "delivered_at",
-                "hold_expires_at",
                 "updated_at",
             ]
         )
@@ -175,29 +156,16 @@ class Order(TimeStampedModel):
 
     @transaction.atomic
     def cancel(self, reason=""):
-        """
-        Return the reserved units to the pool.
-
-        Units already SOLD are left alone — once a buyer has the credentials
-        the account is spent, whatever the order says afterwards.
-        """
+        """Close the order out. Nothing is held, so there is nothing to return."""
         now = timezone.now()
-        self.stock_items.exclude(status=StockStatus.SOLD).update(
-            status=StockStatus.AVAILABLE,
-            reserved_until=None,
-            order_item=None,
-            updated_at=now,
-        )
         self.status = OrderStatus.CANCELLED
         self.cancelled_at = now
-        self.hold_expires_at = None
         if reason:
             self.staff_note = f"{self.staff_note}\n{reason}".strip()
         self.save(
             update_fields=[
                 "status",
                 "cancelled_at",
-                "hold_expires_at",
                 "staff_note",
                 "updated_at",
             ]
@@ -209,29 +177,21 @@ class Order(TimeStampedModel):
     @transaction.atomic
     def create_from_items(cls, items, *, source=OrderSource.WEB, **fields):
         """
-        Build an order from [(product, quantity), ...], reserving stock as we go.
+        Build an order from [(product, quantity), ...].
 
-        Raises OutOfStock if any line cannot be filled. Because this runs in a
-        transaction, a partial failure rolls back every reservation — an order
-        is either fully stocked or it does not exist.
+        Nothing is reserved. What we sell is an activation that can be handed
+        out repeatedly, so there is no finite pool to draw down and an order
+        can never fail for want of stock. Fulfilment is manual.
         """
-        hold_minutes = settings.ORDER_HOLD_MINUTES
         order = cls(
             source=source,
             currency=settings.STORE_CURRENCY,
-            hold_expires_at=timezone.now() + timezone.timedelta(minutes=hold_minutes),
             **fields,
         )
         order.save()
 
         subtotal = Decimal("0")
         for product, quantity in items:
-            reserved = StockItem.allocate(
-                product, quantity=quantity, hold_minutes=hold_minutes
-            )
-            if len(reserved) < quantity:
-                raise OutOfStock(product, quantity, len(reserved))
-
             line = OrderItem.objects.create(
                 order=order,
                 product=product,
@@ -239,9 +199,6 @@ class Order(TimeStampedModel):
                 product_slug=product.slug,
                 unit_price=product.price,
                 quantity=quantity,
-            )
-            StockItem.objects.filter(pk__in=[s.pk for s in reserved]).update(
-                order_item=line, updated_at=timezone.now()
             )
             subtotal += line.line_total
 
@@ -272,20 +229,3 @@ class OrderItem(TimeStampedModel):
     @property
     def line_total(self):
         return self.unit_price * self.quantity
-
-
-def expire_stale_orders():
-    """
-    Cancel unpaid orders whose hold has run out, freeing their stock.
-
-    Without this an abandoned checkout would sit on inventory forever.
-    """
-    stale = Order.objects.filter(
-        status=OrderStatus.AWAITING_PAYMENT,
-        hold_expires_at__lt=timezone.now(),
-    )
-    count = 0
-    for order in stale:
-        order.cancel(reason="Auto-cancelled: payment hold expired.")
-        count += 1
-    return count

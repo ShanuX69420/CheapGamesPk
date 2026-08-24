@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 from apps.catalog.models import Product
 
-from .models import StockItem, StockStatus, release_expired_reservations
+from .models import StockItem, StockStatus
 
 
 class BulkImportForm(forms.Form):
@@ -44,7 +44,6 @@ class StockItemAdmin(admin.ModelAdmin):
         "label",
         "status_badge",
         "payload_preview",
-        "reserved_until",
         "sold_at",
     ]
     list_filter = ["status", "product__product_type", "product__platform", "product"]
@@ -56,7 +55,7 @@ class StockItemAdmin(admin.ModelAdmin):
 
     fieldsets = [
         (None, {"fields": ["product", "label", "payload"]}),
-        ("State", {"fields": ["status", "reserved_until", "sold_at"]}),
+        ("State", {"fields": ["status", "sold_at"]}),
         ("Notes", {"fields": ["notes"]}),
         ("Timestamps", {"fields": ["created_at", "updated_at"], "classes": ["collapse"]}),
     ]
@@ -67,7 +66,6 @@ class StockItemAdmin(admin.ModelAdmin):
     def status_badge(self, obj):
         colours = {
             StockStatus.AVAILABLE: "#27ae60",
-            StockStatus.RESERVED: "#e67e22",
             StockStatus.SOLD: "#2980b9",
             StockStatus.BURNED: "#c0392b",
             StockStatus.DISABLED: "#7f8c8d",
@@ -86,10 +84,8 @@ class StockItemAdmin(admin.ModelAdmin):
 
     @admin.action(description="Release back to available")
     def action_release(self, request, queryset):
-        count = queryset.exclude(status=StockStatus.SOLD).update(
-            status=StockStatus.AVAILABLE, reserved_until=None
-        )
-        self.message_user(request, f"{count} unit(s) released back into stock.")
+        count = queryset.update(status=StockStatus.AVAILABLE)
+        self.message_user(request, f"{count} unit(s) marked available again.")
 
     @admin.action(description="Burn (reclaimed / dead)")
     def action_burn(self, request, queryset):
@@ -110,11 +106,6 @@ class StockItemAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.bulk_import_view),
                 name="inventory_stockitem_bulk_import",
             ),
-            path(
-                "release-expired/",
-                self.admin_site.admin_view(self.release_expired_view),
-                name="inventory_stockitem_release_expired",
-            ),
         ]
         return custom + super().get_urls()
 
@@ -124,11 +115,6 @@ class StockItemAdmin(admin.ModelAdmin):
             "admin:inventory_stockitem_bulk_import"
         )
         return super().changelist_view(request, extra_context)
-
-    def release_expired_view(self, request):
-        count = release_expired_reservations()
-        self.message_user(request, f"{count} expired reservation(s) returned to stock.")
-        return redirect("admin:inventory_stockitem_changelist")
 
     def bulk_import_view(self, request):
         form = BulkImportForm(request.POST or None)

@@ -44,7 +44,7 @@ function Trust({ children }: { children: React.ReactNode }) {
 }
 
 export function Hero({ featured }: { featured: Product[] }) {
-  const best = featured.find((p) => p.is_on_sale && p.in_stock);
+  const best = featured.find((p) => p.is_on_sale);
 
   return (
     <section className="relative mb-8 overflow-hidden rounded-2xl ring-1 ring-ink-800">
@@ -54,7 +54,7 @@ export function Hero({ featured }: { featured: Product[] }) {
       <div className="relative flex items-center justify-between gap-6 px-6 py-9 sm:px-10 sm:py-12">
         <div className="max-w-xl">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-bright ring-1 ring-accent/25">
-            Instant delivery · 24/7
+            Fast delivery · 24/7
           </span>
 
           <h1 className="mt-4 text-3xl font-black leading-[1.1] tracking-tight sm:text-[2.6rem]">
@@ -64,7 +64,7 @@ export function Hero({ featured }: { featured: Product[] }) {
 
           <p className="mt-3 text-[15px] leading-relaxed text-ink-200">
             Offline activations, online accounts and genuine keys — delivered
-            the moment you pay, with support on every order.
+            fast once you pay, with support on every order.
           </p>
 
           <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2">

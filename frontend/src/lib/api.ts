@@ -3,7 +3,6 @@ import type {
   CreatedOrder,
   CreateOrderInput,
   Order,
-  OutOfStockError,
   Paginated,
   PaymentMethod,
   Platform,
@@ -27,7 +26,6 @@ export type ProductQuery = {
   type?: string;
   platform?: string;
   category?: string;
-  in_stock?: string;
   on_sale?: string;
   ordering?: string;
   page?: string;
@@ -94,14 +92,6 @@ export async function safely<T>(promise: Promise<T>, fallback: T): Promise<T> {
 
 // --- orders -----------------------------------------------------------------
 
-/** Thrown when the server rejects an order because stock ran out (409). */
-export class StockConflictError extends Error {
-  constructor(readonly info: OutOfStockError) {
-    super(info.detail);
-    this.name = "StockConflictError";
-  }
-}
-
 /** Thrown for 400s so forms can surface per-field messages. */
 export class ValidationError extends Error {
   constructor(readonly fields: Record<string, unknown>) {
@@ -118,9 +108,6 @@ export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder
     cache: "no-store",
   });
 
-  if (response.status === 409) {
-    throw new StockConflictError((await response.json()) as OutOfStockError);
-  }
   if (response.status === 400) {
     throw new ValidationError((await response.json()) as Record<string, unknown>);
   }

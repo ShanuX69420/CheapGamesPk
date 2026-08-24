@@ -36,35 +36,30 @@ Storefront at http://localhost:3000
 
 ## How an order flows
 
-Both checkout paths create the same `Order` and reserve the same stock — they
-differ only in how the buyer pays.
+Both checkout paths create the same `Order` — they differ only in how the
+buyer pays.
 
 1. **Buyer orders** — website checkout, or "Buy now on WhatsApp" which creates
    the order first and then opens a chat pre-filled with the order number.
-2. **Stock is reserved.** Units move `available -> reserved` and are attached to
-   the order line. If any line cannot be filled the whole order rolls back, so
-   an order is never partially stocked.
-3. **Buyer pays** using the instructions on their order page (JazzCash,
+2. **Buyer pays** using the instructions on their order page (JazzCash,
    EasyPaisa, bank transfer, crypto — all editable in the admin).
-4. **You confirm** in Django admin: select the order, "Mark as paid", then
+3. **You confirm** in Django admin: select the order, "Mark as paid", then
    "Deliver — release credentials to the buyer".
-5. **Credentials appear** on the buyer's order page. Until delivery the API
-   returns `null` for them, whatever the URL says.
+4. **Credentials appear** on the buyer's order page, if you attached a unit to
+   the order line. Until delivery the API returns `null` for them, whatever
+   the URL says.
+
+Nothing is reserved and nothing runs out. What we sell is an offline
+activation that can be handed out repeatedly, so every active listing is
+always sellable and fulfilment is manual. Stock items are a credential
+library for staff, not a pool that orders draw down — hide a listing with
+`is_active` if you need it off the shelf.
 
 Emails go out automatically at steps 1 and 5 — a confirmation with the payment
 instructions, then a "ready" email once you deliver. Both link to the order
 page rather than pasting account details into the message; set
 `ORDER_EMAIL_INCLUDE_CREDENTIALS=True` if you would rather inline them, knowing
 that puts credentials in an inbox you cannot revoke.
-
-Unpaid orders release their stock automatically after `ORDER_HOLD_MINUTES`
-(default 120). Run the sweep from the admin ("Expire stale holds") or on a
-schedule:
-
-```python
-from apps.orders.models import expire_stale_orders
-expire_stale_orders()
-```
 
 ### Order links
 
@@ -84,13 +79,12 @@ Backend `.env` (see `backend/.env.example`):
 | Variable | Purpose |
 |---|---|
 | `WHATSAPP_NUMBER` | Digits with country code, e.g. `923001234567`. Empty hides every WhatsApp button. |
-| `ORDER_HOLD_MINUTES` | How long an unpaid order holds stock. |
 | `STORE_CURRENCY` | Currency prices are stored in. |
 | `SITE_URL` | Public storefront URL. Order links in emails are built from it — wrong value means dead links. |
 | `EMAIL_HOST` etc. | SMTP settings. **Leave blank and mail prints to the console instead of sending.** |
 | `DEFAULT_FROM_EMAIL` | From address on order emails. |
 | `ORDER_EMAIL_INCLUDE_CREDENTIALS` | `True` also pastes account details into the email body. Off by default. |
-| `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. Orders reserve stock, so this is what stops someone locking your catalog. |
+| `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. |
 | `THROTTLE_ORDER_RECOVER` | Rate limit on recovery emails, default `5/hour`. |
 
 Payment instructions live in the admin under **Orders → Payment methods**. The
@@ -104,7 +98,7 @@ python manage.py seed_payment_methods
 ## Useful commands
 
 ```bash
-python manage.py seed_demo             # demo catalog + stock
+python manage.py seed_demo             # demo catalog + credentials
 python manage.py fetch_artwork         # pull cover art from Steam's CDN
 python manage.py seed_payment_methods  # starter payment methods
 python manage.py send_test_email you@example.com --kind delivered

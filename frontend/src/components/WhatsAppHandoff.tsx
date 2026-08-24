@@ -1,0 +1,46 @@
+"use client";
+
+import { WhatsAppIcon } from "./icons";
+
+/**
+ * Replaces the WhatsApp button once the order exists.
+ *
+ * A WhatsApp sale is finished in the chat — we agree it, take payment and
+ * hand the details over there — so there is nothing for the buyer to do back
+ * on the site and nowhere useful to send them. This panel only confirms the
+ * order landed and keeps a way into the chat if the popup never opened.
+ */
+export function WhatsAppHandoff({
+  number,
+  url,
+  opened,
+}: {
+  number: string;
+  url: string | null;
+  opened: boolean;
+}) {
+  return (
+    <div className="rounded-lg bg-[#25D366]/[0.08] p-4 ring-1 ring-[#25D366]/30">
+      <p className="text-sm font-bold text-[#3ae07a]">
+        Order {number} is with us
+      </p>
+      <p className="mt-1.5 text-xs leading-relaxed text-ink-200">
+        {opened
+          ? "WhatsApp is open with your order details — send the message and we'll take it from there."
+          : "Your browser blocked the WhatsApp tab. Open the chat below and send us the message."}
+      </p>
+
+      {url && (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-2.5 text-sm font-bold text-[#04301c] transition hover:bg-[#3ae07a]"
+        >
+          <WhatsAppIcon className="h-4 w-4" />
+          {opened ? "Open the chat again" : "Open WhatsApp"}
+        </a>
+      )}
+    </div>
+  );
+}

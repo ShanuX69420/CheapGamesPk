@@ -38,9 +38,21 @@ check("message carries an order number", /CGP-[A-Z0-9]{6}/.test(text), text.matc
 check("message states a total", /Total: PKR/.test(text));
 console.log("\n--- prefilled message ---\n" + text + "\n-------------------------");
 
-// The shopper should also land on their order page.
-await page.waitForURL("**/order/**", { timeout: 20000 }).catch(() => {});
-check("buyer lands on their order page", /\/order\/CGP-/.test(page.url()), page.url());
+// The sale continues in the chat, so the buyer must NOT be routed anywhere.
+const number = text.match(/CGP-[A-Z0-9]{6}/)?.[0] ?? "";
+const handoff = page.getByText(`Order ${number} is with us`);
+await handoff.waitFor({ timeout: 20000 }).catch(() => {});
+check("stays on the product page", /\/product\//.test(page.url()), page.url());
+check("no redirect to an order page", !/\/order\//.test(page.url()), page.url());
+check("confirms the order inline", await handoff.isVisible());
+check(
+  "keeps a way back into the chat",
+  (await page.getByRole("link", { name: /open the chat again/i }).count()) === 1,
+);
+check(
+  "payment instructions are not shown",
+  !/payment proof|awaiting payment/i.test(await page.locator("body").innerText()),
+);
 await page.screenshot({ path: path.join(SHOTS, "flow-whatsapp-order.png"), fullPage: true });
 
 await browser.close();

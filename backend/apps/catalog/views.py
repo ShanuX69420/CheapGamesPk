@@ -2,8 +2,6 @@ import django_filters
 from django.db.models import Count, F, Prefetch, Q
 from rest_framework import viewsets
 
-from apps.inventory.models import StockStatus
-
 from .models import Category, Platform, Product, ProductImage
 from .serializers import (
     CategorySerializer,
@@ -20,7 +18,6 @@ class ProductFilter(django_filters.FilterSet):
     min_price = django_filters.NumberFilter(field_name="price", lookup_expr="gte")
     max_price = django_filters.NumberFilter(field_name="price", lookup_expr="lte")
     on_sale = django_filters.BooleanFilter(method="filter_on_sale")
-    in_stock = django_filters.BooleanFilter(method="filter_in_stock")
 
     class Meta:
         model = Product
@@ -28,10 +25,6 @@ class ProductFilter(django_filters.FilterSet):
 
     def filter_on_sale(self, queryset, name, value):
         lookup = Q(compare_at_price__isnull=False, compare_at_price__gt=F("price"))
-        return queryset.filter(lookup) if value else queryset.exclude(lookup)
-
-    def filter_in_stock(self, queryset, name, value):
-        lookup = Q(available_count__gt=0)
         return queryset.filter(lookup) if value else queryset.exclude(lookup)
 
 
@@ -49,13 +42,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             .prefetch_related(
                 "categories",
                 Prefetch("images", queryset=ProductImage.objects.order_by("sort_order", "id")),
-            )
-            .annotate(
-                available_count=Count(
-                    "stock_items",
-                    filter=Q(stock_items__status=StockStatus.AVAILABLE),
-                    distinct=True,
-                )
             )
         )
 

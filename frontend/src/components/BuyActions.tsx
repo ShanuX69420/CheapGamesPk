@@ -1,14 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { createOrder, StockConflictError } from "@/lib/api";
-import { rememberOrder, orderUrl } from "@/lib/orderStore";
+import { createOrder } from "@/lib/api";
+import { rememberOrder } from "@/lib/orderStore";
 import type { Product } from "@/lib/types";
 
 import { useCart } from "./CartProvider";
 import { WhatsAppIcon } from "./icons";
+import { WhatsAppHandoff } from "./WhatsAppHandoff";
 
 export function BuyActions({
   product,
@@ -17,24 +17,16 @@ export function BuyActions({
   product: Product;
   whatsappEnabled: boolean;
 }) {
-  const router = useRouter();
   const { add } = useCart();
 
   const [added, setAdded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!product.in_stock) {
-    return (
-      <button
-        type="button"
-        disabled
-        className="mt-4 w-full cursor-not-allowed rounded-lg bg-ink-700 px-4 py-3 font-bold text-ink-400"
-      >
-        Out of stock
-      </button>
-    );
-  }
+  const [placed, setPlaced] = useState<{
+    number: string;
+    url: string | null;
+    opened: boolean;
+  } | null>(null);
 
   function handleAdd() {
     add(product, 1);
@@ -64,21 +56,19 @@ export function BuyActions({
         createdAt: order.created_at,
       });
 
-      if (order.whatsapp_url) {
-        if (tab) tab.location.href = order.whatsapp_url;
-        else window.location.href = order.whatsapp_url;
-      } else {
-        tab?.close();
-      }
+      if (order.whatsapp_url && tab) tab.location.href = order.whatsapp_url;
+      else tab?.close();
 
-      router.push(orderUrl(order.number, order.access_token));
-    } catch (err) {
+      /* No redirect: the rest of this sale happens in the chat, so the buyer
+         stays where they are and we just confirm the order exists. */
+      setPlaced({
+        number: order.number,
+        url: order.whatsapp_url,
+        opened: Boolean(tab && order.whatsapp_url),
+      });
+    } catch {
       tab?.close();
-      setError(
-        err instanceof StockConflictError
-          ? `Only ${err.info.available} left — someone just bought the last one.`
-          : "Could not start the order. Please try again.",
-      );
+      setError("Could not start the order. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -94,17 +84,20 @@ export function BuyActions({
         {added ? "Added to cart ✓" : "Add to cart"}
       </button>
 
-      {whatsappEnabled && (
-        <button
-          type="button"
-          onClick={handleWhatsApp}
-          disabled={busy}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
-        >
-          <WhatsAppIcon className="h-5 w-5" />
-          {busy ? "Starting…" : "Buy now on WhatsApp"}
-        </button>
-      )}
+      {whatsappEnabled &&
+        (placed ? (
+          <WhatsAppHandoff {...placed} />
+        ) : (
+          <button
+            type="button"
+            onClick={handleWhatsApp}
+            disabled={busy}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
+          >
+            <WhatsAppIcon className="h-5 w-5" />
+            {busy ? "Starting…" : "Buy now on WhatsApp"}
+          </button>
+        ))}
 
       {error && (
         <p className="rounded-lg bg-deal/10 px-3 py-2 text-xs text-deal ring-1 ring-deal/25">

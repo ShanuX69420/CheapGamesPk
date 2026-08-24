@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .emails import send_order_confirmation, send_order_recovery
-from .models import Order, OrderStatus, OutOfStock, PaymentMethod
+from .models import Order, OrderStatus, PaymentMethod
 from .serializers import (
     OrderCreateSerializer,
     OrderCreatedSerializer,
@@ -25,7 +25,7 @@ class PaymentMethodViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class OrderCreateView(APIView):
-    """Create an order and hold its stock. No authentication — carts are anonymous."""
+    """Create an order. No authentication — carts are anonymous."""
 
     throttle_scope = "order_create"
 
@@ -47,28 +47,15 @@ class OrderCreateView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        try:
-            with transaction.atomic():
-                order = Order.create_from_items(
-                    products,
-                    source=data["source"],
-                    email=data.get("email", ""),
-                    phone=data.get("phone", ""),
-                    customer_name=data.get("customer_name", ""),
-                    customer_note=data.get("customer_note", ""),
-                    payment_method=method,
-                )
-        except OutOfStock as exc:
-            # 409 rather than 400: the request was valid, the world changed.
-            return Response(
-                {
-                    "detail": "Some items sold out while you were checking out.",
-                    "product": exc.product.name,
-                    "slug": exc.product.slug,
-                    "requested": exc.requested,
-                    "available": exc.available,
-                },
-                status=status.HTTP_409_CONFLICT,
+        with transaction.atomic():
+            order = Order.create_from_items(
+                products,
+                source=data["source"],
+                email=data.get("email", ""),
+                phone=data.get("phone", ""),
+                customer_name=data.get("customer_name", ""),
+                customer_note=data.get("customer_note", ""),
+                payment_method=method,
             )
 
         transaction.on_commit(lambda: send_order_confirmation(order))
@@ -110,7 +97,6 @@ class StoreConfigView(APIView):
             {
                 "currency": settings.STORE_CURRENCY,
                 "whatsapp_number": getattr(settings, "WHATSAPP_NUMBER", "") or None,
-                "hold_minutes": settings.ORDER_HOLD_MINUTES,
                 "order_statuses": dict(OrderStatus.choices),
             }
         )

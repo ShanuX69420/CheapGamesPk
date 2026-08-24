@@ -4,13 +4,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .emails import send_order_confirmation, send_order_delivered
-from .models import (
-    Order,
-    OrderItem,
-    OrderStatus,
-    PaymentMethod,
-    expire_stale_orders,
-)
+from .models import Order, OrderItem, OrderStatus, PaymentMethod
 
 STATUS_COLOURS = {
     OrderStatus.AWAITING_PAYMENT: "#e67e22",
@@ -115,7 +109,6 @@ class OrderAdmin(admin.ModelAdmin):
             "Timeline",
             {
                 "fields": [
-                    "hold_expires_at",
                     "paid_at",
                     "delivered_at",
                     "cancelled_at",
@@ -155,7 +148,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     # --- actions -----------------------------------------------------------
 
-    @admin.action(description="Mark as paid (does not release credentials)")
+    @admin.action(description="Mark as paid (not yet completed)")
     def action_mark_paid(self, request, queryset):
         done = 0
         for order in queryset.exclude(status__in=[OrderStatus.DELIVERED, OrderStatus.CANCELLED]):
@@ -163,8 +156,15 @@ class OrderAdmin(admin.ModelAdmin):
             done += 1
         self.message_user(request, f"{done} order(s) marked paid.")
 
-    @admin.action(description="Deliver — release credentials to the buyer")
+    @admin.action(description="Mark completed — order fulfilled")
     def action_deliver(self, request, queryset):
+        """
+        Close an order out once you have actually delivered it.
+
+        Delivery itself happens wherever you talk to the buyer — usually the
+        WhatsApp chat. This marks the order done, reveals any credentials you
+        attached to it by hand, and emails the buyer if we have an address.
+        """
         done, skipped = 0, 0
         for order in queryset:
             if order.status == OrderStatus.CANCELLED:
@@ -173,21 +173,19 @@ class OrderAdmin(admin.ModelAdmin):
             order.mark_delivered()
             done += 1
 
-        note = f"{done} order(s) delivered — credentials are now visible to the buyer."
+        note = f"{done} order(s) marked completed."
         if skipped:
             note += f" {skipped} skipped (cancelled)."
         self.message_user(request, note, messages.SUCCESS)
 
-    @admin.action(description="Cancel and return stock")
+    @admin.action(description="Cancel this order")
     def action_cancel(self, request, queryset):
         done = 0
         for order in queryset.exclude(status=OrderStatus.CANCELLED):
             order.cancel(reason=f"Cancelled in admin by {request.user}.")
             done += 1
         self.message_user(
-            request,
-            f"{done} order(s) cancelled. Unsold units returned to stock.",
-            messages.WARNING,
+            request, f"{done} order(s) cancelled.", messages.WARNING
         )
 
     @admin.action(description="Resend the order email to the buyer")
@@ -209,25 +207,3 @@ class OrderAdmin(admin.ModelAdmin):
             note += f" {skipped} order(s) have no email address (WhatsApp orders)."
         self.message_user(request, note)
 
-    # --- maintenance -------------------------------------------------------
-
-    def get_urls(self):
-        from django.urls import path
-
-        extra = [
-            path(
-                "expire-stale/",
-                self.admin_site.admin_view(self.expire_stale_view),
-                name="orders_order_expire_stale",
-            )
-        ]
-        return extra + super().get_urls()
-
-    def expire_stale_view(self, request):
-        from django.shortcuts import redirect
-
-        count = expire_stale_orders()
-        self.message_user(
-            request, f"{count} expired order(s) cancelled and stock returned."
-        )
-        return redirect("admin:orders_order_changelist")
