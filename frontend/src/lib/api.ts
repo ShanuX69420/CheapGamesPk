@@ -24,12 +24,20 @@ const API_URL =
     : process.env.NEXT_PUBLIC_API_URL) ?? "http://127.0.0.1:8000/api";
 
 /**
- * Seconds before cached catalog data is refetched. Stock changes, so keep it
- * short. In development we skip the cache entirely — otherwise a backend change
- * appears not to have taken effect for up to a minute.
+ * Catalog reads are never cached.
+ *
+ * A timed `revalidate` looks like a free win and is not: Next serves the stale
+ * entry to whoever arrives after it expires and only refetches in the
+ * background, so the first person through the door sees the previous answer and
+ * a reload shows the new one. Editing a price or uploading artwork and then
+ * finding the page unchanged until you refresh is that, not a bug in the edit.
+ *
+ * The catalog is small and Django is a loopback hop away, so paying for it on
+ * every render costs a few milliseconds and keeps the store honest about what
+ * it is selling. Revisit only with on-demand revalidation, so a write is what
+ * clears the cache rather than a clock.
  */
-const REVALIDATE = 60;
-const IS_DEV = process.env.NODE_ENV === "development";
+const NO_CACHE = { cache: "no-store" } as const;
 
 export type ProductQuery = {
   search?: string;
@@ -57,10 +65,7 @@ async function get<T>(path: string, params?: Record<string, string | undefined>)
     if (value) url.searchParams.set(key, value);
   }
 
-  const response = await fetch(
-    url,
-    IS_DEV ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } },
-  );
+  const response = await fetch(url, NO_CACHE);
   if (!response.ok) {
     throw new ApiError(`GET ${url.pathname} failed`, response.status);
   }
