@@ -38,8 +38,9 @@ export default function FindOrderPage() {
     <div className="mx-auto max-w-xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-black tracking-tight">Find your order</h1>
       <p className="mt-2 text-sm leading-relaxed text-ink-400">
-        Order links contain a private access code, so we can only send them to
-        the email address used at checkout.
+        Order links contain a private access code. Orders you placed on this
+        device are listed below; otherwise we can only email the link to the
+        address on the order.
       </p>
 
       {recent.length > 0 && (
@@ -73,7 +74,7 @@ export default function FindOrderPage() {
 
         <label className="mt-3 block">
           <span className="mb-1.5 block text-xs font-semibold text-ink-200">
-            Email used at checkout
+            Email on your order
           </span>
           <input
             type="email"

@@ -76,14 +76,8 @@ export function BuyActions({
 
   return (
     <div className="mt-4 space-y-2.5">
-      <button
-        type="button"
-        onClick={handleAdd}
-        className="w-full rounded-lg bg-accent px-4 py-3 font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-bright"
-      >
-        {added ? "Added to cart ✓" : "Add to cart"}
-      </button>
-
+      {/* WhatsApp is the only way to buy, so it leads and the cart follows as
+          the way to bundle several games into one chat. */}
       {whatsappEnabled &&
         (placed ? (
           <WhatsAppHandoff {...placed} />
@@ -92,12 +86,20 @@ export function BuyActions({
             type="button"
             onClick={handleWhatsApp}
             disabled={busy}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] shadow-lg shadow-[#25D366]/20 transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
           >
             <WhatsAppIcon className="h-5 w-5" />
             {busy ? "Starting…" : "Buy now on WhatsApp"}
           </button>
         ))}
+
+      <button
+        type="button"
+        onClick={handleAdd}
+        className="w-full rounded-lg bg-ink-800 px-4 py-3 font-bold text-ink-100 ring-1 ring-ink-700 transition hover:bg-ink-700 hover:text-ink-50"
+      >
+        {added ? "Added to cart ✓" : "Add to cart"}
+      </button>
 
       {error && (
         <p className="rounded-lg bg-deal/10 px-3 py-2 text-xs text-deal ring-1 ring-deal/25">

@@ -138,10 +138,5 @@ export interface OrderLineInput {
 
 export interface CreateOrderInput {
   items: OrderLineInput[];
-  email?: string;
-  phone?: string;
-  customer_name?: string;
-  customer_note?: string;
-  payment_method?: string;
   source?: OrderSource;
 }

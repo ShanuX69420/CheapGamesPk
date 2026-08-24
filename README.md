@@ -36,13 +36,15 @@ Storefront at http://localhost:3000
 
 ## How an order flows
 
-Both checkout paths create the same `Order` — they differ only in how the
-buyer pays.
+There is one way to buy and it is WhatsApp. The site takes the basket and
+opens the chat; everything after that happens in the conversation.
 
-1. **Buyer orders** — website checkout, or "Buy now on WhatsApp" which creates
-   the order first and then opens a chat pre-filled with the order number.
-2. **Buyer pays** using the instructions on their order page (JazzCash,
-   EasyPaisa, bank transfer, crypto — all editable in the admin).
+1. **Buyer orders** — "Buy now on WhatsApp" on a product page, or the same
+   button in the cart to bundle several games into one chat. The order is
+   written first, then the chat opens pre-filled with its number and lines.
+2. **Buyer pays** using whatever you agree in the chat (JazzCash, EasyPaisa,
+   bank transfer, crypto — the wording lives in the admin under Payment
+   methods).
 3. **You confirm** in Django admin: select the order, "Mark as paid", then
    "Deliver — release credentials to the buyer".
 4. **Credentials appear** on the buyer's order page, if you attached a unit to
@@ -55,11 +57,12 @@ always sellable and fulfilment is manual. Stock items are a credential
 library for staff, not a pool that orders draw down — hide a listing with
 `is_active` if you need it off the shelf.
 
-Emails go out automatically at steps 1 and 5 — a confirmation with the payment
-instructions, then a "ready" email once you deliver. Both link to the order
-page rather than pasting account details into the message; set
-`ORDER_EMAIL_INCLUDE_CREDENTIALS=True` if you would rather inline them, knowing
-that puts credentials in an inbox you cannot revoke.
+Emails are opt-in by accident of the flow: a WhatsApp order carries no address,
+so nothing is sent unless you put one on the order in the admin. Once an order
+has an email, a confirmation goes out at step 1 and a "ready" email at step 3.
+Both link to the order page rather than pasting account details into the
+message; set `ORDER_EMAIL_INCLUDE_CREDENTIALS=True` if you would rather inline
+them, knowing that puts credentials in an inbox you cannot revoke.
 
 ### Order links
 
@@ -87,9 +90,11 @@ Backend `.env` (see `backend/.env.example`):
 | `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. |
 | `THROTTLE_ORDER_RECOVER` | Rate limit on recovery emails, default `5/hour`. |
 
-Payment instructions live in the admin under **Orders → Payment methods**. The
-seeded ones contain placeholder account numbers — edit them before taking real
-orders:
+Payment instructions live in the admin under **Orders → Payment methods**.
+Nothing on the storefront asks the buyer to pick one — you quote them in the
+chat, and they appear on the order page and in emails once you set one on an
+order. The seeded ones contain placeholder account numbers — edit them before
+taking real orders:
 
 ```bash
 python manage.py seed_payment_methods

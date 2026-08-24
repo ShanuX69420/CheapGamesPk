@@ -13,7 +13,7 @@ import { rememberOrder } from "@/lib/orderStore";
 export default function CartPage() {
   const { lines, subtotal, count, ready, setQuantity, remove, clear } = useCart();
 
-  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [whatsappEnabled, setWhatsappEnabled] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [placed, setPlaced] = useState<{
@@ -179,32 +179,25 @@ export default function CartPage() {
               </span>
             </div>
 
-            <Link
-              href="/checkout"
-              className="mt-4 block w-full rounded-lg bg-accent px-4 py-3 text-center font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-bright"
-            >
-              Checkout
-            </Link>
-
-            {whatsappEnabled && (
+            {whatsappEnabled === false ? (
+              <p className="mt-4 rounded-lg bg-ink-800/60 px-3.5 py-3 text-sm leading-relaxed text-ink-200 ring-1 ring-ink-700">
+                Ordering runs on WhatsApp and the number isn&apos;t set up yet.
+                Please check back shortly.
+              </p>
+            ) : (
               <>
-                <div className="my-3 flex items-center gap-3 text-[11px] uppercase tracking-wider text-ink-400">
-                  <span className="h-px flex-1 bg-ink-700" />
-                  or
-                  <span className="h-px flex-1 bg-ink-700" />
-                </div>
-
                 <button
                   type="button"
                   onClick={handleWhatsApp}
-                  disabled={busy}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
+                  disabled={busy || whatsappEnabled === null}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 font-bold text-[#04301c] shadow-lg shadow-[#25D366]/20 transition hover:bg-[#3ae07a] disabled:cursor-wait disabled:opacity-70"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
                   {busy ? "Starting…" : "Order on WhatsApp"}
                 </button>
-                <p className="mt-2 text-center text-xs text-ink-400">
-                  We create your order and open a chat with the details.
+                <p className="mt-2 text-center text-xs leading-relaxed text-ink-400">
+                  We create your order and open a chat with the details — you
+                  agree it and pay there.
                 </p>
               </>
             )}

@@ -4,7 +4,6 @@ import type {
   CreateOrderInput,
   Order,
   Paginated,
-  PaymentMethod,
   Platform,
   Product,
   ProductDetail,
@@ -128,10 +127,6 @@ export async function getOrder(
   if (response.status === 404) return null;
   if (!response.ok) throw new ApiError("Could not load the order", response.status);
   return (await response.json()) as Order;
-}
-
-export function getPaymentMethods() {
-  return get<PaymentMethod[]>("/payment-methods/");
 }
 
 export function getStoreConfig() {
