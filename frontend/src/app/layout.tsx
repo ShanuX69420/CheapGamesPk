@@ -93,7 +93,7 @@ function Footer() {
     <footer className="mt-16 border-t border-ink-800">
       <div className="mx-auto grid max-w-[88rem] gap-8 px-4 py-10 sm:grid-cols-3 sm:px-6">
         <div>
-          <Logo markClassName="h-7 w-7" wordClassName="text-base" />
+          <Logo className="h-7" />
           <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-400">
             Offline activations, online accounts and genuine keys for PC —
             delivered fast.
