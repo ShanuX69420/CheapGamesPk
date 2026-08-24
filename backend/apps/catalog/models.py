@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.db import models
 from django.utils.text import slugify
 
+from .imaging import compress_to_webp, is_fresh_upload
+
 
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -193,3 +195,8 @@ class ProductImage(TimeStampedModel):
 
     def __str__(self):
         return f"Image for {self.product.name}"
+
+    def save(self, *args, **kwargs):
+        if is_fresh_upload(self.image):
+            compress_to_webp(self.image)
+        super().save(*args, **kwargs)
