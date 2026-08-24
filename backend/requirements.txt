@@ -4,3 +4,9 @@ django-cors-headers==4.7.0
 django-filter==25.1
 python-dotenv==1.1.1
 Pillow==11.3.0
+
+# Production
+psycopg[binary]==3.2.9
+dj-database-url==2.3.0
+gunicorn==23.0.0
+whitenoise==6.9.0

@@ -1,0 +1,28 @@
+# /etc/systemd/system/cheapgamespk-api.service
+[Unit]
+Description=cheapgamespk Django API (gunicorn)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=cheapgamespk
+Group=cheapgamespk
+WorkingDirectory=/srv/cheapgamespk/backend
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/srv/cheapgamespk/backend/.venv/bin/gunicorn config.wsgi:application \
+    --bind 127.0.0.1:8000 \
+    --workers 3 \
+    --timeout 60 \
+    --access-logfile - \
+    --error-logfile -
+Restart=always
+RestartSec=5
+
+# The app needs to write nothing outside its own tree.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

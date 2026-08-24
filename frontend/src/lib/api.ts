@@ -10,7 +10,18 @@ import type {
   StoreConfig,
 } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
+/**
+ * Where to reach the API, which differs by who is asking.
+ *
+ * The browser goes through nginx at the public origin, which is what keeps
+ * everything same-origin and CORS out of the picture. A server render is
+ * already inside the box, so it talks to gunicorn directly and skips the proxy
+ * hop. Both must be absolute — `new URL()` below rejects a bare path.
+ */
+const API_URL =
+  (typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL) ?? "http://127.0.0.1:8000/api";
 
 /**
  * Seconds before cached catalog data is refetched. Stock changes, so keep it

@@ -99,6 +99,21 @@ taking real orders:
 python manage.py seed_payment_methods
 ```
 
+## Deployment
+
+Production runs on a single Ubuntu droplet: nginx out front, Next.js on `:3000`,
+gunicorn on `:8000`, Postgres on `:5432`. Only nginx is reachable from outside,
+and both apps answer on one origin — `/api` and `/admin` go to Django,
+everything else to Next — which is why CORS is unused in production.
+
+- **First-time provisioning:** [`deploy/SETUP.md`](deploy/SETUP.md)
+- **Later updates:** `ssh cheapgamespk '/srv/cheapgamespk/deploy/deploy.sh'`
+
+`DJANGO_DEBUG=False` is the single switch for production hardening — secure
+cookies, HSTS, SSL redirect and the rest come on together, and startup aborts
+if `DJANGO_SECRET_KEY` is still the dev default. The database is SQLite until
+`DATABASE_URL` is set, so a fresh checkout runs with no configuration.
+
 ## Useful commands
 
 ```bash

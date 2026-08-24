@@ -1,0 +1,23 @@
+# /etc/systemd/system/cheapgamespk-web.service
+[Unit]
+Description=cheapgamespk storefront (Next.js)
+After=network.target cheapgamespk-api.service
+
+[Service]
+User=cheapgamespk
+Group=cheapgamespk
+WorkingDirectory=/srv/cheapgamespk/frontend
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

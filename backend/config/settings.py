@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import dj_database_url
 from dotenv import load_dotenv
 import os
 
@@ -41,6 +42,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves the admin's CSS/JS straight from gunicorn, so nginx never needs
+    # to know where staticfiles live.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,12 +73,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Postgres in production via DATABASE_URL, e.g.
+# postgres://cheapgamespk:pass@127.0.0.1:5432/cheapgamespk
+#
+# Tested for emptiness, not just presence: `DATABASE_URL=` sitting blank in a
+# .env parses to Django's dummy backend, which fails at the first query with a
+# message that says nothing about the real cause.
+_database_url = os.getenv("DATABASE_URL", "").strip()
+
+if _database_url:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            _database_url, conn_max_age=600, conn_health_checks=True
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -90,6 +109,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -130,3 +155,45 @@ SITE_URL = os.getenv("SITE_URL", "http://localhost:3000").rstrip("/")
 # the only channel the store sells through, so blank leaves buyers with no way
 # to order at all.
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
+
+
+# --- Production hardening -------------------------------------------------
+# All of this is a no-op in development. It switches on with DJANGO_DEBUG=False
+# so there is one flag to get wrong, not eight.
+
+# Django only knows the request arrived over HTTPS because nginx says so —
+# gunicorn itself is spoken to over plain HTTP on localhost.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Admin login POSTs are rejected without this once we are behind HTTPS.
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    X_FRAME_OPTIONS = "DENY"
+
+    # A missing key in production is a deploy that should fail loudly, not one
+    # that silently runs on the dev default and invalidates every session.
+    if SECRET_KEY == "dev-only-insecure-key-change-me":
+        raise RuntimeError("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG=False")
+
+# Log to stdout so journalctl owns the log file, rotation and retention.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"simple": {"format": "{levelname} {name} {message}", "style": "{"}},
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "simple"},
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        "django.request": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+    },
+}
