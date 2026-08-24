@@ -7,6 +7,8 @@ const TERMS = [
   "Any changes to account details are strictly prohibited.",
   "One activation — 1 PC.",
   "The game can be played indefinitely after setting up offline mode.",
+  "Your saves are yours to keep, with no time limit on finishing the game.",
+  "You can switch back to your own account without any problems.",
   "Any online features of the game will be unavailable.",
   "Activation is not possible for playing via PlayKey, GFN, Google Stadia, Loudplay, Drova, or other cloud services.",
   "Assistance with product issues is available for 365 days from the date of purchase (only activation-related questions).",
