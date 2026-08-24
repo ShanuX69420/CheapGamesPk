@@ -171,7 +171,16 @@ CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # Off when nginx already redirects http->https, which it does in our setup.
+    # Leaving it on breaks server-side rendering: Next fetches the API over
+    # plain http on loopback, and Django answers those with a 301 to https
+    # instead of data.
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    if not SECURE_SSL_REDIRECT:
+        # W008 exists to catch a site with no redirect anywhere. Ours is one
+        # layer up, so the warning is noise — and deploy.sh treats warnings as
+        # failures.
+        SILENCED_SYSTEM_CHECKS = ["security.W008"]
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True

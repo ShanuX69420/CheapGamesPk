@@ -97,7 +97,9 @@ that switches on every security setting at once**:
 ```ini
 DJANGO_SECRET_KEY=<python3 -c "import secrets;print(secrets.token_urlsafe(64))">
 DJANGO_DEBUG=False
-DJANGO_ALLOWED_HOSTS=cheapgames.pk,www.cheapgames.pk,167.99.72.162
+# 127.0.0.1 is required: server-side renders reach gunicorn on loopback and
+# Django checks the Host header on those too.
+DJANGO_ALLOWED_HOSTS=cheapgames.pk,www.cheapgames.pk,167.99.72.162,127.0.0.1
 DJANGO_TIME_ZONE=Asia/Karachi
 
 DATABASE_URL=postgres://cheapgamespk:THE_PASSWORD@127.0.0.1:5432/cheapgamespk
@@ -109,6 +111,11 @@ CSRF_TRUSTED_ORIGINS=https://cheapgames.pk,https://www.cheapgames.pk
 STORE_CURRENCY=PKR
 WHATSAPP_NUMBER=923252155276
 SITE_URL=https://cheapgames.pk
+
+# nginx already redirects http->https. Leaving Django to do it as well breaks
+# server-side rendering — Next fetches the API over plain http on loopback and
+# would get a 301 instead of JSON.
+SECURE_SSL_REDIRECT=False
 
 CATALOG_PAGE_SIZE=24
 THROTTLE_ORDER_CREATE=20/hour
