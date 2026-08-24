@@ -18,9 +18,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    # Root-relative, for the same reason as Product.cover().
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ["id", "image", "alt_text", "sort_order"]
+
+    def get_image(self, obj):
+        return obj.image.url
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -53,7 +59,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        return obj.cover(self.context.get("request"))
+        return obj.cover()
 
 
 class ProductDetailSerializer(ProductListSerializer):
@@ -69,7 +75,7 @@ class ProductDetailSerializer(ProductListSerializer):
     banner = serializers.SerializerMethodField()
 
     def get_banner(self, obj):
-        return obj.banner(self.context.get("request"))
+        return obj.banner()
 
     class Meta(ProductListSerializer.Meta):
         fields = ProductListSerializer.Meta.fields + [

@@ -170,16 +170,22 @@ class Product(SluggedModel):
     def primary_image(self):
         return self.images.first()
 
-    def cover(self, request=None):
-        """Uploaded image wins; otherwise fall back to the external cover URL."""
+    def cover(self):
+        """Uploaded image wins; otherwise fall back to the external cover URL.
+
+        Uploads come back root-relative on purpose. The same API answers both
+        the browser (through nginx, at the public origin) and the server
+        render (straight to gunicorn at 127.0.0.1), so absolutising against
+        the asking host would bake the internal address into public HTML.
+        Media lives at /media/ on the storefront origin either way.
+        """
         uploaded = self.primary_image
         if uploaded:
-            url = uploaded.image.url
-            return request.build_absolute_uri(url) if request else url
+            return uploaded.image.url
         return self.cover_url or None
 
-    def banner(self, request=None):
-        return self.banner_url or self.cover(request)
+    def banner(self):
+        return self.banner_url or self.cover()
 
 
 class ProductImage(TimeStampedModel):
