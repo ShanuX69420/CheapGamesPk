@@ -1,4 +1,4 @@
-import { CatalogFilters } from "@/components/CatalogFilters";
+import { CatalogFilters, headingForType } from "@/components/CatalogFilters";
 import { Hero } from "@/components/Hero";
 import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
@@ -42,19 +42,21 @@ export default async function HomePage({
     page: params.page,
   };
 
-  const isBrowsing = !Object.values(params).some(Boolean);
+  /* The hero is page furniture, not a result: it holds its place while you
+     browse tabs and filters, and only steps aside for a search or page 2+. */
+  const showHero = !params.search && !(params.page && params.page !== "1");
 
   const [page, platforms, featured] = await Promise.all([
     safely(getProducts(query), EMPTY),
     safely(getPlatforms(), []),
-    isBrowsing
+    showHero
       ? safely(getProducts({ ordering: "-created_at" }), EMPTY)
       : Promise.resolve(EMPTY),
   ]);
 
   return (
     <div className="mx-auto max-w-[88rem] px-4 py-6 sm:px-6">
-      {isBrowsing && <Hero featured={featured.results} />}
+      {showHero && <Hero featured={featured.results} />}
 
       <CatalogFilters params={params} platforms={platforms} />
 
@@ -68,7 +70,7 @@ export default async function HomePage({
               </span>
             </>
           ) : (
-            "All products"
+            headingForType(params.type)
           )}
         </h2>
         <span className="shrink-0 text-sm tabular-nums text-ink-400">
