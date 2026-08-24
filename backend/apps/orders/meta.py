@@ -14,7 +14,8 @@ days later back to the ad click that earned it.
 
 Every event carries an `event_id`. When the browser and the server both report
 the same thing Meta keeps one copy, so the ids built here must match the ones
-in `frontend/src/lib/pixel.ts`.
+in `frontend/src/lib/pixel.ts`. `ga.py` is the same split reported to Google
+Analytics, which has no such key and so hears each event from one side only.
 
 None of this is load-bearing. With `META_PIXEL_ID` or `META_CAPI_ACCESS_TOKEN`
 unset every call is a no-op, and a rejected or unreachable Graph API is logged
@@ -40,9 +41,25 @@ GRAPH_URL = "https://graph.facebook.com/{version}/{pixel_id}/events"
 # hold a member of staff hostage in the admin.
 TIMEOUT = 8
 
+# What the admin calls this when it reports back to staff.
+NAME = "Meta"
+
+# The column that remembers this network already heard about a sale.
+PURCHASE_STAMP = "meta_purchase_event_sent_at"
+
 
 def is_configured():
     return bool(settings.META_PIXEL_ID and settings.META_CAPI_ACCESS_TOKEN)
+
+
+def can_report(order):
+    """
+    Whether this order is one Meta could be told about at all.
+
+    Always: an address and a user agent are enough to send a Purchase on, and
+    every order has those. `ga.can_report` is the one that says no.
+    """
+    return True
 
 
 # --- events -----------------------------------------------------------------
@@ -74,14 +91,14 @@ def send_purchase(order):
     completed a second time, cannot report one sale twice. A failure is left
     unstamped and retried the next time it is asked for.
     """
-    if order.purchase_event_sent_at:
+    if getattr(order, PURCHASE_STAMP):
         return False
 
     if not _send(order, "Purchase", purchase_event_id(order), order.delivered_at):
         return False
 
-    order.purchase_event_sent_at = timezone.now()
-    order.save(update_fields=["purchase_event_sent_at", "updated_at"])
+    setattr(order, PURCHASE_STAMP, timezone.now())
+    order.save(update_fields=[PURCHASE_STAMP, "updated_at"])
     return True
 
 
@@ -159,7 +176,7 @@ def _custom_data(order):
         "content_ids": [entry["id"] for entry in contents],
         "contents": contents,
         # Meta drops repeat Purchases carrying the same order_id, which is a
-        # second guard behind purchase_event_sent_at.
+        # second guard behind meta_purchase_event_sent_at.
         "order_id": order.number,
     }
 

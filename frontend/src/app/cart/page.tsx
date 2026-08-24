@@ -8,6 +8,7 @@ import { WhatsAppIcon } from "@/components/icons";
 import { WhatsAppHandoff } from "@/components/WhatsAppHandoff";
 import { createOrder, getStoreConfig } from "@/lib/api";
 import { money } from "@/lib/format";
+import { gaAttribution, gaGenerateLead } from "@/lib/ga";
 import { rememberOrder } from "@/lib/orderStore";
 import { attribution, trackLead } from "@/lib/pixel";
 
@@ -39,6 +40,7 @@ export default function CartPage() {
         items: lines.map((line) => ({ slug: line.slug, quantity: line.quantity })),
         source: "whatsapp",
         ...attribution(),
+        ...gaAttribution(),
       });
 
       rememberOrder({
@@ -54,6 +56,15 @@ export default function CartPage() {
         order,
         lines.map((line) => ({
           slug: line.slug,
+          quantity: line.quantity,
+          price: Number(line.price),
+        })),
+      );
+      gaGenerateLead(
+        order,
+        lines.map((line) => ({
+          slug: line.slug,
+          name: line.name,
           quantity: line.quantity,
           price: Number(line.price),
         })),

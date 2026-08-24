@@ -126,6 +126,13 @@ THROTTLE_ORDER_CREATE=20/hour
 META_PIXEL_ID=
 META_CAPI_ACCESS_TOKEN=
 META_TEST_EVENT_CODE=
+
+# Google Analytics. Same measurement id the frontend gets below; the secret comes
+# from Admin > Data streams > the stream > Measurement Protocol API secrets, and
+# reports the same sale to Google. Leave both blank to run without analytics.
+GA_MEASUREMENT_ID=
+GA_API_SECRET=
+GA_DEBUG=
 ```
 
 ```bash
@@ -152,6 +159,8 @@ NEXT_PUBLIC_STORE_CURRENCY=PKR
 # The same id as META_PIXEL_ID above. Blank leaves the pixel off the page,
 # which also leaves the server with nothing to attribute a sale to.
 NEXT_PUBLIC_FACEBOOK_PIXEL_ID=
+# The same id as GA_MEASUREMENT_ID above, and the same warning.
+NEXT_PUBLIC_GA_MEASUREMENT_ID=
 ```
 
 `NEXT_PUBLIC_*` values are baked into the bundle at build time, so this file has

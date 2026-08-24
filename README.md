@@ -50,7 +50,7 @@ opens the chat; everything after that happens in the conversation.
 4. **Credentials appear** on the buyer's order page, if you attached a unit to
    the order line. Until delivery the API returns `null` for them, whatever
    the URL says. Completing the order is also what reports the sale to Meta
-   — see [Ads tracking](#ads-tracking).
+   and Google — see [Ads and analytics tracking](#ads-and-analytics-tracking).
 
 Nothing is reserved and nothing runs out. What we sell is an offline
 activation that can be handed out repeatedly, so every active listing is
@@ -93,10 +93,14 @@ Backend `.env` (see `backend/.env.example`):
 | `META_PIXEL_ID` | Facebook pixel (dataset) id. Blank turns ads tracking off everywhere. |
 | `META_CAPI_ACCESS_TOKEN` | Conversions API token, from Events Manager. Without it sales go unreported. |
 | `META_TEST_EVENT_CODE` | Set while testing to divert events to the Test events tab. Clear it to go live. |
+| `GA_MEASUREMENT_ID` | GA4 measurement id, `G-…`. Blank turns analytics off everywhere. |
+| `GA_API_SECRET` | Measurement Protocol API secret, from the data stream. Without it sales go unreported. |
+| `GA_DEBUG` | Set while testing: events are validated and discarded rather than recorded. Clear it to go live. |
 
-Frontend `.env.local` needs `NEXT_PUBLIC_FACEBOOK_PIXEL_ID` set to the same id
-as `META_PIXEL_ID`. It is baked into the bundle at build time, so changing it
-means rebuilding.
+Frontend `.env.local` needs `NEXT_PUBLIC_FACEBOOK_PIXEL_ID` and
+`NEXT_PUBLIC_GA_MEASUREMENT_ID` set to the same ids as `META_PIXEL_ID` and
+`GA_MEASUREMENT_ID`. Both are baked into the bundle at build time, so changing
+either means rebuilding.
 
 Payment instructions live in the admin under **Orders → Payment methods**.
 Nothing on the storefront asks the buyer to pick one — you quote them in the
@@ -107,43 +111,69 @@ taking real orders:
 python manage.py seed_payment_methods
 ```
 
-## Ads tracking
+## Ads and analytics tracking
 
-A sale here does not finish on the site, so the Facebook pixel cannot see one.
-The buyer clicks into WhatsApp, pays in the chat, and you confirm it by hand
-later. Tracking is split to match:
+A sale here does not finish on the site, so neither the Facebook pixel nor
+Google Analytics can see one. The buyer clicks into WhatsApp, pays in the chat,
+and you confirm it by hand later. Both are split to match:
 
-| What happens | Event | Reported by |
-|---|---|---|
-| A product page is opened | `ViewContent` | the browser |
-| "Add to cart" | `AddToCart` | the browser |
-| "Buy now on WhatsApp" — the order is written and the chat opens | `Lead` | the browser **and** the server |
-| You mark the order completed in the admin | `Purchase` | the server |
+| What happens | Meta | Google | Reported by |
+|---|---|---|---|
+| A product page is opened | `ViewContent` | `view_item` | the browser |
+| "Add to cart" | `AddToCart` | `add_to_cart` | the browser |
+| "Buy now on WhatsApp" — the order is written and the chat opens | `Lead` | `generate_lead` | the browser |
+| You mark the order completed in the admin | `Purchase` | `purchase` | the server |
 
 **A click into WhatsApp is a lead, not a sale.** The money is only counted when
 you complete the order, which is the one moment the store knows a sale actually
 happened. Cancel an order instead and nothing is ever reported.
 
-The server half is the Conversions API (`backend/apps/orders/meta.py`). It
-matters because by the time you confirm a sale the buyer is long gone: what
-makes the Purchase creditable to an ad is `_fbp`/`_fbc`, the pixel's cookies,
-copied onto the order when it was placed. Events carry an `event_id`, so the
-two copies of a `Lead` are counted once.
+The server halves are the Conversions API (`backend/apps/orders/meta.py`) and
+the Measurement Protocol (`backend/apps/orders/ga.py`). They matter because by
+the time you confirm a sale the buyer is long gone: what makes a purchase
+creditable is `_fbp`/`_fbc` and `_ga`, the cookies the two tags write, copied
+onto the order when it was placed. Each network is told separately and stamps
+its own column, so a retry only re-sends the half that never landed.
+
+One difference between them is worth knowing. Meta's events carry an
+`event_id`, so a `Lead` can safely be sent from the browser **and** the server
+and still be counted once — which is how buyers running an ad blocker still
+reach Events Manager. GA4 has no such key, so nothing is ever sent from both
+sides, and a blocked tag is a lead Google never hears about. For the same
+reason **never let Google Tag Manager fire Meta events**: a GTM copy would
+carry a different `event_id` and every conversion would count twice. There is
+no GTM here — gtag.js is loaded directly.
+
+Page views are the one thing the store does not report to Google. GA4's
+enhanced measurement already reports one on each History API change, which is
+what an in-app navigation is, and a second from us would double them. If page
+views ever stop arriving, check **Admin → Data streams → Enhanced measurement**
+before looking at the code.
 
 Nothing here can hold up a sale. Unconfigured, blocked by an ad blocker, or
-rejected by Graph, every event fails quietly — the failure lands in
+rejected by Graph or Google, every event fails quietly — the failure lands in
 `journalctl -u cheapgamespk-api` and the order goes through regardless. A
-Purchase that never arrived is stamped as unsent and can be retried with the
-admin's **Send the Purchase event to Meta** action.
+purchase that never arrived is left unstamped and can be retried with the
+admin's **Send the purchase event again** action.
 
 To check the wiring end to end, set `META_TEST_EVENT_CODE` from the Test events
-tab in Events Manager, place an order and complete it. Both events should
-appear there, and neither reaches the live dataset. What the browser reports
-can be checked without Meta at all:
+tab in Events Manager and `GA_DEBUG=True`, place an order and complete it.
+Meta's events appear in that tab and reach no live dataset; Google validates
+its own and records nothing, complaining in the log if anything is malformed.
+
+Google's half of that only proves the payload, though — a wrong measurement id
+or a wrong API secret both come back clean, because the Measurement Protocol
+never admits to a bad credential on any endpoint. The only thing that proves
+those is clearing `GA_DEBUG` and watching **Reports → Realtime** for the event.
+
+What the browser reports can be checked without either service:
 
 ```bash
 NEXT_PUBLIC_FACEBOOK_PIXEL_ID=1234567890123456 npm run dev
 npm run e2e:pixel
+
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-TEST12345 npm run dev
+npm run e2e:ga
 ```
 
 ## Deployment

@@ -46,12 +46,14 @@ class OrderCreateSerializer(serializers.Serializer):
         choices=OrderSource.choices, default=OrderSource.WEB
     )
 
-    # Meta ads attribution, lifted from the browser's cookies by the storefront.
-    # Deliberately unconstrained: these are stored, never acted on, and the view
-    # trims them to size. A malformed cookie must not be able to fail an order
-    # over an ad network's bookkeeping.
+    # Ads and analytics attribution, lifted from the browser's cookies by the
+    # storefront. Deliberately unconstrained: these are stored, never acted on,
+    # and the view trims them to size. A malformed cookie must not be able to
+    # fail an order over an ad network's bookkeeping.
     fbp = serializers.CharField(required=False, allow_blank=True)
     fbc = serializers.CharField(required=False, allow_blank=True)
+    ga_client_id = serializers.CharField(required=False, allow_blank=True)
+    ga_session_id = serializers.CharField(required=False, allow_blank=True)
     source_url = serializers.CharField(required=False, allow_blank=True)
 
     def validate_items(self, value):

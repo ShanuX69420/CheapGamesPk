@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
@@ -54,7 +55,14 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div>
+      {/* One per network. Neither knows about the other, so either
+          can be pulled out on its own. */}
       <TrackViewContent
+        slug={product.slug}
+        name={product.name}
+        price={product.price}
+      />
+      <TrackViewItem
         slug={product.slug}
         name={product.name}
         price={product.price}

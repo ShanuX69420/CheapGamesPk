@@ -92,18 +92,23 @@ class Order(TimeStampedModel):
     customer_note = models.TextField(blank=True)
     staff_note = models.TextField(blank=True)
 
-    # --- Meta ads attribution ---------------------------------------------
+    # --- ads and analytics attribution -------------------------------------
     # Read off the browser when the order is written, because by the time a
     # sale is confirmed the buyer is long gone from the site and the browser
-    # can no longer be asked. Without these a Purchase reported from the admin
-    # is an anonymous number that Meta cannot credit to any ad.
-    # See apps/orders/meta.py.
+    # can no longer be asked. Without these a purchase reported from the admin
+    # is an anonymous number that neither Meta nor Google can credit to any ad.
+    # See apps/orders/meta.py and apps/orders/ga.py.
     fbp = models.CharField("Meta browser id", max_length=128, blank=True)
     fbc = models.CharField("Meta click id", max_length=255, blank=True)
+    ga_client_id = models.CharField("Google client id", max_length=64, blank=True)
+    ga_session_id = models.CharField("Google session id", max_length=32, blank=True)
     client_ip = models.GenericIPAddressField(blank=True, null=True)
     client_user_agent = models.CharField(max_length=400, blank=True)
     source_url = models.URLField(max_length=500, blank=True)
-    purchase_event_sent_at = models.DateTimeField(blank=True, null=True)
+    # One stamp per network — each is reported to on its own and can fail on
+    # its own, so a retry must not re-send the half that already landed.
+    meta_purchase_event_sent_at = models.DateTimeField(blank=True, null=True)
+    ga_purchase_event_sent_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ["-created_at"]

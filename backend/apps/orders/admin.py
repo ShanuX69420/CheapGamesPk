@@ -4,8 +4,14 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from . import meta
+from . import ga, meta
 from .models import Order, OrderItem, OrderStatus, PaymentMethod
+
+# The two places a completed order is reported as a sale. Both modules answer
+# to the same five names — NAME, PURCHASE_STAMP, is_configured, can_report and
+# send_purchase — so this page can tell each one in turn without knowing which
+# is which, and adding a third would be a one-line change here.
+CONVERSIONS = (meta, ga)
 
 STATUS_COLOURS = {
     OrderStatus.AWAITING_PAYMENT: "#e67e22",
@@ -95,7 +101,8 @@ class OrderAdmin(admin.ModelAdmin):
         "paid_at",
         "delivered_at",
         "cancelled_at",
-        "purchase_event_sent_at",
+        "meta_purchase_event_sent_at",
+        "ga_purchase_event_sent_at",
         "created_at",
         "updated_at",
     ]
@@ -121,7 +128,14 @@ class OrderAdmin(admin.ModelAdmin):
         ),
         (
             "Internal",
-            {"fields": ["staff_note", "access_token", "purchase_event_sent_at"]},
+            {
+                "fields": [
+                    "staff_note",
+                    "access_token",
+                    "meta_purchase_event_sent_at",
+                    "ga_purchase_event_sent_at",
+                ]
+            },
         ),
     ]
 
@@ -161,13 +175,13 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         """
-        Keep the Meta action out of the way of a store that has no pixel.
+        Keep the re-send action out of the way of a store with no tracking.
 
-        Nothing here breaks without one, but an action that can only ever
-        answer "no pixel is configured" is furniture.
+        Nothing here breaks without it, but an action that can only ever answer
+        "nothing is configured" is furniture.
         """
         actions = super().get_actions(request)
-        if not meta.is_configured():
+        if not any(api.is_configured() for api in CONVERSIONS):
             actions.pop("action_send_purchase", None)
         return actions
 
@@ -176,38 +190,55 @@ class OrderAdmin(admin.ModelAdmin):
         Switching the status to Delivered by hand counts as completing the order.
 
         The dropdown on this page is the other way staff finish a sale, and on
-        its own it only writes a word to a column — no timestamps, and Meta
-        never hears about the money. Send it down the same path the action
-        takes so both ways of finishing an order mean the same thing.
+        its own it only writes a word to a column — no timestamps, and neither
+        Meta nor Google ever hears about the money. Send it down the same path
+        the action takes so both ways of finishing an order mean the same
+        thing.
         """
         super().save_model(request, obj, form, change)
 
         if obj.status == OrderStatus.DELIVERED and "status" in form.changed_data:
             obj.mark_delivered()
-            reported = bool(meta.send_purchase(obj))
-            self._report_to_meta(request, reported, 1)
+            self._report_purchase(request, [obj])
 
-    def _report_to_meta(self, request, sent, expected):
+    def _report_purchase(self, request, orders):
         """
-        Say what actually reached Meta — but stay quiet when nobody is listening.
+        Tell every network that is configured that these orders were sales.
 
-        Silence would be worse than noise here: a Purchase that never arrives
-        is invisible in the admin and only shows up as ad spend against sales
-        that Meta thinks never happened.
+        Each is asked separately and can fail separately, which is why each
+        stamps its own column — a retry then only re-sends the half that never
+        landed.
         """
-        if not meta.is_configured() or not expected:
-            return
+        for api in CONVERSIONS:
+            if not api.is_configured():
+                continue
+            # A buyer the network never saw is not a failure, so leave them out
+            # of the count rather than reporting one.
+            reportable = [order for order in orders if api.can_report(order)]
+            if not reportable:
+                continue
+            sent = sum(bool(api.send_purchase(order)) for order in reportable)
+            self._say_what_landed(request, api, sent, len(reportable))
 
+    def _say_what_landed(self, request, api, sent, expected):
+        """
+        Say what actually arrived — silence would be worse than noise here.
+
+        A purchase that never lands is invisible in the admin and only shows up
+        later as ad spend against sales the network thinks never happened.
+        """
         if sent == expected:
             self.message_user(
-                request, f"{sent} Purchase event(s) sent to Meta.", messages.SUCCESS
+                request,
+                f"{sent} purchase event(s) sent to {api.NAME}.",
+                messages.SUCCESS,
             )
         else:
             self.message_user(
                 request,
-                f"{sent} of {expected} Purchase event(s) reached Meta. The rest "
-                "were reported before, or failed — the reason is in the server "
-                'log, and "Send the Purchase event to Meta" retries them.',
+                f"{sent} of {expected} purchase event(s) reached {api.NAME}. The "
+                "rest were reported before, or failed — the reason is in the "
+                'server log, and "Send the purchase event again" retries them.',
                 messages.WARNING,
             )
 
@@ -226,56 +257,61 @@ class OrderAdmin(admin.ModelAdmin):
 
         Delivery itself happens in the WhatsApp chat — that is where you send
         the account details. This only records that it happened, reveals any
-        credentials you attached to the order by hand, and tells Meta the sale
-        went through. This is the moment a Purchase is counted: nothing before
-        it is money, because until now the buyer had only asked.
+        credentials you attached to the order by hand, and tells Meta and Google
+        the sale went through. This is the moment a purchase is counted: nothing
+        before it is money, because until now the buyer had only asked.
         """
-        done, skipped, reported = 0, 0, 0
+        delivered, skipped = [], 0
         for order in queryset:
             if order.status == OrderStatus.CANCELLED:
                 skipped += 1
                 continue
             order.mark_delivered()
-            reported += bool(meta.send_purchase(order))
-            done += 1
+            delivered.append(order)
 
-        note = f"{done} order(s) marked completed."
+        note = f"{len(delivered)} order(s) marked completed."
         if skipped:
             note += f" {skipped} skipped (cancelled)."
         self.message_user(request, note, messages.SUCCESS)
-        self._report_to_meta(request, reported, done)
+        self._report_purchase(request, delivered)
 
-    @admin.action(description="Send the Purchase event to Meta")
+    @admin.action(description="Send the purchase event again")
     def action_send_purchase(self, request, queryset):
         """
-        Report a sale Meta never heard about.
+        Report a sale a network never heard about.
 
         Completing an order already reports itself, so this is for the day the
-        token had expired or Graph was down — the failure is in the log and the
-        order is still unreported. Orders that already reported are left alone,
-        and one that was never completed has no sale to report yet.
+        token had expired or the endpoint was down — the failure is in the log
+        and the order is still unreported. Each network is chased separately on
+        its own stamp, so one that already has the sale is left alone, and an
+        order that was never completed has no sale to report yet.
         """
-        if not meta.is_configured():
-            self.message_user(
-                request, "No Meta pixel is configured.", messages.WARNING
-            )
-            return
+        anything = False
 
-        pending = queryset.filter(
-            status=OrderStatus.DELIVERED, purchase_event_sent_at__isnull=True
-        )
-        sent = sum(bool(meta.send_purchase(order)) for order in pending)
-        total = len(pending)
+        for api in CONVERSIONS:
+            if not api.is_configured():
+                continue
+            pending = [
+                order
+                for order in queryset.filter(
+                    status=OrderStatus.DELIVERED,
+                    **{f"{api.PURCHASE_STAMP}__isnull": True},
+                )
+                if api.can_report(order)
+            ]
+            if not pending:
+                continue
+            anything = True
+            sent = sum(bool(api.send_purchase(order)) for order in pending)
+            self._say_what_landed(request, api, sent, len(pending))
 
-        if not total:
+        if not anything:
             self.message_user(
                 request,
-                "Nothing to send — those orders are either unfinished or already "
-                "reported.",
+                "Nothing to send — those orders are either unfinished, already "
+                "reported, or were placed by a browser the tracking never saw.",
                 messages.WARNING,
             )
-        else:
-            self._report_to_meta(request, sent, total)
 
     @admin.action(description="Cancel this order")
     def action_cancel(self, request, queryset):

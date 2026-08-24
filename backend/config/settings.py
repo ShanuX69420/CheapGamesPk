@@ -169,6 +169,19 @@ META_TEST_EVENT_CODE = os.getenv("META_TEST_EVENT_CODE", "")
 # bumping roughly yearly. Check developers.facebook.com/docs/graph-api/changelog.
 META_GRAPH_API_VERSION = os.getenv("META_GRAPH_API_VERSION", "").strip() or "v25.0"
 
+# --- Google Analytics 4 -----------------------------------------------------
+# The measurement id from the GA4 data stream, shared with gtag.js in the
+# browser, plus a Measurement Protocol API secret so the server can report the
+# sale the buyer finishes in WhatsApp. Both blank leaves every event unsent.
+# The frontend needs the id too, as NEXT_PUBLIC_GA_MEASUREMENT_ID.
+GA_MEASUREMENT_ID = os.getenv("GA_MEASUREMENT_ID", "").strip()
+GA_API_SECRET = os.getenv("GA_API_SECRET", "").strip()
+# Set while testing: events are validated and discarded instead of recorded,
+# and anything wrong with them lands in the log. The live endpoint accepts
+# every request without comment, so this is the only way to be told. Unset it
+# to go live.
+GA_DEBUG = os.getenv("GA_DEBUG", "").lower() in {"1", "true", "yes", "on"}
+
 
 # --- Production hardening -------------------------------------------------
 # All of this is a no-op in development. It switches on with DJANGO_DEBUG=False

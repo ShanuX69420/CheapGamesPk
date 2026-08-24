@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { createOrder } from "@/lib/api";
+import { gaAddToCart, gaAttribution, gaGenerateLead } from "@/lib/ga";
 import { rememberOrder } from "@/lib/orderStore";
 import { attribution, trackAddToCart, trackLead } from "@/lib/pixel";
 import type { Product } from "@/lib/types";
@@ -32,6 +33,7 @@ export function BuyActions({
   function handleAdd() {
     add(product, 1);
     trackAddToCart(product);
+    gaAddToCart(product);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   }
@@ -52,6 +54,7 @@ export function BuyActions({
            days later from the admin, and this is the only chance to record
            which ad click it came from. */
         ...attribution(),
+        ...gaAttribution(),
       });
 
       rememberOrder({
@@ -63,9 +66,17 @@ export function BuyActions({
       });
 
       /* A lead, not a sale — they have asked to buy, and nothing is paid until
-         the chat says so. The Purchase comes from the server later. */
+         the chat says so. The purchase comes from the server later. */
       trackLead(order, [
         { slug: product.slug, quantity: 1, price: Number(product.price) },
+      ]);
+      gaGenerateLead(order, [
+        {
+          slug: product.slug,
+          name: product.name,
+          quantity: 1,
+          price: Number(product.price),
+        },
       ]);
 
       if (order.whatsapp_url && tab) tab.location.href = order.whatsapp_url;

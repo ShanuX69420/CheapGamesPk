@@ -36,16 +36,19 @@ def client_ip(request):
 
 def attribution(request, data):
     """
-    What Meta will need to recognise this buyer months from now.
+    What Meta and Google will need to recognise this buyer months from now.
 
     The sale is finished in WhatsApp and confirmed from the admin days later,
     by which point there is no browser left to ask — so whatever identifies
     this one has to be written down now. Everything here is optional and
-    trimmed to fit; see apps/orders/meta.py for what it is for.
+    trimmed to fit; see apps/orders/meta.py and apps/orders/ga.py for what it
+    is for.
     """
     return {
         "fbp": data.get("fbp", "")[:128],
         "fbc": data.get("fbc", "")[:255],
+        "ga_client_id": data.get("ga_client_id", "")[:64],
+        "ga_session_id": data.get("ga_session_id", "")[:32],
         "source_url": data.get("source_url", "")[:500],
         "client_ip": client_ip(request),
         "client_user_agent": request.META.get("HTTP_USER_AGENT", "")[:400],
