@@ -58,7 +58,11 @@ function Header() {
             <SearchField />
           </div>
 
-          <CartIndicator />
+          {/* On a phone the search bar is on its own row, so nothing above
+              pushes the cart over — it takes the free space itself. */}
+          <div className="ml-auto md:ml-0">
+            <CartIndicator />
+          </div>
         </div>
 
         <div className="pb-3 md:hidden">
