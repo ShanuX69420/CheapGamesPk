@@ -18,7 +18,7 @@ function CoverFan({ products }: { products: Product[] }) {
       {covers.map((product, i) => (
         <div
           key={product.id}
-          className={`h-52 w-36 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 transition duration-500 ${ROTATIONS[i]} ${OFFSETS[i]}`}
+          className={`h-36 w-36 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 transition duration-500 ${ROTATIONS[i]} ${OFFSETS[i]}`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

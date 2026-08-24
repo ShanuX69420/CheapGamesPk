@@ -129,7 +129,7 @@ export default function CartPage() {
             >
               <Link
                 href={`/product/${line.slug}`}
-                className="h-24 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800"
+                className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800"
               >
                 {line.image ? (
                   /* eslint-disable-next-line @next/next/no-img-element */

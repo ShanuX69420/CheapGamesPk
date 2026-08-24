@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
       href={`/product/${product.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-xl bg-ink-900 ring-1 ring-ink-800 transition duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/10 hover:ring-accent/50"
     >
-      <div className="relative aspect-[2/3] overflow-hidden bg-ink-800">
+      <div className="relative aspect-square overflow-hidden bg-ink-800">
         {product.image ? (
           /* Artwork is served from an external CDN, so plain <img> avoids
              registering every remote host with next/image. */
