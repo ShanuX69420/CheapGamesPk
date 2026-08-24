@@ -1,6 +1,8 @@
 /* The house rules for offline activation accounts. Identical on every such
    listing, so it lives here rather than being retyped per product in admin. */
 const TERMS = [
+  "You receive the login details for an account we provide — this is not a game key, and the game is not added to your own Steam account.",
+  "Details are sent to you on WhatsApp as soon as your payment is confirmed.",
   "The account is for offline use only.",
   "Use of the Family Library Sharing feature is prohibited.",
   "Sharing account details with third parties is prohibited.",
@@ -12,10 +14,14 @@ const TERMS = [
   "Any online features of the game will be unavailable.",
   "Activation is not possible for playing via PlayKey, GFN, Google Stadia, Loudplay, Drova, or other cloud services.",
   "Assistance with product issues is available for 365 days from the date of purchase (only activation-related questions).",
+  "Once the account details have been sent, the sale is final. If we cannot deliver, you get a full refund.",
 ];
 
 const WARNING =
   "Any violation of these conditions will result in service denial without a refund.";
+
+const DISCLAIMER =
+  "cheapgames.pk is an independent seller and is not affiliated with, endorsed by, or sponsored by Valve Corporation or Steam.";
 
 export function OfflineTerms() {
   return (
@@ -36,6 +42,7 @@ export function OfflineTerms() {
       <p className="mt-4 border-t border-ink-800 pt-3 text-sm font-medium text-deal">
         {WARNING}
       </p>
+      <p className="mt-3 text-xs leading-relaxed text-ink-500">{DISCLAIMER}</p>
     </section>
   );
 }
