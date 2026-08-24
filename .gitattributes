@@ -1,0 +1,27 @@
+# Line endings are decided here, not by whatever wrote the file.
+#
+# Without this, a tool that writes CRLF into a repo checked out as LF (or the
+# reverse) turns a one-line change into a whole-file diff. Git normalises text
+# to LF in the object store and checks it back out as LF everywhere.
+* text=auto eol=lf
+
+# Files Windows genuinely wants CRLF in.
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Never rewrite these - a stray CRLF corrupts them.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.pdf    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.sqlite3 binary
+
+# Generated - collapse it in GitHub reviews.
+frontend/package-lock.json linguist-generated=true
