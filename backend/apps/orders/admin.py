@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from . import meta
 from .models import Order, OrderItem, OrderStatus, PaymentMethod
 
 STATUS_COLOURS = {
@@ -76,7 +77,12 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ["number", "email", "phone", "customer_name", "items__product_name"]
     date_hierarchy = "created_at"
     inlines = [OrderItemInline]
-    actions = ["action_mark_paid", "action_deliver", "action_cancel"]
+    actions = [
+        "action_mark_paid",
+        "action_deliver",
+        "action_cancel",
+        "action_send_purchase",
+    ]
     list_select_related = ["payment_method"]
 
     readonly_fields = [
@@ -89,6 +95,7 @@ class OrderAdmin(admin.ModelAdmin):
         "paid_at",
         "delivered_at",
         "cancelled_at",
+        "purchase_event_sent_at",
         "created_at",
         "updated_at",
     ]
@@ -112,7 +119,10 @@ class OrderAdmin(admin.ModelAdmin):
                 ]
             },
         ),
-        ("Internal", {"fields": ["staff_note", "access_token"]}),
+        (
+            "Internal",
+            {"fields": ["staff_note", "access_token", "purchase_event_sent_at"]},
+        ),
     ]
 
     # --- display -----------------------------------------------------------
@@ -149,6 +159,58 @@ class OrderAdmin(admin.ModelAdmin):
 
     # --- actions -----------------------------------------------------------
 
+    def get_actions(self, request):
+        """
+        Keep the Meta action out of the way of a store that has no pixel.
+
+        Nothing here breaks without one, but an action that can only ever
+        answer "no pixel is configured" is furniture.
+        """
+        actions = super().get_actions(request)
+        if not meta.is_configured():
+            actions.pop("action_send_purchase", None)
+        return actions
+
+    def save_model(self, request, obj, form, change):
+        """
+        Switching the status to Delivered by hand counts as completing the order.
+
+        The dropdown on this page is the other way staff finish a sale, and on
+        its own it only writes a word to a column — no timestamps, and Meta
+        never hears about the money. Send it down the same path the action
+        takes so both ways of finishing an order mean the same thing.
+        """
+        super().save_model(request, obj, form, change)
+
+        if obj.status == OrderStatus.DELIVERED and "status" in form.changed_data:
+            obj.mark_delivered()
+            reported = bool(meta.send_purchase(obj))
+            self._report_to_meta(request, reported, 1)
+
+    def _report_to_meta(self, request, sent, expected):
+        """
+        Say what actually reached Meta — but stay quiet when nobody is listening.
+
+        Silence would be worse than noise here: a Purchase that never arrives
+        is invisible in the admin and only shows up as ad spend against sales
+        that Meta thinks never happened.
+        """
+        if not meta.is_configured() or not expected:
+            return
+
+        if sent == expected:
+            self.message_user(
+                request, f"{sent} Purchase event(s) sent to Meta.", messages.SUCCESS
+            )
+        else:
+            self.message_user(
+                request,
+                f"{sent} of {expected} Purchase event(s) reached Meta. The rest "
+                "were reported before, or failed — the reason is in the server "
+                'log, and "Send the Purchase event to Meta" retries them.',
+                messages.WARNING,
+            )
+
     @admin.action(description="Mark as paid (not yet completed)")
     def action_mark_paid(self, request, queryset):
         done = 0
@@ -163,21 +225,57 @@ class OrderAdmin(admin.ModelAdmin):
         Close an order out once you have actually delivered it.
 
         Delivery itself happens in the WhatsApp chat — that is where you send
-        the account details. This only records that it happened, and reveals
-        any credentials you attached to the order by hand.
+        the account details. This only records that it happened, reveals any
+        credentials you attached to the order by hand, and tells Meta the sale
+        went through. This is the moment a Purchase is counted: nothing before
+        it is money, because until now the buyer had only asked.
         """
-        done, skipped = 0, 0
+        done, skipped, reported = 0, 0, 0
         for order in queryset:
             if order.status == OrderStatus.CANCELLED:
                 skipped += 1
                 continue
             order.mark_delivered()
+            reported += bool(meta.send_purchase(order))
             done += 1
 
         note = f"{done} order(s) marked completed."
         if skipped:
             note += f" {skipped} skipped (cancelled)."
         self.message_user(request, note, messages.SUCCESS)
+        self._report_to_meta(request, reported, done)
+
+    @admin.action(description="Send the Purchase event to Meta")
+    def action_send_purchase(self, request, queryset):
+        """
+        Report a sale Meta never heard about.
+
+        Completing an order already reports itself, so this is for the day the
+        token had expired or Graph was down — the failure is in the log and the
+        order is still unreported. Orders that already reported are left alone,
+        and one that was never completed has no sale to report yet.
+        """
+        if not meta.is_configured():
+            self.message_user(
+                request, "No Meta pixel is configured.", messages.WARNING
+            )
+            return
+
+        pending = queryset.filter(
+            status=OrderStatus.DELIVERED, purchase_event_sent_at__isnull=True
+        )
+        sent = sum(bool(meta.send_purchase(order)) for order in pending)
+        total = len(pending)
+
+        if not total:
+            self.message_user(
+                request,
+                "Nothing to send — those orders are either unfinished or already "
+                "reported.",
+                messages.WARNING,
+            )
+        else:
+            self._report_to_meta(request, sent, total)
 
     @admin.action(description="Cancel this order")
     def action_cancel(self, request, queryset):

@@ -1,4 +1,4 @@
-const CURRENCY = process.env.NEXT_PUBLIC_STORE_CURRENCY ?? "PKR";
+export const CURRENCY = process.env.NEXT_PUBLIC_STORE_CURRENCY ?? "PKR";
 
 const formatter = new Intl.NumberFormat("en-PK", {
   style: "currency",

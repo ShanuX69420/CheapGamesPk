@@ -46,10 +46,11 @@ opens the chat; everything after that happens in the conversation.
    bank transfer, crypto — the wording lives in the admin under Payment
    methods).
 3. **You confirm** in Django admin: select the order, "Mark as paid", then
-   "Deliver — release credentials to the buyer".
+   "Mark completed — order fulfilled".
 4. **Credentials appear** on the buyer's order page, if you attached a unit to
    the order line. Until delivery the API returns `null` for them, whatever
-   the URL says.
+   the URL says. Completing the order is also what reports the sale to Meta
+   — see [Ads tracking](#ads-tracking).
 
 Nothing is reserved and nothing runs out. What we sell is an offline
 activation that can be handed out repeatedly, so every active listing is
@@ -89,6 +90,13 @@ Backend `.env` (see `backend/.env.example`):
 | `STORE_CURRENCY` | Currency prices are stored in. |
 | `SITE_URL` | Public storefront URL. The order link the admin hands you is built from it — wrong value means dead links. |
 | `THROTTLE_ORDER_CREATE` | Rate limit on order creation, default `20/hour`. |
+| `META_PIXEL_ID` | Facebook pixel (dataset) id. Blank turns ads tracking off everywhere. |
+| `META_CAPI_ACCESS_TOKEN` | Conversions API token, from Events Manager. Without it sales go unreported. |
+| `META_TEST_EVENT_CODE` | Set while testing to divert events to the Test events tab. Clear it to go live. |
+
+Frontend `.env.local` needs `NEXT_PUBLIC_FACEBOOK_PIXEL_ID` set to the same id
+as `META_PIXEL_ID`. It is baked into the bundle at build time, so changing it
+means rebuilding.
 
 Payment instructions live in the admin under **Orders → Payment methods**.
 Nothing on the storefront asks the buyer to pick one — you quote them in the
@@ -97,6 +105,45 @@ taking real orders:
 
 ```bash
 python manage.py seed_payment_methods
+```
+
+## Ads tracking
+
+A sale here does not finish on the site, so the Facebook pixel cannot see one.
+The buyer clicks into WhatsApp, pays in the chat, and you confirm it by hand
+later. Tracking is split to match:
+
+| What happens | Event | Reported by |
+|---|---|---|
+| A product page is opened | `ViewContent` | the browser |
+| "Add to cart" | `AddToCart` | the browser |
+| "Buy now on WhatsApp" — the order is written and the chat opens | `Lead` | the browser **and** the server |
+| You mark the order completed in the admin | `Purchase` | the server |
+
+**A click into WhatsApp is a lead, not a sale.** The money is only counted when
+you complete the order, which is the one moment the store knows a sale actually
+happened. Cancel an order instead and nothing is ever reported.
+
+The server half is the Conversions API (`backend/apps/orders/meta.py`). It
+matters because by the time you confirm a sale the buyer is long gone: what
+makes the Purchase creditable to an ad is `_fbp`/`_fbc`, the pixel's cookies,
+copied onto the order when it was placed. Events carry an `event_id`, so the
+two copies of a `Lead` are counted once.
+
+Nothing here can hold up a sale. Unconfigured, blocked by an ad blocker, or
+rejected by Graph, every event fails quietly — the failure lands in
+`journalctl -u cheapgamespk-api` and the order goes through regardless. A
+Purchase that never arrived is stamped as unsent and can be retried with the
+admin's **Send the Purchase event to Meta** action.
+
+To check the wiring end to end, set `META_TEST_EVENT_CODE` from the Test events
+tab in Events Manager, place an order and complete it. Both events should
+appear there, and neither reaches the live dataset. What the browser reports
+can be checked without Meta at all:
+
+```bash
+NEXT_PUBLIC_FACEBOOK_PIXEL_ID=1234567890123456 npm run dev
+npm run e2e:pixel
 ```
 
 ## Deployment

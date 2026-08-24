@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { createOrder } from "@/lib/api";
 import { rememberOrder } from "@/lib/orderStore";
+import { attribution, trackAddToCart, trackLead } from "@/lib/pixel";
 import type { Product } from "@/lib/types";
 
 import { useCart } from "./CartProvider";
@@ -30,6 +31,7 @@ export function BuyActions({
 
   function handleAdd() {
     add(product, 1);
+    trackAddToCart(product);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   }
@@ -46,6 +48,10 @@ export function BuyActions({
       const order = await createOrder({
         items: [{ slug: product.slug, quantity: 1 }],
         source: "whatsapp",
+        /* Sent with the order rather than kept here: the sale is confirmed
+           days later from the admin, and this is the only chance to record
+           which ad click it came from. */
+        ...attribution(),
       });
 
       rememberOrder({
@@ -55,6 +61,12 @@ export function BuyActions({
         currency: order.currency,
         createdAt: order.created_at,
       });
+
+      /* A lead, not a sale — they have asked to buy, and nothing is paid until
+         the chat says so. The Purchase comes from the server later. */
+      trackLead(order, [
+        { slug: product.slug, quantity: 1, price: Number(product.price) },
+      ]);
 
       if (order.whatsapp_url && tab) tab.location.href = order.whatsapp_url;
       else tab?.close();

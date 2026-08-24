@@ -9,6 +9,7 @@ import { WhatsAppHandoff } from "@/components/WhatsAppHandoff";
 import { createOrder, getStoreConfig } from "@/lib/api";
 import { money } from "@/lib/format";
 import { rememberOrder } from "@/lib/orderStore";
+import { attribution, trackLead } from "@/lib/pixel";
 
 export default function CartPage() {
   const { lines, subtotal, count, ready, setQuantity, remove, clear } = useCart();
@@ -37,6 +38,7 @@ export default function CartPage() {
       const order = await createOrder({
         items: lines.map((line) => ({ slug: line.slug, quantity: line.quantity })),
         source: "whatsapp",
+        ...attribution(),
       });
 
       rememberOrder({
@@ -46,6 +48,16 @@ export default function CartPage() {
         currency: order.currency,
         createdAt: order.created_at,
       });
+
+      /* Before clear() — the basket is what the lead is worth. */
+      trackLead(
+        order,
+        lines.map((line) => ({
+          slug: line.slug,
+          quantity: line.quantity,
+          price: Number(line.price),
+        })),
+      );
       clear();
 
       if (order.whatsapp_url && tab) tab.location.href = order.whatsapp_url;

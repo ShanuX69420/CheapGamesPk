@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { CartIndicator } from "@/components/CartIndicator";
 import { CartProvider } from "@/components/CartProvider";
+import { FacebookPixel } from "@/components/FacebookPixel";
 import { MobileNav } from "@/components/MobileNav";
 
 import "./globals.css";
@@ -154,6 +155,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col antialiased">
+        <FacebookPixel />
         <CartProvider>
           <Header />
           <main className="flex-1">{children}</main>

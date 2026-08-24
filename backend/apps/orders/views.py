@@ -1,9 +1,12 @@
+import ipaddress
+
 from django.conf import settings
 from django.db import transaction
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from . import meta
 from .models import Order, OrderStatus, PaymentMethod
 from .serializers import (
     OrderCreateSerializer,
@@ -11,6 +14,42 @@ from .serializers import (
     OrderSerializer,
     PaymentMethodSerializer,
 )
+
+
+def client_ip(request):
+    """
+    The buyer's address rather than the proxy's.
+
+    In production every request arrives through nginx on loopback, so
+    REMOTE_ADDR is always 127.0.0.1 and the first entry of X-Forwarded-For is
+    the real client. Trusting that header is only safe because nothing but
+    nginx can reach gunicorn — it is parsed, never used for access control, and
+    anything that is not an IP address is dropped.
+    """
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    candidate = forwarded.split(",")[0].strip() or request.META.get("REMOTE_ADDR", "")
+    try:
+        return str(ipaddress.ip_address(candidate))
+    except ValueError:
+        return None
+
+
+def attribution(request, data):
+    """
+    What Meta will need to recognise this buyer months from now.
+
+    The sale is finished in WhatsApp and confirmed from the admin days later,
+    by which point there is no browser left to ask — so whatever identifies
+    this one has to be written down now. Everything here is optional and
+    trimmed to fit; see apps/orders/meta.py for what it is for.
+    """
+    return {
+        "fbp": data.get("fbp", "")[:128],
+        "fbc": data.get("fbc", "")[:255],
+        "source_url": data.get("source_url", "")[:500],
+        "client_ip": client_ip(request),
+        "client_user_agent": request.META.get("HTTP_USER_AGENT", "")[:400],
+    }
 
 
 class PaymentMethodViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,7 +91,12 @@ class OrderCreateView(APIView):
                 customer_name=data.get("customer_name", ""),
                 customer_note=data.get("customer_note", ""),
                 payment_method=method,
+                **attribution(request, data),
             )
+
+        # Fire and forget — the buyer is waiting on this response to open
+        # WhatsApp, and the browser reports the same lead itself.
+        meta.send_lead_in_background(order)
 
         payload = OrderCreatedSerializer(order, context={"request": request}).data
         return Response(payload, status=status.HTTP_201_CREATED)

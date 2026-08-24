@@ -119,6 +119,13 @@ SECURE_SSL_REDIRECT=False
 
 CATALOG_PAGE_SIZE=24
 THROTTLE_ORDER_CREATE=20/hour
+
+# Meta ads. Same pixel id the frontend gets below; the token comes from Events
+# Manager > Settings > Conversions API and is what reports a sale after the
+# buyer has left the site. Leave both blank to run without ads tracking.
+META_PIXEL_ID=
+META_CAPI_ACCESS_TOKEN=
+META_TEST_EVENT_CODE=
 ```
 
 ```bash
@@ -142,6 +149,9 @@ NEXT_PUBLIC_API_URL=https://cheapgames.pk/api
 # What a server render calls — straight to gunicorn, skipping nginx.
 INTERNAL_API_URL=http://127.0.0.1:8000/api
 NEXT_PUBLIC_STORE_CURRENCY=PKR
+# The same id as META_PIXEL_ID above. Blank leaves the pixel off the page,
+# which also leaves the server with nothing to attribute a sale to.
+NEXT_PUBLIC_FACEBOOK_PIXEL_ID=
 ```
 
 `NEXT_PUBLIC_*` values are baked into the bundle at build time, so this file has

@@ -156,6 +156,19 @@ SITE_URL = os.getenv("SITE_URL", "http://localhost:3000").rstrip("/")
 # to order at all.
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
 
+# --- Meta (Facebook) ads ---------------------------------------------------
+# The dataset id from Events Manager, shared with the browser pixel, plus a
+# Conversions API token so the server can report the sale the buyer finishes in
+# WhatsApp. Both blank leaves every event unsent — the store does not care.
+# The frontend needs the id too, as NEXT_PUBLIC_FACEBOOK_PIXEL_ID.
+META_PIXEL_ID = os.getenv("META_PIXEL_ID", "")
+META_CAPI_ACCESS_TOKEN = os.getenv("META_CAPI_ACCESS_TOKEN", "")
+# Set while testing to divert events to the Test events tab; unset to go live.
+META_TEST_EVENT_CODE = os.getenv("META_TEST_EVENT_CODE", "")
+# Graph API versions are supported about two years from release, so this needs
+# bumping roughly yearly. Check developers.facebook.com/docs/graph-api/changelog.
+META_GRAPH_API_VERSION = os.getenv("META_GRAPH_API_VERSION", "").strip() or "v25.0"
+
 
 # --- Production hardening -------------------------------------------------
 # All of this is a no-op in development. It switches on with DJANGO_DEBUG=False

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BuyActions } from "@/components/BuyActions";
+import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
 import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
 import { money } from "@/lib/format";
@@ -53,6 +54,11 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div>
+      <TrackViewContent
+        slug={product.slug}
+        name={product.name}
+        price={product.price}
+      />
       <Banner product={product} />
 
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">

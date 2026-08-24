@@ -139,4 +139,9 @@ export interface OrderLineInput {
 export interface CreateOrderInput {
   items: OrderLineInput[];
   source?: OrderSource;
+  /* Meta ads attribution, read off the browser by lib/pixel.ts. Optional —
+     an order without it is fine, just uncreditable. */
+  fbp?: string;
+  fbc?: string;
+  source_url?: string;
 }
