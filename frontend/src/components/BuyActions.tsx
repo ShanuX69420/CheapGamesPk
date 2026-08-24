@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { createOrder } from "@/lib/api";
 import { gaAddToCart, gaAttribution, gaGenerateLead } from "@/lib/ga";
-import { rememberOrder } from "@/lib/orderStore";
 import { attribution, trackAddToCart, trackLead } from "@/lib/pixel";
 import type { Product } from "@/lib/types";
 
@@ -55,14 +54,6 @@ export function BuyActions({
            which ad click it came from. */
         ...attribution(),
         ...gaAttribution(),
-      });
-
-      rememberOrder({
-        number: order.number,
-        token: order.access_token,
-        total: order.total,
-        currency: order.currency,
-        createdAt: order.created_at,
       });
 
       /* A lead, not a sale — they have asked to buy, and nothing is paid until

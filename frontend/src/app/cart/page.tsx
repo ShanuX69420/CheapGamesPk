@@ -9,7 +9,6 @@ import { WhatsAppHandoff } from "@/components/WhatsAppHandoff";
 import { createOrder, getStoreConfig } from "@/lib/api";
 import { money } from "@/lib/format";
 import { gaAttribution, gaGenerateLead } from "@/lib/ga";
-import { rememberOrder } from "@/lib/orderStore";
 import { attribution, trackLead } from "@/lib/pixel";
 
 export default function CartPage() {
@@ -41,14 +40,6 @@ export default function CartPage() {
         source: "whatsapp",
         ...attribution(),
         ...gaAttribution(),
-      });
-
-      rememberOrder({
-        number: order.number,
-        token: order.access_token,
-        total: order.total,
-        currency: order.currency,
-        createdAt: order.created_at,
       });
 
       /* Before clear() — the basket is what the lead is worth. */

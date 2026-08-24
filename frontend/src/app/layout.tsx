@@ -130,14 +130,6 @@ function Footer() {
             Support
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-ink-400">
-            <li>
-              <Link
-                href="/order/find"
-                className="transition hover:text-accent-bright"
-              >
-                Find your order
-              </Link>
-            </li>
             <li>Fast delivery, 24/7</li>
             <li>Setup guide with every order</li>
             <li>Help with activation issues</li>

@@ -92,16 +92,6 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                   </Link>
                 </li>
               ))}
-
-              <li className="mt-1 border-t border-ink-800 pt-1">
-                <Link
-                  href="/order/find"
-                  onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-3 text-[15px] font-semibold text-ink-400 transition hover:bg-ink-800 hover:text-accent-bright"
-                >
-                  Find your order
-                </Link>
-              </li>
             </ul>
           </nav>
         </>

@@ -282,16 +282,14 @@ function NotFound({ reason }: { reason: string }) {
         {reason} Check that you used the full link we gave you — it includes an
         access code after the order number.
       </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link
-          href="/order/find"
-          className="rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white transition hover:bg-accent-bright"
-        >
-          Find your order
-        </Link>
+      <p className="mt-2 text-sm text-ink-400">
+        Still stuck? The whole order is in your WhatsApp chat with us — message
+        us there and we&rsquo;ll sort it out.
+      </p>
+      <div className="mt-6 flex justify-center">
         <Link
           href="/"
-          className="rounded-lg bg-ink-800 px-5 py-2.5 text-sm font-bold text-ink-200 ring-1 ring-ink-700 transition hover:bg-ink-700"
+          className="rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white transition hover:bg-accent-bright"
         >
           Back to the store
         </Link>
