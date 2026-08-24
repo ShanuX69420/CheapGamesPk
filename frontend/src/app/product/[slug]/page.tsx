@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
+import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
 import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
@@ -79,11 +80,7 @@ export default async function ProductPage({ params }: Props) {
                 </Section>
               )}
 
-            {product.limitations && (
-              <Section title="What does not work" tone="warn">
-                <Prose text={product.limitations} />
-              </Section>
-            )}
+            {product.product_type === "offline_account" && <OfflineTerms />}
 
             {product.system_requirements && (
               <Section title="System requirements">
@@ -159,7 +156,7 @@ function Banner({ product }: { product: ProductDetail }) {
 
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end">
           <div className="w-40 shrink-0 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 sm:w-48">
-            <div className="aspect-[2/3]">
+            <div className="aspect-square">
               {product.image ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
@@ -228,33 +225,12 @@ function BuyBox({
   product: ProductDetail;
   whatsappEnabled: boolean;
 }) {
-  const saving =
-    product.compare_at_price !== null
-      ? Number(product.compare_at_price) - Number(product.price)
-      : 0;
-
   return (
     <aside className="lg:sticky lg:top-20 lg:self-start lg:pt-8">
       <div className="rounded-xl bg-ink-900 p-5 ring-1 ring-ink-700">
-        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-          <span className="text-3xl font-black tabular-nums">
-            {money(product.price)}
-          </span>
-          {product.is_on_sale && product.compare_at_price && (
-            <>
-              <span className="text-sm tabular-nums text-ink-400 line-through">
-                {money(product.compare_at_price)}
-              </span>
-              <span className="rounded-md bg-deal px-1.5 py-0.5 text-xs font-black text-white">
-                &minus;{product.discount_percent}%
-              </span>
-            </>
-          )}
-        </div>
-
-        {saving > 0 && (
-          <p className="mt-1.5 text-xs text-good">You save {money(saving)}</p>
-        )}
+        <span className="text-3xl font-black tabular-nums">
+          {money(product.price)}
+        </span>
 
         <div className="mt-3 flex items-center gap-1.5 text-sm">
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-good" />
@@ -286,26 +262,14 @@ function Perk({ children }: { children: React.ReactNode }) {
 
 function Section({
   title,
-  tone,
   children,
 }: {
   title: string;
-  tone?: "warn";
   children: React.ReactNode;
 }) {
   return (
-    <section
-      className={`mb-5 rounded-xl p-5 ring-1 ${
-        tone === "warn"
-          ? "bg-deal/[0.06] ring-deal/25"
-          : "bg-ink-900/70 ring-ink-800"
-      }`}
-    >
-      <h2
-        className={`mb-3 text-xs font-bold uppercase tracking-wider ${
-          tone === "warn" ? "text-deal" : "text-ink-400"
-        }`}
-      >
+    <section className="mb-5 rounded-xl bg-ink-900/70 p-5 ring-1 ring-ink-800">
+      <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-ink-400">
         {title}
       </h2>
       {children}
