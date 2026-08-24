@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { CartIndicator } from "@/components/CartIndicator";
 import { CartProvider } from "@/components/CartProvider";
+import { MobileNav } from "@/components/MobileNav";
 
 import "./globals.css";
 
@@ -25,48 +26,66 @@ const NAV = [
 function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink-800 bg-ink-950/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[88rem] items-center gap-3 px-4 py-3 sm:gap-5 sm:px-6">
-        <Link
-          href="/"
-          className="shrink-0 text-lg font-black tracking-tight sm:text-xl"
-        >
-          cheap<span className="text-accent">games</span>
-          <span className="text-ink-400">pk</span>
-        </Link>
+      <div className="relative mx-auto max-w-[88rem] px-4 sm:px-6">
+        <div className="flex items-center gap-3 py-3 sm:gap-5">
+          <MobileNav items={NAV} />
 
-        <nav className="hidden items-center gap-4 md:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-semibold text-ink-200 transition hover:text-accent-bright"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <Link
+            href="/"
+            className="shrink-0 text-lg font-black tracking-tight sm:text-xl"
+          >
+            cheap<span className="text-accent">games</span>
+            <span className="text-ink-400">pk</span>
+          </Link>
 
-        <form action="/" className="ml-auto w-full max-w-sm">
-          <div className="relative">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400"
-            >
-              &#9906;
-            </span>
-            <input
-              type="search"
-              name="search"
-              placeholder="Search games…"
-              aria-label="Search games"
-              className="w-full rounded-lg bg-ink-800/80 py-2 pl-9 pr-3 text-sm text-ink-50 ring-1 ring-ink-700 outline-none transition placeholder:text-ink-400 focus:bg-ink-800 focus:ring-accent"
-            />
+          <nav className="hidden items-center gap-4 md:flex">
+            {NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-sm font-semibold text-ink-200 transition hover:text-accent-bright"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Below md the search bar moves to its own row — three controls plus
+              a text field do not fit on a phone. */}
+          <div className="ml-auto hidden w-full max-w-sm md:block">
+            <SearchField />
           </div>
-        </form>
 
-        <CartIndicator />
+          <CartIndicator />
+        </div>
+
+        <div className="pb-3 md:hidden">
+          <SearchField />
+        </div>
       </div>
     </header>
+  );
+}
+
+function SearchField() {
+  return (
+    <form action="/">
+      <div className="relative">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400"
+        >
+          &#9906;
+        </span>
+        <input
+          type="search"
+          name="search"
+          placeholder="Search games…"
+          aria-label="Search games"
+          className="w-full rounded-lg bg-ink-800/80 py-2 pl-9 pr-3 text-sm text-ink-50 ring-1 ring-ink-700 outline-none transition placeholder:text-ink-400 focus:bg-ink-800 focus:ring-accent"
+        />
+      </div>
+    </form>
   );
 }
 
