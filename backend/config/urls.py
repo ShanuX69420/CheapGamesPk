@@ -12,6 +12,6 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-admin.site.site_header = "cheapgamespk"
-admin.site.site_title = "cheapgamespk admin"
+admin.site.site_header = "cheapgames.pk"
+admin.site.site_title = "cheapgames.pk admin"
 admin.site.index_title = "Store back-office"
