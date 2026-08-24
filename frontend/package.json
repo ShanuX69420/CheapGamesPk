@@ -9,7 +9,7 @@
     "lint": "eslint",
     "shot": "node scripts/screenshot.mjs",
     "shot:scrolled": "node scripts/screenshot-scrolled.mjs",
-    "e2e": "node scripts/e2e-checkout.mjs && node scripts/e2e-whatsapp.mjs && node scripts/e2e-recovery.mjs"
+    "e2e": "node scripts/e2e-checkout.mjs && node scripts/e2e-whatsapp.mjs && node scripts/e2e-recovery.mjs && node scripts/shot-mobile-nav.mjs"
   },
   "dependencies": {
     "next": "16.3.2",

@@ -14,8 +14,13 @@ import type {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
 
-/** Seconds before cached catalog data is refetched. Stock changes, so keep it short. */
+/**
+ * Seconds before cached catalog data is refetched. Stock changes, so keep it
+ * short. In development we skip the cache entirely — otherwise a backend change
+ * appears not to have taken effect for up to a minute.
+ */
 const REVALIDATE = 60;
+const IS_DEV = process.env.NODE_ENV === "development";
 
 export type ProductQuery = {
   search?: string;
@@ -44,7 +49,10 @@ async function get<T>(path: string, params?: Record<string, string | undefined>)
     if (value) url.searchParams.set(key, value);
   }
 
-  const response = await fetch(url, { next: { revalidate: REVALIDATE } });
+  const response = await fetch(
+    url,
+    IS_DEV ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } },
+  );
   if (!response.ok) {
     throw new ApiError(`GET ${url.pathname} failed`, response.status);
   }

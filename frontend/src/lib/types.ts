@@ -64,6 +64,9 @@ export interface Paginated<T> {
   count: number;
   next: string | null;
   previous: string | null;
+  page: number;
+  total_pages: number;
+  page_size: number;
   results: T[];
 }
 

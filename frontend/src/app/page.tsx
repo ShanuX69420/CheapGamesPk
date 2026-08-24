@@ -1,5 +1,6 @@
 import { CatalogFilters } from "@/components/CatalogFilters";
 import { Hero } from "@/components/Hero";
+import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
 import { getPlatforms, getProducts, safely, type ProductQuery } from "@/lib/api";
 import type { Paginated, Product } from "@/lib/types";
@@ -19,6 +20,9 @@ const EMPTY: Paginated<Product> = {
   count: 0,
   next: null,
   previous: null,
+  page: 1,
+  total_pages: 1,
+  page_size: 24,
   results: [],
 };
 
@@ -69,7 +73,9 @@ export default async function HomePage({
           )}
         </h2>
         <span className="shrink-0 text-sm tabular-nums text-ink-400">
-          {page.count} {page.count === 1 ? "product" : "products"}
+          {page.total_pages > 1
+            ? `Page ${page.page} of ${page.total_pages} · ${page.count} products`
+            : `${page.count} ${page.count === 1 ? "product" : "products"}`}
         </span>
       </div>
 
@@ -81,11 +87,19 @@ export default async function HomePage({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {page.results.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {page.results.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <Pagination
+            params={params}
+            page={page.page}
+            totalPages={page.total_pages}
+          />
+        </>
       )}
     </div>
   );
