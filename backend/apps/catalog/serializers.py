@@ -59,7 +59,9 @@ class ProductListSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        return obj.cover()
+        # Card-sized on purpose: this endpoint fills a grid of 24, and nothing
+        # in it is drawn larger than a card. The detail view sends the full one.
+        return obj.card()
 
 
 class ProductDetailSerializer(ProductListSerializer):
@@ -73,6 +75,10 @@ class ProductDetailSerializer(ProductListSerializer):
     categories = CategorySerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     banner = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        """The product page draws the cover large enough to want the full one."""
+        return obj.cover()
 
     def get_banner(self, obj):
         return obj.banner()

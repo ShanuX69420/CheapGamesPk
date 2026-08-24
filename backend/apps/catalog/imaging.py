@@ -12,9 +12,15 @@ from pathlib import Path
 from django.core.files.base import ContentFile
 from PIL import Image, ImageOps
 
-# Cards render around 300px wide, so 800 leaves room for retina screens and
-# for the larger cover on the product page without paying for the original.
+# The largest the cover is ever drawn is the product page, at 192px, so 800
+# leaves room for a retina screen without paying for the original.
 COVER_MAX_WIDTH = 800
+
+# The grid draws the same cover at ~215px and loads 24 of them at once, which
+# is where the page weight actually lives. A separate card-sized copy at 480
+# still covers a 2x screen and costs about a third of the bytes.
+CARD_MAX_WIDTH = 480
+
 WEBP_QUALITY = 82
 
 

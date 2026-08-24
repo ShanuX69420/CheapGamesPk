@@ -1,9 +1,16 @@
 from decimal import Decimal
 
+from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.text import slugify
 
-from .imaging import compress_to_webp, is_fresh_upload
+from .imaging import (
+    CARD_MAX_WIDTH,
+    compress_to_webp,
+    is_fresh_upload,
+    render_webp,
+    webp_name,
+)
 
 
 class TimeStampedModel(models.Model):
@@ -170,6 +177,17 @@ class Product(SluggedModel):
     def primary_image(self):
         return self.images.first()
 
+    def card(self):
+        """Cover at the size the grid draws it.
+
+        Falls back to the full cover, so a row that predates the card rendition
+        — or an external URL, which comes in one size only — still shows art.
+        """
+        uploaded = self.primary_image
+        if uploaded and uploaded.thumbnail:
+            return uploaded.thumbnail.url
+        return self.cover()
+
     def cover(self):
         """Uploaded image wins; otherwise fall back to the external cover URL.
 
@@ -193,6 +211,11 @@ class ProductImage(TimeStampedModel):
         Product, on_delete=models.CASCADE, related_name="images"
     )
     image = models.ImageField(upload_to="products/")
+    thumbnail = models.ImageField(
+        upload_to="products/cards/",
+        blank=True,
+        help_text="Card-sized copy, written for you when the image is uploaded.",
+    )
     alt_text = models.CharField(max_length=200, blank=True)
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -204,5 +227,15 @@ class ProductImage(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if is_fresh_upload(self.image):
+            # Both renditions come off the original upload rather than off each
+            # other, so the card is not a re-encode of a re-encode.
+            self.build_thumbnail()
             compress_to_webp(self.image)
         super().save(*args, **kwargs)
+
+    def build_thumbnail(self):
+        """Write the card-sized copy. Commits the file, not the row."""
+        source = self.image.file
+        source.seek(0)
+        data = render_webp(source, CARD_MAX_WIDTH)
+        self.thumbnail.save(webp_name(self.image.name), ContentFile(data), save=False)

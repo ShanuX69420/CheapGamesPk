@@ -219,6 +219,22 @@ certbot --nginx -d cheapgames.pk -d www.cheapgames.pk
 Certbot rewrites the site config with the `:443` block and the redirect, and
 installs a renewal timer. Confirm with `certbot renew --dry-run`.
 
+Certbot writes those listeners without HTTP/2, and a page of the shop asks for
+two dozen covers at once — over HTTP/1.1 the browser drip-feeds them six at a
+time. nginx 1.24 takes it as a `listen` parameter (the standalone `http2 on;`
+directive only arrives in 1.25.1):
+
+```bash
+C=/etc/nginx/sites-available/cheapgamespk
+sed -i -e 's/listen \[::\]:443 ssl ipv6only=on;/listen [::]:443 ssl http2 ipv6only=on;/' "$C"
+sed -i -e 's/listen 443 ssl;/listen 443 ssl http2;/' "$C"
+nginx -t && systemctl reload nginx
+
+# Expect 2. Certbot renewals replace the certificate and leave the listeners
+# alone, so this survives them — but re-check after any `certbot --nginx` rerun.
+curl -s -o /dev/null -w '%{http_version}\n' https://cheapgames.pk/
+```
+
 **Now** flip both Cloudflare A records to orange (Proxied), and set
 **SSL/TLS → Overview → Full (strict)**. Any other mode either breaks
 (`Flexible` gives a redirect loop against `SECURE_SSL_REDIRECT`) or skips
