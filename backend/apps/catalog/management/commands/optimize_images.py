@@ -36,7 +36,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
-        before_total = after_total = 0
+        # Covers and cards are counted apart on purpose. Adding a second
+        # rendition raises what sits on disk while lowering what a page ships,
+        # and one combined number would read as the run having made it worse.
+        cover_before = cover_after = card_total = 0
         converted = skipped = 0
 
         for record in ProductImage.objects.select_related("product"):
@@ -68,10 +71,10 @@ class Command(BaseCommand):
                 continue
 
             before = field.size
-            before_total += before
-            after_total += len(data) if stale else before
+            cover_before += before
+            cover_after += len(data) if stale else before
             if wants_card:
-                after_total += len(card)
+                card_total += len(card)
             converted += 1
 
             did = "would fix" if dry_run else "fixed"
@@ -94,8 +97,12 @@ class Command(BaseCommand):
 
         self.stdout.write("")
         self.stdout.write(
-            self.style.SUCCESS(
-                f"{converted} touched, {skipped} already optimized "
-                f"({kb(before_total)} -> {kb(after_total)})"
-            )
+            self.style.SUCCESS(f"{converted} touched, {skipped} already optimized")
         )
+        if cover_before:
+            self.stdout.write(f"  covers  {kb(cover_before)} -> {kb(cover_after)}")
+        if card_total:
+            self.stdout.write(
+                f"  cards   {kb(card_total)} written; the grid asks for these, "
+                f"the covers stay on disk for the product page"
+            )
