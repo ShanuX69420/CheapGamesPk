@@ -24,7 +24,6 @@ const NAV = [
   { href: "/?type=offline_account", label: "Offline" },
   { href: "/?type=online_account", label: "Online" },
   { href: "/?type=key", label: "Keys" },
-  { href: "/?on_sale=true", label: "Deals" },
 ];
 
 function Header() {

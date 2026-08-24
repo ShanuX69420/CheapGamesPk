@@ -133,15 +133,6 @@ export function CatalogFilters({
           </Pill>
         ))}
 
-        <span className="mx-1 h-4 w-px bg-ink-700" aria-hidden />
-
-        <Pill
-          href={urlWith(params, "on_sale", params.on_sale ? "" : "true")}
-          active={params.on_sale === "true"}
-        >
-          On sale
-        </Pill>
-
         <div className="ml-auto flex items-center gap-1.5">
           <span className="text-[11px] font-medium uppercase tracking-wider text-ink-400">
             Sort
