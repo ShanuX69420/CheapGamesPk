@@ -82,7 +82,9 @@ export default async function ProductPage({ params }: Props) {
                 </Section>
               )}
 
-            {product.product_type === "offline_account" && <OfflineTerms />}
+            {product.product_type === "offline_account" && (
+              <OfflineTerms platform={product.platform} />
+            )}
 
             {product.system_requirements && (
               <Section title="System requirements">

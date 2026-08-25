@@ -6,7 +6,9 @@ the same limitations every time, and those two blocks have to read identically
 across the store — a buyer comparing two listings should not find two different
 accounts of what offline mode costs them. So they live here, and a batch file
 carries only what actually differs per game: the name, the price, the artwork
-and the words about the game itself.
+and the words about the game itself. Which client the steps name follows the
+platform the listing sells on, so a Ubisoft game does not tell its buyer to
+install Steam.
 
     python manage.py import_products games.json --dry-run
     python manage.py import_products games.json
@@ -29,13 +31,15 @@ from apps.catalog.models import Category, Platform, Product
 from .fetch_artwork import PORTRAIT, WIDE, first_available, resolve_appid
 
 # The two blocks every offline-account listing shares, worded as they already
-# are on the live listings. Overridable per game in the batch file, but the
-# point is that nobody has to.
+# are on the live listings. Only the client moves between platforms — the words
+# around it are written once, so a buyer comparing a Ubisoft listing with a
+# Steam one does not find two different accounts of what offline mode costs
+# them. Overridable per game in the batch file, but the point is that nobody
+# has to.
 ACTIVATION_INSTRUCTIONS = (
-    "1. Install Steam and sign in with the details we send you in the chat.\n"
+    "1. Install {client} and sign in with the details we send you in the chat.\n"
     "2. Let the game finish downloading.\n"
-    "3. In Steam, open the top-left menu and choose Go Offline. Stay in Offline\n"
-    "   Mode whenever you play.\n"
+    "3. {go_offline} Stay in Offline Mode whenever you play.\n"
     "4. Do not change the account password or email.\n\n"
     "Stuck on any step? Message us on WhatsApp and we will walk you through it."
 )
@@ -44,9 +48,31 @@ LIMITATIONS = (
     "Single-player only. Online modes, multiplayer and cloud saves are not part "
     "of this, and achievements earn on the account we provide rather than on "
     "your own profile.\n"
-    "The account has to stay in Steam's Offline Mode. Changing its password or "
-    "email ends access — for you as well as for everyone else."
+    "The account has to stay in {client}'s Offline Mode. Changing its password "
+    "or email ends access — for you as well as for everyone else."
 )
+
+# The client a platform's offline mode lives in, and where the buyer finds it.
+# A platform missing here has no house wording, so a batch selling on it has to
+# bring its own rather than be handed somebody else's client by default.
+CLIENTS = {
+    "Steam": (
+        "Steam",
+        "In Steam, open the top-left menu and choose Go Offline.",
+    ),
+    "EA App": (
+        "the EA app",
+        "In the EA app, open the menu beside your avatar and choose Go Offline.",
+    ),
+    "Ubisoft Connect": (
+        "Ubisoft Connect",
+        "In Ubisoft Connect, open the top-left menu and choose Go Offline.",
+    ),
+}
+
+# The two blocks a listing has to carry itself when we have no wording for its
+# platform.
+HOUSE_BLOCKS = ["activation_instructions", "limitations"]
 
 # What we sell unless a batch says otherwise. Product's own defaults already
 # cover the rest — offline account, Global, active, not featured.
@@ -160,6 +186,15 @@ class Command(BaseCommand):
                 Decimal(str(spec["price"]))
             except (KeyError, InvalidOperation) as exc:
                 raise CommandError(f"{where} ('{name}') has no usable price.") from exc
+            platform = spec.get("platform", DEFAULT_PLATFORM)
+            if platform not in CLIENTS:
+                missing = [f for f in HOUSE_BLOCKS if not spec.get(f)]
+                if missing:
+                    raise CommandError(
+                        f"{where} ('{name}'): nothing here knows how {platform} "
+                        f"goes offline, so the entry has to carry its own "
+                        f"{' and '.join(missing)}."
+                    )
             if spec.get("release_date"):
                 try:
                     date.fromisoformat(spec["release_date"])
@@ -180,13 +215,11 @@ class Command(BaseCommand):
         dates off everything in it.
 
         The two shared blocks are the exception and are rewritten every time —
-        they are here precisely so that every listing words them identically.
+        they are here precisely so that every listing on a platform words them
+        identically.
         """
-        fields = {
-            "price": Decimal(str(spec["price"])),
-            "activation_instructions": ACTIVATION_INSTRUCTIONS,
-            "limitations": LIMITATIONS,
-        }
+        fields = {"price": Decimal(str(spec["price"]))}
+        fields.update(self.house_blocks(spec))
         if "product_type" in spec:
             fields["product_type"] = spec["product_type"]
         if spec.get("compare_at_price"):
@@ -203,6 +236,23 @@ class Command(BaseCommand):
         if artwork and not fields.get("cover_url"):
             fields.update(self.artwork(spec))
         return fields
+
+    def house_blocks(self, spec):
+        """The shared wording for the platform this listing sells on.
+
+        Nothing for a platform we have no client wording for — load() has
+        already made sure such an entry carries its own.
+        """
+        client = CLIENTS.get(spec.get("platform", DEFAULT_PLATFORM))
+        if not client:
+            return {}
+        name, go_offline = client
+        return {
+            "activation_instructions": ACTIVATION_INSTRUCTIONS.format(
+                client=name, go_offline=go_offline
+            ),
+            "limitations": LIMITATIONS.format(client=name),
+        }
 
     def artwork(self, spec):
         """
