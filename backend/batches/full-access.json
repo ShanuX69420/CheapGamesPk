@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Grand Theft Auto V Enhanced + Legacy — Full Access Account",
+    "product_type": "online_account",
+    "platform": "Steam",
+    "appid": 271590,
+    "price": "4000.00",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "A brand-new Steam account with GTA V Enhanced and Legacy on it and 0 hours played. Yours to keep, online included.",
+    "description": "Both builds on one fresh account: Enhanced, the rebuilt version with ray tracing and the higher frame rates, and the original Legacy alongside it for mods and for anything Enhanced does not run. Story mode and GTA Online both work — this is the account itself, sold outright, not an offline activation of it."
+  },
+  {
+    "name": "Red Dead Redemption 2 — Full Access Account",
+    "product_type": "online_account",
+    "platform": "Steam",
+    "appid": 1174180,
+    "price": "4200.00",
+    "release_date": "2019-12-05",
+    "categories": [
+      "Action",
+      "Adventure"
+    ],
+    "short_description": "A brand-new Steam account with Red Dead Redemption 2 on it and 0 hours played. Yours to keep, online included.",
+    "description": "Arthur Morgan's stretch of the Van der Linde gang's last years, across a map that still looks like nothing else six years on. The full story plus Red Dead Online, on a fresh account that becomes yours the moment the details arrive."
+  },
+  {
+    "name": "Tekken 8 — Full Access Account",
+    "product_type": "online_account",
+    "platform": "Steam",
+    "appid": 1778820,
+    "price": "7000.00",
+    "release_date": "2024-01-26",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "A brand-new Steam account with Tekken 8 on it and 0 hours played. Yours to keep, ranked play included.",
+    "description": "The Heat system, the full roster and the story picking up where 7 left off. Ranked and player matches work the same as on any account of your own — the point of a full-access account is that nothing online is closed off, so your rank is yours and it stays."
+  },
+  {
+    "name": "EA Sports FC 26 — Full Access Account",
+    "product_type": "online_account",
+    "platform": "Steam",
+    "appid": 3405690,
+    "price": "2500.00",
+    "release_date": "2025-09-26",
+    "categories": [
+      "Sports"
+    ],
+    "short_description": "A brand-new Steam account with EA Sports FC 26 on it and 0 hours played. Ultimate Team and online seasons included.",
+    "description": "The whole game rather than the offline half of it: Ultimate Team, online seasons, Clubs and the career modes all playable, because the account is yours. Fresh, unplayed, and it stays yours — so does the club you build on it."
+  },
+  {
+    "name": "EA Sports FC 27 — Full Access Account",
+    "product_type": "online_account",
+    "platform": "Steam",
+    "price": "12000.00",
+    "categories": [
+      "Sports"
+    ],
+    "short_description": "A brand-new Steam account with EA Sports FC 27 on it and 0 hours played. Ultimate Team and online seasons included.",
+    "description": "This year's FC on an account of its own, fresh and unplayed. Ultimate Team, online seasons, Clubs and the career modes all work, because what you are buying is the account rather than an offline activation of it — start the new Ultimate Team squad on something that is yours."
+  }
+]

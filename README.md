@@ -211,6 +211,12 @@ python manage.py import_products batches/ea-ubisoft.json --no-artwork
 python manage.py import_products batches/game-pass.json
 ```
 
+Full-access accounts — the account itself, fresh and unplayed, sold outright —
+are the same file format with `"product_type": "online_account"` on them. That
+is what swaps the offline wording for the full-access wording on the same
+platform, so a Steam listing tells its buyer to change the password now and the
+email in a month rather than to stay in Offline Mode.
+
 Game Pass listings are the same idea one step further. Each one sells the same
 Microsoft Store account with a 12-month subscription on it, and only the game a
 buyer came in looking for changes, so a batch entry carries the game and

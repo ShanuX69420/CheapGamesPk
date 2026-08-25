@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
+import { FullAccessTerms } from "@/components/FullAccessTerms";
 import { GamePassTerms, isGamePass } from "@/components/GamePassTerms";
 import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
@@ -84,10 +85,13 @@ export default async function ProductPage({ params }: Props) {
               )}
 
             {/* Which set of house rules applies is a property of what the
-                listing sells, not of the game — Game Pass is sold as a
-                subscription account, so it has its own. */}
+                listing sells, not of the game. Game Pass is a subscription on
+                an account we keep; every other online account here is one sold
+                outright, fresh and unplayed; an offline account is neither. */}
             {isGamePass(product.platform) ? (
               <GamePassTerms />
+            ) : product.product_type === "online_account" ? (
+              <FullAccessTerms platform={product.platform} />
             ) : (
               product.product_type === "offline_account" && (
                 <OfflineTerms platform={product.platform} />

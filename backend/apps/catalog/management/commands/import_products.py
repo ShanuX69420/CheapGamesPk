@@ -52,6 +52,33 @@ LIMITATIONS = (
     "or email ends access — for you as well as for everyone else."
 )
 
+# A full-access account is the opposite trade from an offline one: the buyer
+# gets the account itself, fresh and unplayed, and everything online works
+# because nothing is being hidden from the client. What it costs instead is the
+# first month — the account stays on our email long enough that we can still
+# recover it if something goes wrong, and moves to the buyer's after that. Sold
+# on the same platforms as the offline accounts, so which client to name comes
+# from CLIENTS below; what makes a listing this rather than that is its
+# product type.
+FULL_ACCESS_ACTIVATION = (
+    "1. Install {client} and sign in with the details we send you in the chat.\n"
+    "2. Change the password straight away and keep the new one somewhere safe.\n"
+    "3. Let the game finish downloading and play it however you like — online "
+    "included.\n"
+    "4. After one month, change the account's email address to your own.\n\n"
+    "Stuck on any step? Message us on WhatsApp and we will walk you through it."
+)
+
+FULL_ACCESS_LIMITATIONS = (
+    "A fresh {client} account made for this sale with the game already on it "
+    "and no hours played. The account is yours — online play, multiplayer, "
+    "cloud saves and achievements all work as they would on any account of "
+    "your own.\n"
+    "Leave the email as delivered for the first month. While the account is "
+    "still on our address we can recover it for you; once you have moved it to "
+    "yours, it is entirely in your hands."
+)
+
 # The client a platform's offline mode lives in, and where the buyer finds it.
 # A platform missing here has no house wording, so a batch selling on it has to
 # bring its own rather than be handed somebody else's client by default.
@@ -290,6 +317,13 @@ class Command(BaseCommand):
         if not client:
             return {}
         name, go_offline = client
+        # Same platforms, opposite trade: an online listing on one of these is
+        # the account sold outright, not an offline activation of it.
+        if spec.get("product_type") == ProductType.ONLINE_ACCOUNT:
+            return {
+                "activation_instructions": FULL_ACCESS_ACTIVATION.format(client=name),
+                "limitations": FULL_ACCESS_LIMITATIONS.format(client=name),
+            }
         return {
             "activation_instructions": ACTIVATION_INSTRUCTIONS.format(
                 client=name, go_offline=go_offline
