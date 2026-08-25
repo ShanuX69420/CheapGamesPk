@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
+import { GamePassTerms, isGamePass } from "@/components/GamePassTerms";
 import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
@@ -82,8 +83,15 @@ export default async function ProductPage({ params }: Props) {
                 </Section>
               )}
 
-            {product.product_type === "offline_account" && (
-              <OfflineTerms platform={product.platform} />
+            {/* Which set of house rules applies is a property of what the
+                listing sells, not of the game — Game Pass is sold as a
+                subscription account, so it has its own. */}
+            {isGamePass(product.platform) ? (
+              <GamePassTerms />
+            ) : (
+              product.product_type === "offline_account" && (
+                <OfflineTerms platform={product.platform} />
+              )
             )}
 
             {product.system_requirements && (

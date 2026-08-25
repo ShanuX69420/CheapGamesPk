@@ -208,7 +208,17 @@ every Ubisoft one.
 ```bash
 python manage.py import_products batches/ea-ubisoft.json --dry-run
 python manage.py import_products batches/ea-ubisoft.json --no-artwork
+python manage.py import_products batches/game-pass.json
 ```
+
+Game Pass listings are the same idea one step further. Each one sells the same
+Microsoft Store account with a 12-month subscription on it, and only the game a
+buyer came in looking for changes, so a batch entry carries the game and
+nothing else: `"platform": "Xbox Game Pass"` is what makes it an online account
+with the subscription's activation steps and limitations on it. What the
+subscription includes, and the titles it does not cover, are on the storefront
+in `frontend/src/components/GamePassTerms.tsx` — the Game Pass library rotates,
+so it is worth a look before a batch of them goes up.
 
 `--no-artwork` leaves the covers empty for uploading by hand in the admin.
 Without it the command looks the game up on Steam's CDN, by `appid` if the

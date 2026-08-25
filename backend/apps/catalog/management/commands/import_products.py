@@ -26,7 +26,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from apps.catalog.models import Category, Platform, Product
+from apps.catalog.models import Category, Platform, Product, ProductType
 
 from .fetch_artwork import PORTRAIT, WIDE, first_available, resolve_appid
 
@@ -69,6 +69,38 @@ CLIENTS = {
         "In Ubisoft Connect, open the top-left menu and choose Go Offline.",
     ),
 }
+
+# Game Pass does not word like an offline activation and is not sold like
+# one: the buyer signs into an account that carries the subscription, and
+# what they get is a year of the whole library rather than the one game whose
+# listing they came in on. So it has its own two blocks, picked by platform
+# like the others. The library itself is named on the storefront, in
+# GamePassTerms.tsx — it rotates, and a batch file is the wrong place to keep
+# chasing it.
+GAME_PASS_PLATFORM = "Xbox Game Pass"
+
+GAME_PASS_ACTIVATION = (
+    "1. Open the Xbox app or the Microsoft Store on your PC and sign in "
+    "with the details we send you in the chat.\n"
+    "2. Find the game in the Game Pass library and let it finish "
+    "installing.\n"
+    "3. Play on your own Xbox Live account, so the achievements stay on "
+    "your own profile.\n"
+    "4. Do not change the account password or any other account detail.\n\n"
+    "Stuck on any step? Message us on WhatsApp and we will walk you "
+    "through it."
+)
+
+GAME_PASS_LIMITATIONS = (
+    "A 12-month subscription on an account we provide, not a key — the game "
+    "is not added to your own Microsoft account, and access runs for the 12 "
+    "months from the date of purchase.\n"
+    "Windows 10/11 PCs only; Xbox consoles are not supported. Minecraft, "
+    "Sea of Thieves, Riot Games titles, Ubisoft+, EA Play and Activision "
+    "games are not part of what this covers.\n"
+    "One purchase — 1 PC. Changing the account password or email ends "
+    "access — for you as well as for everyone else."
+)
 
 # The two blocks a listing has to carry itself when we have no wording for its
 # platform.
@@ -187,12 +219,12 @@ class Command(BaseCommand):
             except (KeyError, InvalidOperation) as exc:
                 raise CommandError(f"{where} ('{name}') has no usable price.") from exc
             platform = spec.get("platform", DEFAULT_PLATFORM)
-            if platform not in CLIENTS:
+            if not self.house_blocks(spec):
                 missing = [f for f in HOUSE_BLOCKS if not spec.get(f)]
                 if missing:
                     raise CommandError(
-                        f"{where} ('{name}'): nothing here knows how {platform} "
-                        f"goes offline, so the entry has to carry its own "
+                        f"{where} ('{name}'): nothing here knows how a {platform} "
+                        f"listing is activated, so the entry has to carry its own "
                         f"{' and '.join(missing)}."
                     )
             if spec.get("release_date"):
@@ -222,6 +254,11 @@ class Command(BaseCommand):
         fields.update(self.house_blocks(spec))
         if "product_type" in spec:
             fields["product_type"] = spec["product_type"]
+        elif spec.get("platform") == GAME_PASS_PLATFORM:
+            # An account with a subscription on it, not the offline activation
+            # the model defaults to. The platform already says which it is, so
+            # the batch file does not repeat it on every entry.
+            fields["product_type"] = ProductType.ONLINE_ACCOUNT
         if spec.get("compare_at_price"):
             fields["compare_at_price"] = Decimal(str(spec["compare_at_price"]))
         if spec.get("release_date"):
@@ -238,12 +275,18 @@ class Command(BaseCommand):
         return fields
 
     def house_blocks(self, spec):
-        """The shared wording for the platform this listing sells on.
+        """The shared wording for whatever this listing sells.
 
-        Nothing for a platform we have no client wording for — load() has
-        already made sure such an entry carries its own.
+        Nothing for a platform we have no wording for — load() has already
+        made sure such an entry carries its own.
         """
-        client = CLIENTS.get(spec.get("platform", DEFAULT_PLATFORM))
+        platform = spec.get("platform", DEFAULT_PLATFORM)
+        if platform == GAME_PASS_PLATFORM:
+            return {
+                "activation_instructions": GAME_PASS_ACTIVATION,
+                "limitations": GAME_PASS_LIMITATIONS,
+            }
+        client = CLIENTS.get(platform)
         if not client:
             return {}
         name, go_offline = client
