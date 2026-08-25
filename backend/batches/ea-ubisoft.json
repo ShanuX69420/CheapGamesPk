@@ -1,0 +1,321 @@
+[
+  {
+    "name": "Star Wars Jedi: Survivor",
+    "platform": "EA App",
+    "price": "999.00",
+    "release_date": "2023-04-28",
+    "categories": [
+      "Action",
+      "Adventure"
+    ],
+    "short_description": "Cal Kestis five years on, with five lightsaber stances and a much larger stretch of galaxy to cross.",
+    "description": "The sequel to Fallen Order. Cal Kestis is older, hunted, and moving through a bigger world — Koboh's frontier country, Jedha's deserts, and the ships between them. Five lightsaber stances you swap between mid-fight, a proper skill tree, and a campaign long enough to sit with. Single-player from start to finish."
+  },
+  {
+    "name": "Star Wars Jedi: Fallen Order",
+    "platform": "EA App",
+    "price": "600.00",
+    "release_date": "2019-11-15",
+    "categories": [
+      "Action",
+      "Adventure"
+    ],
+    "short_description": "The one that started it — a Padawan in hiding, five planets, and combat that makes you block properly.",
+    "description": "You play Cal Kestis, a Padawan who survived Order 66 and has been hiding as a scrapper ever since. Five planets to work through, each looping back on itself as you unlock new ways to climb and cut through them. The fighting rewards patience over mashing. Single-player, with no online modes at all."
+  },
+  {
+    "name": "EA Sports FIFA 23",
+    "platform": "EA App",
+    "price": "750.00",
+    "release_date": "2022-09-30",
+    "categories": [
+      "Sports"
+    ],
+    "short_description": "Career mode, kick-off and tournaments offline. Ultimate Team and online seasons are not part of this.",
+    "description": "The last game to carry the FIFA name, with both the men's and women's World Cups included and full club and player licensing. Everything offline is here: player and manager careers, kick-off, and the tournament modes. Ultimate Team, Pro Clubs and online seasons need a live connection, so they are not available on an offline account."
+  },
+  {
+    "name": "Battlefield 1 + Battlefield V",
+    "platform": "EA App",
+    "price": "600.00",
+    "release_date": "2016-10-21",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "Both campaigns on one account — the War Stories of the First World War and the Second. Single-player only.",
+    "description": "Two games on one account. Battlefield 1's War Stories run through the First World War from a tank crew, a pilot, and a runner at Gallipoli; Battlefield V's do the same for the Second, from Norway to North Africa. Both look and sound far better than campaigns of their age usually do. Multiplayer is the part these games are famous for and it is the part an offline account cannot reach — this is the campaigns."
+  },
+  {
+    "name": "Battlefield 3",
+    "platform": "EA App",
+    "price": "500.00",
+    "release_date": "2011-10-25",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "The 2011 campaign, from Blackburn's tour to the jet and tank missions. Campaign only.",
+    "description": "Battlefield 3's single-player campaign, told in flashback while Sergeant Blackburn is interrogated about a nuclear plot. It moves between infantry firefights, a tank column outside Tehran, and a run in an F/A-18. The multiplayer that defined the game is online-only and is not part of an offline account."
+  },
+  {
+    "name": "Battlefield Hardline",
+    "platform": "EA App",
+    "price": "500.00",
+    "release_date": "2015-03-17",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "Cops and robbers instead of soldiers — a campaign built in episodes, with arrests as a real option.",
+    "description": "Battlefield with a police badge. Nick Mendoza works a Miami narcotics case that goes wrong, over a campaign cut into television-style episodes. You can flash the badge and arrest people instead of shooting them, which changes how a level plays out. The online modes are not reachable offline; this is the story."
+  },
+  {
+    "name": "Assassin's Creed Mirage",
+    "platform": "Ubisoft Connect",
+    "price": "999.00",
+    "release_date": "2023-10-05",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Stealth"
+    ],
+    "short_description": "Back to ninth-century Baghdad and back to stealth — a tighter, smaller Assassin's Creed on purpose.",
+    "description": "Basim in Baghdad, twenty years before Valhalla. Mirage deliberately shrinks the series back down: one dense city, no sprawling level grind, and stealth that matters again — crowds to disappear into, guards to study, and a hidden blade that kills in one hit. Roughly twenty hours rather than a hundred. Single-player only."
+  },
+  {
+    "name": "Assassin's Creed Valhalla",
+    "platform": "Ubisoft Connect",
+    "price": "750.00",
+    "release_date": "2020-11-10",
+    "categories": [
+      "Action",
+      "RPG",
+      "Open World"
+    ],
+    "short_description": "Eivor's raid on ninth-century England — the biggest of the modern Assassin's Creeds by a distance.",
+    "description": "You lead a Norwegian clan into England, build a settlement on the Ribble, and spend the next hundred-odd hours making and breaking alliances across the kingdoms. Raids on monasteries, longship travel, and a genuinely enormous map. Single-player throughout — the raids are crewed by your own clan, not by other players."
+  },
+  {
+    "name": "Assassin's Creed Odyssey",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2018-10-05",
+    "categories": [
+      "Action",
+      "RPG",
+      "Open World"
+    ],
+    "short_description": "Peloponnesian War Greece as a full RPG — pick Kassandra or Alexios, and pick your dialogue.",
+    "description": "The point where the series became an RPG outright: branching dialogue, choices that stick, and multiple endings. You play a mercenary caught between Athens and Sparta, sailing the Aegean between islands, hunting a cult, and fighting battles at a scale the older games never tried. Enormous, and single-player."
+  },
+  {
+    "name": "Assassin's Creed Origins",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2017-10-27",
+    "categories": [
+      "Action",
+      "RPG",
+      "Open World"
+    ],
+    "short_description": "Ptolemaic Egypt, and the beginning of the Brotherhood. The reinvention the series needed.",
+    "description": "Bayek of Siwa, a Medjay avenging his son, in an Egypt that runs from Alexandria's streets to the desert and the pyramids. Origins rebuilt the combat from scratch and turned the series into an RPG with levels and loot. The Discovery Tour mode is included if you would rather walk the place than fight in it. Single-player."
+  },
+  {
+    "name": "Assassin's Creed Syndicate",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2015-10-23",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "Victorian London with the Frye twins — a rope launcher, gang warfare, and carriages to steal.",
+    "description": "Jacob and Evie Frye take on the Templars running industrial London, one borough at a time. You swap between them freely: Jacob for brawling, Evie for the quieter approach. The rope launcher makes the rooftops fast in a way no earlier game managed, and the carriages give the streets a proper chase. Single-player."
+  },
+  {
+    "name": "Assassin's Creed Unity",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2014-11-11",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Stealth"
+    ],
+    "short_description": "Revolutionary Paris, rebuilt at full scale — still the best-looking city in the series.",
+    "description": "Arno Dorian in Paris as the Revolution turns. Unity's crowds run into the thousands and its buildings open up inside, which nothing before it did. It also brought back real stealth, with crouching and cover, and murder mysteries to solve on the side. The co-op missions were online-only and are not reachable on an offline account; the campaign is all here."
+  },
+  {
+    "name": "Assassin's Creed IV: Black Flag",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2013-10-29",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "The pirate one, and the one most people would put first. Sail the Caribbean, board what you like.",
+    "description": "Edward Kenway with a ship and no particular loyalties, in a Caribbean you can sail across without a loading screen. Board merchant vessels, upgrade the Jackdaw, hunt for shanties, and get pulled into an assassin plot along the way. The naval combat is why this one is remembered. Single-player; the old multiplayer modes are not part of an offline account."
+  },
+  {
+    "name": "Assassin's Creed Rogue",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2015-03-10",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "The one where you play the Templar. Same ship, colder seas, and assassins hunting you for once.",
+    "description": "Shay Cormac leaves the Brotherhood and starts hunting it, which flips the series on its head — now it is you being stalked across the rooftops. Built on Black Flag's sailing, moved to the ice of the North Atlantic and the rivers of New York. Single-player."
+  },
+  {
+    "name": "Assassin's Creed Brotherhood",
+    "platform": "Ubisoft Connect",
+    "price": "500.00",
+    "release_date": "2011-03-17",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Stealth"
+    ],
+    "short_description": "Ezio in Rome, rebuilding the city and training a Brotherhood to call down on his enemies.",
+    "description": "Ezio's second game, and the one that gave the series its recruits — assassins you train, send on contracts, and whistle in to kill from the rooftops. One city rather than several, restored district by district as you take it back from the Borgia. Single-player; the multiplayer modes are long dead and not part of this."
+  },
+  {
+    "name": "Assassin's Creed Revelations",
+    "platform": "Ubisoft Connect",
+    "price": "500.00",
+    "release_date": "2011-11-29",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Stealth"
+    ],
+    "short_description": "Ezio's last chapter, in Constantinople — and Altair's, told in pieces alongside it.",
+    "description": "An older Ezio goes to Constantinople looking for what Altair left behind, and the two stories close together. The hookblade makes the city quick to cross, and bomb-crafting gives the stealth more to work with. It is the end of both men's stories, which is the reason to play it. Single-player."
+  },
+  {
+    "name": "Avatar: Frontiers of Pandora",
+    "platform": "Ubisoft Connect",
+    "price": "999.00",
+    "release_date": "2023-12-07",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "Pandora's Western Frontier, first-person, on foot and by ikran. One of the best-looking games on PC.",
+    "description": "You play a Na'vi raised by the RDA and returned to your own people, learning a world you were taken from. Pandora is dense and reactive — plants that respond to you, weather that changes what you can see, and a bow that rewards knowing an animal before you shoot it. Later you fly an ikran over the whole map. Single-player."
+  },
+  {
+    "name": "Far Cry 6",
+    "platform": "Ubisoft Connect",
+    "price": "750.00",
+    "release_date": "2021-10-07",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "Guerrilla war on a Caribbean island, with Giancarlo Esposito as the dictator you are working against.",
+    "description": "Yara is a stand-in for Cold War Cuba and Anton Castillo runs it. You fight as a guerrilla with improvised weapons, a backpack that fires rockets, and animal companions that do half the work. The island is the largest Far Cry map, split between jungle, farmland and a proper capital city. The co-op is online-only; the campaign plays solo start to finish."
+  },
+  {
+    "name": "Far Cry 5",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2018-03-27",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "Hope County, Montana, and a doomsday cult that has already won by the time you arrive.",
+    "description": "A deputy sent to arrest a cult leader and immediately in over their head. The county splits into three regions, each run by a member of the Seed family, and you can take them in any order. Fishing, planes, and a dog that fetches weapons. The co-op needs a connection; everything else here plays alone."
+  },
+  {
+    "name": "Far Cry 4",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2014-11-18",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "Kyrat, the Himalayas, and Pagan Min — the series villain everyone still quotes.",
+    "description": "Ajay Ghale returns to his mother's country to scatter her ashes and lands in a civil war instead. Elephants you can ride into a checkpoint, a gyrocopter for getting anywhere, and mountains that make the map feel vertical rather than flat. Single-player; the co-op and arena modes are online."
+  },
+  {
+    "name": "Far Cry 3",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2012-11-29",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "The one that set the template, and Vaas — still the best villain the series has had.",
+    "description": "A holiday goes wrong and Jason Brody is left on a pirate-run island learning to kill. Far Cry 3 invented the shape every open-world Ubisoft game has used since: outposts to clear, towers to climb, animals to hunt for a bigger wallet. It still holds up. Single-player."
+  },
+  {
+    "name": "Far Cry 3: Blood Dragon",
+    "platform": "Ubisoft Connect",
+    "price": "500.00",
+    "release_date": "2013-04-30",
+    "categories": [
+      "Action"
+    ],
+    "short_description": "A neon 1980s VHS fever dream with laser guns and cyber-dragons. Short, standalone and very funny.",
+    "description": "Standalone — you do not need Far Cry 3 to play it. It is 2007, the war has gone nuclear, and Sergeant Rex Power Colt is sent to an island of neon and dinosaurs. Four or five hours of jokes at the expense of every action film of the decade, played completely straight. Single-player."
+  },
+  {
+    "name": "Far Cry Primal",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2016-02-23",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "10,000 BC — no guns, a spear and a bow, and predators you tame and take with you.",
+    "description": "Far Cry with the firearms taken out. Takkar is a hunter rebuilding his tribe in the Stone Age, and the whole loop changes because of it: fire matters, night is dangerous, and the best weapon you have is a sabretooth that follows you. The language spoken is a constructed proto-Indo-European, subtitled throughout. Single-player."
+  },
+  {
+    "name": "Watch Dogs",
+    "platform": "Ubisoft Connect",
+    "price": "500.00",
+    "release_date": "2014-05-27",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "Chicago wired to one phone — hack traffic lights, cameras and bank accounts as you go.",
+    "description": "Aiden Pearce hunting the people behind his niece's death, in a Chicago where a phone opens every door in the city. Hacking is the whole idea: raise a bollard to end a chase, black out a block, listen in through a webcam. Single-player; the online invasions the game shipped with are not reachable offline."
+  },
+  {
+    "name": "Watch Dogs 2",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2016-11-15",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "San Francisco, DedSec, and a much lighter game than the first — with a drone and an RC car.",
+    "description": "Marcus Holloway joins DedSec and the series stops scowling. The Bay Area is the best map Ubisoft has built, and the jumper and quadcopter mean a lot of missions can be done without ever walking in. You can finish nearly all of it without killing anyone. The co-op is online; the campaign is not."
+  },
+  {
+    "name": "Watch Dogs: Legion",
+    "platform": "Ubisoft Connect",
+    "price": "600.00",
+    "release_date": "2020-10-29",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "Post-Brexit London where anyone on the street can be recruited and played. Campaign only.",
+    "description": "London under a private security force, and no fixed protagonist — you recruit ordinary people off the street and play as any of them, each with their own skills, voice and schedule. A construction worker gets you in through a site; a grandmother nobody looks twice at gets you in through the front door. The online modes need a connection, so this is the campaign."
+  }
+]

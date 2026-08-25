@@ -199,6 +199,23 @@ python manage.py fetch_artwork         # pull cover art from Steam's CDN
 python manage.py seed_payment_methods  # starter payment methods
 ```
 
+Listings go up in batches rather than one admin form at a time. The batch
+files live in `backend/batches/`, and each carries only what differs per game
+— the activation steps and the limitations are written once per platform in
+the command itself, so every EA listing words them the same way and so does
+every Ubisoft one.
+
+```bash
+python manage.py import_products batches/ea-ubisoft.json --dry-run
+python manage.py import_products batches/ea-ubisoft.json --no-artwork
+```
+
+`--no-artwork` leaves the covers empty for uploading by hand in the admin.
+Without it the command looks the game up on Steam's CDN, by `appid` if the
+batch names one and by a fuzzy title search if it does not — and that search
+happily returns MK11 for "Mortal Kombat 1". Re-running is safe: a name already
+in the catalog is left alone unless `--update` is passed.
+
 Staff passwords are reset with `python manage.py changepassword <user>`. The
 admin's "forgot password" flow needs SMTP and there is none, so that is the
 only way in if you lock yourself out.
