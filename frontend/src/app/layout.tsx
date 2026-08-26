@@ -179,18 +179,19 @@ function Footer() {
   );
 }
 
-/* Phone-only companion to the header's join button: a bar pinned to the
-   bottom of the screen, where a thumb actually reaches. */
+/* Phone-only companion to the header's join button: a floating pill in the
+   bottom corner, where a thumb actually reaches. */
 function ChannelBar() {
   return (
     <a
       href={WHATSAPP_CHANNEL_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-center gap-2 bg-[#25D366] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm font-semibold text-ink-950 md:hidden"
+      className="fixed right-4 z-40 flex items-center gap-2 rounded-full border border-ink-700 bg-ink-900 py-2.5 pl-3 pr-4 text-sm font-semibold text-ink-50 shadow-lg shadow-ink-950/60 md:hidden"
+      style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
     >
-      <WhatsAppIcon className="h-5 w-5" />
-      Join our WhatsApp channel for deals
+      <WhatsAppIcon className="h-5 w-5 text-[#25D366]" />
+      WhatsApp Channel
     </a>
   );
 }
@@ -200,9 +201,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      {/* pb clears the fixed channel bar so the footer's last line stays
-          readable; gone at md where the bar is too. */}
-      <body className="flex min-h-screen flex-col pb-14 antialiased md:pb-0">
+      <body className="flex min-h-screen flex-col antialiased">
         <FacebookPixel />
         <GoogleAnalytics />
         <CartProvider>
