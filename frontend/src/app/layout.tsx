@@ -20,11 +20,21 @@ export const metadata: Metadata = {
     "Offline activations, online accounts and genuine keys for PC games. Fast delivery, priced for Pakistan.",
 };
 
-const NAV = [
+const CATALOG = [
   { href: "/?type=offline_account", label: "Offline" },
   { href: "/?type=online_account", label: "Online" },
   { href: "/?type=key", label: "Keys" },
 ];
+
+/* Trust pages: all three in the footer, and the two that close sales —
+   reviews and the FAQ — in the header too. */
+const TRUST = [
+  { href: "/reviews", label: "Reviews" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/about", label: "About us" },
+];
+
+const NAV = [...CATALOG, ...TRUST.slice(0, 2)];
 
 function Header() {
   return (
@@ -104,7 +114,7 @@ function Footer() {
             Browse
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-ink-200">
-            {NAV.map((item) => (
+            {CATALOG.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="transition-colors hover:text-ink-50">
                   {item.label}
@@ -116,12 +126,16 @@ function Footer() {
 
         <div>
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
-            Support
+            Store
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-ink-200">
-            <li>Fast delivery, 24/7</li>
-            <li>Setup guide with every order</li>
-            <li>Help with activation issues</li>
+            {TRUST.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="transition-colors hover:text-ink-50">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

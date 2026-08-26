@@ -1,8 +1,12 @@
+import Link from "next/link";
+
 import { CatalogFilters, headingForType } from "@/components/CatalogFilters";
 import { Hero } from "@/components/Hero";
 import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
+import { ReviewGallery } from "@/components/ReviewGallery";
 import { getPlatforms, getProducts, safely, type ProductQuery } from "@/lib/api";
+import { FEATURED_REVIEWS } from "@/lib/reviews";
 import type { Paginated, Product } from "@/lib/types";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -101,6 +105,29 @@ export default async function HomePage({
             totalPages={page.total_pages}
           />
         </>
+      )}
+
+      {/* Social proof sits with the hero: on the storefront's front page, but
+          out of the way of a search or a deep page. */}
+      {showHero && (
+        <section className="mt-14">
+          <div className="mb-4 flex items-baseline justify-between gap-4">
+            <div>
+              <h2 className="text-base font-semibold">Reviews from our buyers</h2>
+              <p className="mt-1 text-sm text-ink-400">
+                Real chats, selling since 2024 — names hidden for privacy. Tap
+                to enlarge.
+              </p>
+            </div>
+            <Link
+              href="/reviews"
+              className="shrink-0 text-sm font-medium text-accent-bright transition-colors hover:text-ink-50"
+            >
+              View all &rarr;
+            </Link>
+          </div>
+          <ReviewGallery reviews={FEATURED_REVIEWS} layout="strip" />
+        </section>
       )}
     </div>
   );
