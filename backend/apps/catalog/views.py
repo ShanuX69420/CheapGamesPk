@@ -1,6 +1,8 @@
 import django_filters
 from django.db.models import Count, F, Prefetch, Q
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter, SearchFilter
 
 from .models import Category, Platform, Product, ProductImage
 from .serializers import (
@@ -28,12 +30,32 @@ class ProductFilter(django_filters.FilterSet):
         return queryset.filter(lookup) if value else queryset.exclude(lookup)
 
 
+class ReleaseDateOrderingFilter(OrderingFilter):
+    """release_date is optional, and Postgres puts NULLs first under DESC, so a
+    plain order_by would rank every undated product above the newest release."""
+
+    def filter_queryset(self, request, queryset, view):
+        terms = []
+        for term in self.get_ordering(request, queryset, view) or []:
+            if term.lstrip("-") == "release_date":
+                expr = F("release_date")
+                terms.append(
+                    expr.desc(nulls_last=True)
+                    if term.startswith("-")
+                    else expr.asc(nulls_last=True)
+                )
+            else:
+                terms.append(term)
+        return queryset.order_by(*terms) if terms else queryset
+
+
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "slug"
     filterset_class = ProductFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter, ReleaseDateOrderingFilter]
     search_fields = ["name", "short_description", "description"]
     ordering_fields = ["price", "created_at", "release_date", "name"]
-    ordering = ["-is_featured", "-created_at"]
+    ordering = ["-release_date", "-created_at"]
 
     def get_queryset(self):
         return (

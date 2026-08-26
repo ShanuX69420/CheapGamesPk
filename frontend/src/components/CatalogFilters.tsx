@@ -15,11 +15,11 @@ export function headingForType(type: string | undefined) {
   return TYPES.find((t) => t.value === (type ?? ""))?.heading ?? "All products";
 }
 
+/* No ordering param means the API default: newest release first. */
 const SORTS = [
-  { value: "", label: "Featured" },
+  { value: "", label: "Newest" },
   { value: "price", label: "Cheapest" },
   { value: "-price", label: "Priciest" },
-  { value: "-release_date", label: "Newest" },
 ];
 
 type Params = Record<string, string | undefined>;
