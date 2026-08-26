@@ -7,8 +7,8 @@ import { FacebookPixel } from "@/components/FacebookPixel";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Logo } from "@/components/Logo";
 import { MobileNav } from "@/components/MobileNav";
-import { SearchIcon } from "@/components/icons";
-import { OG_SITE, SITE_URL } from "@/lib/site";
+import { SearchIcon, WhatsAppIcon } from "@/components/icons";
+import { OG_SITE, SITE_URL, WHATSAPP_CHANNEL_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -75,10 +75,18 @@ function Header() {
           </div>
 
           {/* On a phone the search bar is on its own row, so nothing above
-              pushes the cart over — it takes the free space itself. */}
-          <div className="ml-auto md:ml-0">
-            <CartIndicator />
-          </div>
+              pushes these over — the channel button takes the free space. */}
+          <a
+            href={WHATSAPP_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto flex shrink-0 items-center gap-2 rounded-md bg-[#25D366] p-2 text-sm font-semibold text-ink-950 transition-opacity hover:opacity-90 sm:px-3 md:ml-0"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Join channel</span>
+          </a>
+
+          <CartIndicator />
         </div>
 
         <div className="pb-3 md:hidden">
@@ -116,6 +124,15 @@ function Footer() {
             Offline activations, online accounts and genuine keys for PC —
             delivered fast.
           </p>
+          <a
+            href={WHATSAPP_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#25D366] transition-opacity hover:opacity-80"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            Join our WhatsApp channel
+          </a>
         </div>
 
         <div>
