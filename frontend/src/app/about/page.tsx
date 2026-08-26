@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "About us",
   description:
     "Selling PC games in Pakistan since 2024 — thousands of buyers reached on Instagram, now on our own store with delivery and support on WhatsApp.",
+  alternates: { canonical: "/about" },
 };
 
 /* The numbers under the profile screenshot. They come from the screenshot

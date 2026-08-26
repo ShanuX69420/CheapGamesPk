@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CatalogFilters, headingForType } from "@/components/CatalogFilters";
@@ -10,6 +11,12 @@ import { FEATURED_REVIEWS } from "@/lib/reviews";
 import type { Paginated, Product } from "@/lib/types";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/* Filters, search and pagination are all query strings on this one route.
+   One canonical keeps Google from indexing every combination separately. */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /** Search params arrive as string | string[]; the API only wants scalars. */
 function scalars(raw: Record<string, string | string[] | undefined>) {

@@ -11,7 +11,8 @@ import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
 import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
-import { money } from "@/lib/format";
+import { CURRENCY, money } from "@/lib/format";
+import { OG_SITE, SITE_URL } from "@/lib/site";
 import type { Product, ProductDetail } from "@/lib/types";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -30,9 +31,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProduct(slug).catch(() => null);
   if (!product) return { title: "Product not found" };
 
+  const title = product.meta_title || product.title;
+  const description = product.meta_description || product.short_description;
   return {
-    title: product.meta_title || product.title,
-    description: product.meta_description || product.short_description,
+    title,
+    description,
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      ...OG_SITE,
+      title,
+      description,
+      url: `/product/${product.slug}`,
+      /* The cover, so a link pasted into WhatsApp shows the game. */
+      images: product.image ?? "/og.png",
+    },
   };
 }
 
@@ -59,8 +71,32 @@ export default async function ProductPage({ params }: Props) {
     .filter((p) => p.id !== product.id)
     .slice(0, 6);
 
+  /* Product schema makes the listing eligible for price-rich results. InStock
+     is what the buy box says, which is hardcoded too — they agree by design.
+     `new URL` absolutizes the image whether the API sent a path or a URL. */
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    description: product.meta_description || product.short_description,
+    image: product.image ? new URL(product.image, SITE_URL).href : undefined,
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/product/${product.slug}`,
+      price: product.price,
+      priceCurrency: CURRENCY,
+      availability: "https://schema.org/InStock",
+    },
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* One per network. Neither knows about the other, so either
           can be pulled out on its own. */}
       <TrackViewContent

@@ -8,16 +8,23 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Logo } from "@/components/Logo";
 import { MobileNav } from "@/components/MobileNav";
 import { SearchIcon } from "@/components/icons";
+import { OG_SITE, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "cheapgames.pk — game accounts, activations & keys",
     template: "%s — cheapgames.pk",
   },
   description:
     "Offline activations, online accounts and genuine keys for PC games. Fast delivery, priced for Pakistan.",
+  openGraph: {
+    ...OG_SITE,
+    /* The default link-preview card — WhatsApp shares live or die on this. */
+    images: "/og.png",
+  },
 };
 
 const CATALOG = [

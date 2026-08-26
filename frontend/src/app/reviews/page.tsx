@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Reviews",
   description:
     "Screenshots of real WhatsApp and Instagram chats from buyers — games delivered, activated and confirmed working, since 2024.",
+  alternates: { canonical: "/reviews" },
 };
 
 export default function ReviewsPage() {

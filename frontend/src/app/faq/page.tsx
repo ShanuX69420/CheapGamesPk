@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "FAQ",
   description:
     "How buying works: WhatsApp orders, payment methods, offline activations vs keys vs accounts, delivery speed, and what happens if something breaks.",
+  alternates: { canonical: "/faq" },
 };
 
 /*
