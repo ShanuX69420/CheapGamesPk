@@ -74,19 +74,23 @@ function Header() {
             <SearchField />
           </div>
 
-          {/* On a phone the search bar is on its own row, so nothing above
-              pushes these over — the channel button takes the free space. */}
+          {/* On a phone this collapses to a cramped icon nobody reads, so the
+              channel invite lives in the bottom bar there instead. */}
           <a
             href={WHATSAPP_CHANNEL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-auto flex shrink-0 items-center gap-2 rounded-md bg-[#25D366] p-2 text-sm font-semibold text-ink-950 transition-opacity hover:opacity-90 sm:px-3 md:ml-0"
+            className="hidden shrink-0 items-center gap-2 rounded-md bg-[#25D366] px-3 py-2 text-sm font-semibold text-ink-950 transition-opacity hover:opacity-90 md:flex"
           >
             <WhatsAppIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Join channel</span>
+            Join channel
           </a>
 
-          <CartIndicator />
+          {/* On a phone the search bar is on its own row, so nothing above
+              pushes the cart over — it takes the free space itself. */}
+          <div className="ml-auto md:ml-0">
+            <CartIndicator />
+          </div>
         </div>
 
         <div className="pb-3 md:hidden">
@@ -175,18 +179,37 @@ function Footer() {
   );
 }
 
+/* Phone-only companion to the header's join button: a bar pinned to the
+   bottom of the screen, where a thumb actually reaches. */
+function ChannelBar() {
+  return (
+    <a
+      href={WHATSAPP_CHANNEL_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-center gap-2 bg-[#25D366] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm font-semibold text-ink-950 md:hidden"
+    >
+      <WhatsAppIcon className="h-5 w-5" />
+      Join our WhatsApp channel for deals
+    </a>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col antialiased">
+      {/* pb clears the fixed channel bar so the footer's last line stays
+          readable; gone at md where the bar is too. */}
+      <body className="flex min-h-screen flex-col pb-14 antialiased md:pb-0">
         <FacebookPixel />
         <GoogleAnalytics />
         <CartProvider>
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <ChannelBar />
         </CartProvider>
       </body>
     </html>
