@@ -40,11 +40,11 @@ export function PixelPageViews() {
 /** Reports a product page view, once per product. Renders nothing. */
 export function TrackViewContent({
   slug,
-  name,
+  title,
   price,
 }: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   const reported = useRef<string | null>(null);
@@ -52,8 +52,8 @@ export function TrackViewContent({
   useEffect(() => {
     if (reported.current === slug) return;
     reported.current = slug;
-    trackViewContent({ slug, name, price });
-  }, [slug, name, price]);
+    trackViewContent({ slug, title, price });
+  }, [slug, title, price]);
 
   return null;
 }

@@ -18,11 +18,11 @@ import { gaViewItem } from "@/lib/ga";
  */
 export function TrackViewItem({
   slug,
-  name,
+  title,
   price,
 }: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   const reported = useRef<string | null>(null);
@@ -30,8 +30,8 @@ export function TrackViewItem({
   useEffect(() => {
     if (reported.current === slug) return;
     reported.current = slug;
-    gaViewItem({ slug, name, price });
-  }, [slug, name, price]);
+    gaViewItem({ slug, title, price });
+  }, [slug, title, price]);
 
   return null;
 }

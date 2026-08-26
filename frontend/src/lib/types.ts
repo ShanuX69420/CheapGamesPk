@@ -30,7 +30,13 @@ export interface ProductImage {
 
 export interface Product {
   id: number;
+  /** The game's own name. Use `title` for anything a buyer reads. */
   name: string;
+  /** Name plus what the listing sells — "Elden Ring — Steam Offline Activation". */
+  title: string;
+  /** The second half of the title on its own — "Steam Offline Activation".
+      Empty when the name already says what the listing sells. */
+  subtitle: string;
   slug: string;
   product_type: ProductType;
   product_type_display: string;

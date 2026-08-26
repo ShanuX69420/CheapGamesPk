@@ -207,7 +207,7 @@ class Order(TimeStampedModel):
             line = OrderItem.objects.create(
                 order=order,
                 product=product,
-                product_name=product.name,
+                product_name=product.title,
                 product_slug=product.slug,
                 unit_price=product.price,
                 quantity=quantity,
@@ -226,8 +226,10 @@ class OrderItem(TimeStampedModel):
         Product, on_delete=models.SET_NULL, related_name="order_items", null=True
     )
 
-    # Snapshots — a product can be renamed or repriced after the sale.
-    product_name = models.CharField(max_length=200)
+    # Snapshots — a product can be renamed or repriced after the sale. The name
+    # is the listing's full title, so an order still says which client the
+    # activation was for even if the listing later moves platform.
+    product_name = models.CharField(max_length=220)
     product_slug = models.SlugField(max_length=220, blank=True)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)

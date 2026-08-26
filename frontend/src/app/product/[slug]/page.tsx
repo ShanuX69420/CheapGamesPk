@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return { title: "Product not found" };
 
   return {
-    title: product.meta_title || product.name,
+    title: product.meta_title || product.title,
     description: product.meta_description || product.short_description,
   };
 }
@@ -65,12 +65,12 @@ export default async function ProductPage({ params }: Props) {
           can be pulled out on its own. */}
       <TrackViewContent
         slug={product.slug}
-        name={product.name}
+        title={product.title}
         price={product.price}
       />
       <TrackViewItem
         slug={product.slug}
-        name={product.name}
+        title={product.title}
         price={product.price}
       />
       <Banner product={product} />
@@ -208,7 +208,7 @@ function Banner({ product }: { product: ProductDetail }) {
             </div>
 
             <h1 className="mt-3 text-2xl font-bold leading-[1.15] tracking-tight sm:text-[2.1rem]">
-              {product.name}
+              {product.title}
             </h1>
 
             {product.short_description && (

@@ -211,6 +211,16 @@ python manage.py import_products batches/ea-ubisoft.json --no-artwork
 python manage.py import_products batches/game-pass.json
 ```
 
+A batch entry's `name` is the game's own name and nothing else. What an
+offline listing actually sells is an activation on a client of ours, and that
+belongs in the title where a search result shows it, so every offline listing
+reads as `<name> — <platform> Offline Activation` — on the card, in the page
+heading, in the browser tab and in the WhatsApp message. The suffix is built
+from the platform on the fly (`Product.title`), never typed, so it cannot
+disagree with the client the activation steps name, and a listing moved from
+Steam to somewhere else retitles itself. Keys, full-access accounts and Game
+Pass still spell their own suffix out in the typed name.
+
 Keys work the same way with `"product_type": "key"`, and go by where the code is
 redeemed rather than by which client has an offline mode — which is why they can
 sell on storefronts the accounts do not, Rockstar and Microsoft among them.

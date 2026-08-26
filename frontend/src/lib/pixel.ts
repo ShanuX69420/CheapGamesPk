@@ -83,13 +83,13 @@ export function trackLead(order: PlacedOrder, lines: PixelLine[]) {
 
 export function trackAddToCart(product: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   track("AddToCart", {
     content_type: "product",
     content_ids: [product.slug],
-    content_name: product.name,
+    content_name: product.title,
     value: Number(product.price),
     currency: CURRENCY,
   });
@@ -97,13 +97,13 @@ export function trackAddToCart(product: {
 
 export function trackViewContent(product: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   track("ViewContent", {
     content_type: "product",
     content_ids: [product.slug],
-    content_name: product.name,
+    content_name: product.title,
     value: Number(product.price),
     currency: CURRENCY,
   });

@@ -62,8 +62,28 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
     save_on_top = True
 
+    readonly_fields = ["storefront_title"]
+
     fieldsets = [
-        (None, {"fields": ["name", "slug", "product_type", "platform", "categories"]}),
+        (
+            None,
+            {
+                "fields": [
+                    "name",
+                    "storefront_title",
+                    "slug",
+                    "product_type",
+                    "platform",
+                    "categories",
+                ],
+                "description": (
+                    "Name is the game's own name, nothing more. An offline listing "
+                    "is titled '&lt;name&gt; &mdash; &lt;platform&gt; Offline Activation' "
+                    "everywhere a buyer reads it, so typing that on the end here "
+                    "would only say it twice."
+                ),
+            },
+        ),
         ("Artwork", {"fields": ["cover_url", "banner_url"]}),
         ("Pricing", {"fields": ["price", "compare_at_price"]}),
         ("Availability", {"fields": ["region", "release_date", "is_active", "is_featured"]}),
@@ -101,6 +121,10 @@ class ProductAdmin(admin.ModelAdmin):
                 )
             )
         )
+
+    @admin.display(description="Reads on the storefront as")
+    def storefront_title(self, obj):
+        return obj.title if obj and obj.name else "—"
 
     @admin.display(description="Price", ordering="price")
     def price_display(self, obj):

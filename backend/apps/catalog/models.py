@@ -90,6 +90,15 @@ class ProductType(models.TextChoices):
     OTHER = "other", "Other"
 
 
+# What an offline listing sells is not the game itself but an activation on a
+# client of ours, and a buyer should not have to open the page to find that
+# out — it belongs in the title, where a search result and a grid card both
+# show it. Which client comes from the platform rather than from the typed
+# name, so the two can never drift apart and a listing moved between
+# storefronts does not end up saying Steam twice.
+OFFLINE_TITLE_SUFFIX = "Offline Activation"
+
+
 class Product(SluggedModel):
     """A sellable listing. Stock lives in inventory.StockItem."""
 
@@ -161,6 +170,30 @@ class Product(SluggedModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def subtitle(self):
+        """What the listing sells, in the buyer's words. Empty when the name
+        already says it — a key and a full-access account spell their own out.
+        """
+        if self.product_type != ProductType.OFFLINE_ACCOUNT:
+            return ""
+        if self.platform:
+            return f"{self.platform.name} {OFFLINE_TITLE_SUFFIX}"
+        return OFFLINE_TITLE_SUFFIX
+
+    @property
+    def title(self):
+        """The listing's name as a buyer reads it, everywhere one is shown.
+
+        `name` stays the game's own name: it is what gets typed in the admin,
+        what a batch file matches on to avoid creating a listing twice, and
+        what search looks through. Everything a buyer sees — heading, page
+        title, the WhatsApp message — goes through here instead. The grid card
+        is the exception: it is too narrow to end a title, so it draws the two
+        parts on their own lines rather than clipping the second.
+        """
+        return f"{self.name} — {self.subtitle}" if self.subtitle else self.name
 
     @property
     def is_on_sale(self):

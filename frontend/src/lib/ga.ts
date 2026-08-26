@@ -87,7 +87,7 @@ export function gaGenerateLead(order: PlacedOrder, lines: GaLine[]) {
 
 export function gaAddToCart(product: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   gaTrack("add_to_cart", {
@@ -96,7 +96,7 @@ export function gaAddToCart(product: {
     items: items([
       {
         slug: product.slug,
-        name: product.name,
+        name: product.title,
         quantity: 1,
         price: Number(product.price),
       },
@@ -106,7 +106,7 @@ export function gaAddToCart(product: {
 
 export function gaViewItem(product: {
   slug: string;
-  name: string;
+  title: string;
   price: string;
 }) {
   gaTrack("view_item", {
@@ -115,7 +115,7 @@ export function gaViewItem(product: {
     items: items([
       {
         slug: product.slug,
-        name: product.name,
+        name: product.title,
         quantity: 1,
         price: Number(product.price),
       },

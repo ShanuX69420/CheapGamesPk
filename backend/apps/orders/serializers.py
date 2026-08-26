@@ -173,7 +173,7 @@ def build_whatsapp_url(order):
         "",
     ]
     for item in order.items.all():
-        lines.append(f"• {item.quantity} x {item.product_name} — {order.currency} {item.line_total:.0f}")
+        lines.append(f"• {item.quantity} x {item.product_name} · {order.currency} {item.line_total:.0f}")
     lines += ["", f"Total: {order.currency} {order.total:.0f}"]
 
     if order.status == OrderStatus.AWAITING_PAYMENT:

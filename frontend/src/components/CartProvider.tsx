@@ -62,7 +62,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             ...current,
             {
               slug: product.slug,
-              name: product.name,
+              name: product.title,
               price: product.price,
               image: product.image,
               typeLabel: product.product_type_display,

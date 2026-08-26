@@ -64,7 +64,7 @@ export function BuyActions({
       gaGenerateLead(order, [
         {
           slug: product.slug,
-          name: product.name,
+          name: product.title,
           quantity: 1,
           price: Number(product.price),
         },

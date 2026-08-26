@@ -63,11 +63,23 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      {/* Fixed height keeps the grid rows aligned regardless of title length. */}
-      <div className="flex h-[5.5rem] flex-col justify-between border-t border-ink-800 p-3">
-        <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-ink-100 transition-colors group-hover:text-ink-50">
-          {product.name}
-        </h3>
+      {/* A floor rather than a fixed height: two long lines of name over two of
+          subtitle would otherwise push the price out of the card. Growing with
+          the row instead keeps every price on the same line across the grid. */}
+      <div className="flex min-h-[7rem] flex-1 flex-col justify-between border-t border-ink-800 p-3">
+        <div className="min-w-0">
+          <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-ink-100 transition-colors group-hover:text-ink-50">
+            {product.name}
+          </h3>
+          {/* The rest of the title. On its own line because a card is too
+              narrow to end one — run the two together and the clamp cuts off
+              mid-word, which is worse than not saying it at all. */}
+          {product.subtitle && (
+            <p className="mt-1 line-clamp-2 text-[11px] leading-tight text-ink-400">
+              {product.subtitle}
+            </p>
+          )}
+        </div>
 
         <span className="text-[15px] font-semibold tabular-nums text-ink-50">
           {money(product.price)}
