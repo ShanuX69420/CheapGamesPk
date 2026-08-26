@@ -211,6 +211,10 @@ python manage.py import_products batches/ea-ubisoft.json --no-artwork
 python manage.py import_products batches/game-pass.json
 ```
 
+Keys work the same way with `"product_type": "key"`, and go by where the code is
+redeemed rather than by which client has an offline mode — which is why they can
+sell on storefronts the accounts do not, Rockstar and Microsoft among them.
+
 Full-access accounts — the account itself, fresh and unplayed, sold outright —
 are the same file format with `"product_type": "online_account"` on them. That
 is what swaps the offline wording for the full-access wording on the same

@@ -97,6 +97,59 @@ CLIENTS = {
     ),
 }
 
+# A key is the one thing here that never involves an account of ours: the buyer
+# redeems it on their own and owns the game outright. Which is why this table is
+# separate from CLIENTS above — a key sells on storefronts we have no offline
+# wording for at all, and all it needs to know is where the buyer pastes the
+# code.
+REDEEM = {
+    "Steam": (
+        "Steam",
+        "In Steam, open Games → Activate a Product on Steam and paste the key.",
+    ),
+    "Rockstar Games": (
+        "Rockstar Games",
+        "In the Rockstar Games Launcher, open your account menu → Redeem "
+        "Code and paste the key.",
+    ),
+    "Microsoft Store": (
+        "Microsoft",
+        "Go to redeem.microsoft.com, sign in with your own Microsoft account "
+        "and paste the code.",
+    ),
+    "EA App": (
+        "EA",
+        "In the EA app, open the menu beside your avatar → Redeem Product "
+        "Code and paste the key.",
+    ),
+    "Ubisoft Connect": (
+        "Ubisoft",
+        "In Ubisoft Connect, open the top-left menu → Activate a Key and "
+        "paste it.",
+    ),
+    "Epic Games": (
+        "Epic Games",
+        "In the Epic Games Launcher, open your account menu → Redeem Code "
+        "and paste the key.",
+    ),
+}
+
+KEY_ACTIVATION = (
+    "1. {redeem}\n"
+    "2. The game lands in your own {client} library and stays there.\n"
+    "3. Install it and play — online, achievements and cloud saves all "
+    "included.\n\n"
+    "Stuck on any step? Message us on WhatsApp and we will walk you through it."
+)
+
+KEY_LIMITATIONS = (
+    "A key you redeem on your own {client} account, so the game is yours "
+    "permanently. Nothing is shared, there is no offline mode to stay in, and "
+    "nothing has to be given back.\n"
+    "A key redeems once. We check it before it is sent — if it will not "
+    "activate, you get another one or a full refund."
+)
+
 # Game Pass does not word like an offline activation and is not sold like
 # one: the buyer signs into an account that carries the subscription, and
 # what they get is a year of the whole library rather than the one game whose
@@ -312,6 +365,19 @@ class Command(BaseCommand):
             return {
                 "activation_instructions": GAME_PASS_ACTIVATION,
                 "limitations": GAME_PASS_LIMITATIONS,
+            }
+        # Keys go by where they are redeemed, which is a wider set of
+        # storefronts than the ones we sell accounts on.
+        if spec.get("product_type") == ProductType.KEY:
+            redeem = REDEEM.get(platform)
+            if not redeem:
+                return {}
+            name, where = redeem
+            return {
+                "activation_instructions": KEY_ACTIVATION.format(
+                    client=name, redeem=where
+                ),
+                "limitations": KEY_LIMITATIONS.format(client=name),
             }
         client = CLIENTS.get(platform)
         if not client:

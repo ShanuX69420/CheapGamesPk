@@ -1,0 +1,89 @@
+[
+  {
+    "name": "Tekken 8 — Steam Key",
+    "product_type": "key",
+    "platform": "Steam",
+    "price": "7200.00",
+    "release_date": "2024-01-26",
+    "categories": [
+      "Fighting",
+      "Action"
+    ],
+    "short_description": "A genuine Steam key for Tekken 8 on PC, redeemed on your own account.",
+    "description": "The Heat system, the full roster and the story picking up where 7 left off. Redeemed on your own Steam account, so the game sits in your library permanently and ranked play, replays and everything else online works as it should."
+  },
+  {
+    "name": "Grand Theft Auto V — Rockstar Key",
+    "product_type": "key",
+    "platform": "Rockstar Games",
+    "price": "4000.00",
+    "categories": [
+      "Action",
+      "Open World"
+    ],
+    "short_description": "A genuine Rockstar key for Grand Theft Auto V on PC, redeemed on your own account.",
+    "description": "Los Santos, the three-hander story, and GTA Online alongside it. Redeemed in the Rockstar Games Launcher on your own account, so the game is yours permanently and your Online character and progress are yours with it."
+  },
+  {
+    "name": "Red Dead Redemption 2 — Rockstar Key",
+    "product_type": "key",
+    "platform": "Rockstar Games",
+    "price": "4200.00",
+    "release_date": "2019-11-05",
+    "categories": [
+      "Action",
+      "Adventure",
+      "Open World"
+    ],
+    "short_description": "A genuine Rockstar key for Red Dead Redemption 2 on PC, redeemed on your own account.",
+    "description": "Arthur Morgan's stretch of the Van der Linde gang's last years, across a map that still looks like nothing else. Redeemed in the Rockstar Games Launcher on your own account — the full story plus Red Dead Online, permanently in your library."
+  },
+  {
+    "name": "ARC Raiders — Steam Key",
+    "product_type": "key",
+    "platform": "Steam",
+    "price": "8000.00",
+    "categories": [
+      "Shooter",
+      "Action"
+    ],
+    "short_description": "A genuine Steam key for ARC Raiders on PC, redeemed on your own account.",
+    "description": "Embark's extraction shooter: raiders coming up from underground to scavenge a surface the machines have taken over, then trying to get back down with what they found. The other raiders up there are the other half of the problem. Redeemed on your own Steam account, so your progress is yours."
+  },
+  {
+    "name": "Minecraft: Java & Bedrock Edition — Microsoft Key",
+    "product_type": "key",
+    "platform": "Microsoft Store",
+    "price": "6000.00",
+    "categories": [
+      "Survival",
+      "Adventure"
+    ],
+    "short_description": "A genuine Microsoft key for Minecraft Java & Bedrock on PC, redeemed on your own account.",
+    "description": "Both PC editions in one purchase: Java for the mods and the servers that have been running for over a decade, and Bedrock for cross-play with console and mobile. Redeemed on your own Microsoft account, so the game stays attached to you rather than to us."
+  },
+  {
+    "name": "Minecraft: Java & Bedrock Edition Deluxe Collection — Microsoft Key",
+    "product_type": "key",
+    "platform": "Microsoft Store",
+    "price": "7000.00",
+    "categories": [
+      "Survival",
+      "Adventure"
+    ],
+    "short_description": "A genuine Microsoft key for the Minecraft Deluxe Collection on PC, redeemed on your own account.",
+    "description": "Both PC editions as above, plus the Deluxe Collection's extras — Marketplace worlds, skin packs and texture packs, and Minecoins to spend on more of them. Redeemed on your own Microsoft account."
+  },
+  {
+    "name": "Minecraft: Java & Bedrock Edition Ultimate Collection — Microsoft Key",
+    "product_type": "key",
+    "platform": "Microsoft Store",
+    "price": "9000.00",
+    "categories": [
+      "Survival",
+      "Adventure"
+    ],
+    "short_description": "A genuine Microsoft key for the Minecraft Ultimate Collection on PC, redeemed on your own account.",
+    "description": "The largest of the three bundles: both PC editions with the Ultimate Collection's run of Marketplace content and Minecoins on top. Redeemed on your own Microsoft account."
+  }
+]
