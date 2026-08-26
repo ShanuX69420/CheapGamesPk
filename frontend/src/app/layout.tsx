@@ -14,12 +14,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  /* Keyword first, brand last — "cheap pc games pakistan" is the search
+     being targeted, and the domain repeats the brand in the result anyway. */
   title: {
-    default: "cheapgames.pk — game accounts, activations & keys",
+    default: "Cheap PC Games in Pakistan — Steam Accounts & Keys | cheapgames.pk",
     template: "%s — cheapgames.pk",
   },
   description:
-    "Offline activations, online accounts and genuine keys for PC games. Fast delivery, priced for Pakistan.",
+    "Buy PC games at a fraction of store price — offline activations, Steam accounts and genuine keys. Fast delivery on WhatsApp, prices in PKR.",
   openGraph: {
     ...OG_SITE,
     /* The default link-preview card — WhatsApp shares live or die on this. */
