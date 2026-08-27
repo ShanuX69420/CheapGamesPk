@@ -34,7 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = product.meta_title || product.title;
   const description = product.meta_description || product.short_description;
   return {
-    title,
+    /* Absolute, so the layout's "— cheapgames.pk" suffix is not appended.
+       Google prints the site name above the result already, and a title with
+       two separators invites it to rewrite the middle away as boilerplate —
+       which is how "Dispatch — Steam Offline Activation" became "Dispatch". */
+    title: { absolute: title },
     description,
     alternates: { canonical: `/product/${product.slug}` },
     openGraph: {
