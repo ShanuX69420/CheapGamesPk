@@ -6,24 +6,31 @@ are just `deploy/deploy.sh`.
 Everything lives on one box: nginx out front, Next.js on :3000, gunicorn on
 :8000, Postgres on :5432. Only nginx is reachable from outside.
 
-Target: `167.99.72.162` → `cheapgames.pk`
+Target: `168.144.96.249` → `cheapgames.pk` ($6 droplet: 1 GB / 1 vCPU, SGP1)
 
 ---
 
 ## 0. Before you start
 
-- SSH key installed on the droplet (`ssh root@167.99.72.162` works)
-- Cloudflare A records for `@` and `www` → `167.99.72.162`, **grey cloud
+- SSH key installed on the droplet (`ssh root@168.144.96.249` works). Two
+  traps that have both burned us: the DO account's key list and the droplet's
+  `authorized_keys` are separate things, and our key file has a non-default
+  name — `~/.ssh/config` only offers it to Hosts listed there, so a new IP
+  gets no key until you add a Host block. If the DO web console is needed to
+  fix keys, don't paste base64 into it (it mangles long pastes) — host the
+  pubkey at a URL and `curl` it.
+- Cloudflare A records for `@` and `www` → `168.144.96.249`, **grey cloud
   (DNS only)**. Let's Encrypt has to reach the origin directly to issue the
-  certificate; we turn the orange cloud on at step 9.
+  certificate — and the grey cloud is permanent: proxying measured slower
+  from PK, so it stays DNS-only.
 
 ## 1. Swap
 
-2 GB of RAM is enough to *run* this and not quite enough to *build* it —
+1 GB of RAM is enough to *run* this and nowhere near enough to *build* it —
 `next build` will get OOM-killed without swap.
 
 ```bash
-fallocate -l 2G /swapfile && chmod 600 /swapfile
+fallocate -l 3G /swapfile && chmod 600 /swapfile
 mkswap /swapfile && swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 sysctl -w vm.swappiness=10 && echo 'vm.swappiness=10' >> /etc/sysctl.conf
@@ -58,6 +65,9 @@ The apps run as a non-root user that owns nothing but its own tree.
 
 ```bash
 adduser --system --group --home /srv/cheapgamespk --shell /bin/bash cheapgamespk
+# Ubuntu 24.04's adduser creates homes 0750; nginx serves /media/ straight off
+# disk and 403s until the tree is traversable:
+chmod 755 /srv/cheapgamespk
 ```
 
 ## 5. Postgres
@@ -99,7 +109,7 @@ DJANGO_SECRET_KEY=<python3 -c "import secrets;print(secrets.token_urlsafe(64))">
 DJANGO_DEBUG=False
 # 127.0.0.1 is required: server-side renders reach gunicorn on loopback and
 # Django checks the Host header on those too.
-DJANGO_ALLOWED_HOSTS=cheapgames.pk,www.cheapgames.pk,167.99.72.162,127.0.0.1
+DJANGO_ALLOWED_HOSTS=cheapgames.pk,www.cheapgames.pk,168.144.96.249,127.0.0.1
 DJANGO_TIME_ZONE=Asia/Karachi
 
 DATABASE_URL=postgres://cheapgamespk:THE_PASSWORD@127.0.0.1:5432/cheapgamespk
@@ -210,11 +220,16 @@ Check `http://cheapgames.pk` now serves the store over plain HTTP before going
 further. If it does not, fix it here — TLS on top of a broken proxy is harder
 to debug.
 
-## 9. TLS, then Cloudflare
+## 9. TLS
 
 ```bash
 certbot --nginx -d cheapgames.pk -d www.cheapgames.pk
 ```
+
+Migrating from a live droplet instead of starting fresh? Skip the command
+above — `tar` `/etc/letsencrypt` from the old box into `/etc`, take its site
+config too (already certbot-rewritten), and renewal keeps working once DNS
+points here. Confirm with `certbot renew --dry-run` *after* the DNS flip.
 
 Certbot rewrites the site config with the `:443` block and the redirect, and
 installs a renewal timer. Confirm with `certbot renew --dry-run`.
@@ -235,10 +250,10 @@ nginx -t && systemctl reload nginx
 curl -s -o /dev/null -w '%{http_version}\n' https://cheapgames.pk/
 ```
 
-**Now** flip both Cloudflare A records to orange (Proxied), and set
-**SSL/TLS → Overview → Full (strict)**. Any other mode either breaks
-(`Flexible` gives a redirect loop against `SECURE_SSL_REDIRECT`) or skips
-verifying the origin certificate.
+The Cloudflare records **stay grey (DNS only)** — proxying measured slower from
+Pakistani ISPs, so the origin serves directly and certbot renews over plain
+HTTP-01. (If the proxy is ever reconsidered: it needs SSL/TLS → Full (strict);
+`Flexible` redirect-loops against nginx's own http→https redirect.)
 
 ## 10. Backups
 
