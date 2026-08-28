@@ -58,6 +58,9 @@ class ProductListSerializer(serializers.ModelSerializer):
             "is_on_sale",
             "is_featured",
             "image",
+            # Not for the card — the sitemap needs a <lastmod> per listing so
+            # Google recrawls what changed instead of the whole catalog.
+            "updated_at",
         ]
 
     def get_image(self, obj):

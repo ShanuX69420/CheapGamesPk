@@ -6,6 +6,7 @@ import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
 import { FullAccessTerms } from "@/components/FullAccessTerms";
 import { GamePassTerms, isGamePass } from "@/components/GamePassTerms";
+import { JsonLd } from "@/components/JsonLd";
 import { KeyTerms } from "@/components/KeyTerms";
 import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
@@ -78,29 +79,42 @@ export default async function ProductPage({ params }: Props) {
   /* Product schema makes the listing eligible for price-rich results. InStock
      is what the buy box says, which is hardcoded too — they agree by design.
      `new URL` absolutizes the image whether the API sent a path or a URL. */
+  const url = `${SITE_URL}/product/${product.slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    description: product.meta_description || product.short_description,
-    image: product.image ? new URL(product.image, SITE_URL).href : undefined,
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/product/${product.slug}`,
-      price: product.price,
-      priceCurrency: CURRENCY,
-      availability: "https://schema.org/InStock",
-    },
+    "@graph": [
+      {
+        "@type": "Product",
+        name: product.title,
+        description: product.meta_description || product.short_description,
+        image: product.image
+          ? new URL(product.image, SITE_URL).href
+          : undefined,
+        offers: {
+          "@type": "Offer",
+          url,
+          price: product.price,
+          priceCurrency: CURRENCY,
+          availability: "https://schema.org/InStock",
+        },
+      },
+      /* Two rungs, not three. The obvious middle one is the account type, but
+         "/?type=offline_account" canonicalises to "/" — naming a URL here that
+         we tell Google elsewhere is not a page of its own is a contradiction
+         it would be right to ignore. */
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: product.title, item: url },
+        ],
+      },
+    ],
   };
 
   return (
     <div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
+      <JsonLd data={jsonLd} />
       {/* One per network. Neither knows about the other, so either
           can be pulled out on its own. */}
       <TrackViewContent

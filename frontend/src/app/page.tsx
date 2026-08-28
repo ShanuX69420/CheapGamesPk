@@ -6,8 +6,10 @@ import { Hero } from "@/components/Hero";
 import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
 import { ReviewGallery } from "@/components/ReviewGallery";
+import { JsonLd } from "@/components/JsonLd";
 import { getPlatforms, getProducts, safely, type ProductQuery } from "@/lib/api";
 import { FEATURED_REVIEWS } from "@/lib/reviews";
+import { SITE_URL, WHATSAPP_CHANNEL_URL } from "@/lib/site";
 import type { Paginated, Product } from "@/lib/types";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -16,6 +18,41 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
    One canonical keeps Google from indexing every combination separately. */
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+};
+
+/*
+ * Who the site is, said once on the page Google treats as the root.
+ *
+ * WebSite is what feeds the site name printed above a result — the one part
+ * of the old sitelinks-searchbox markup Google still reads. The searchbox
+ * itself was retired in November 2024, so there is deliberately no
+ * SearchAction here; adding one back buys nothing.
+ *
+ * OnlineStore is an Organization subtype, which is where the logo belongs.
+ */
+const SITE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "cheapgames.pk",
+      publisher: { "@id": `${SITE_URL}/#store` },
+    },
+    {
+      "@type": "OnlineStore",
+      "@id": `${SITE_URL}/#store`,
+      name: "cheapgames.pk",
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      image: `${SITE_URL}/og.png`,
+      description:
+        "PC games in Pakistan at a fraction of store price — offline activations, Steam accounts and genuine keys, delivered on WhatsApp.",
+      areaServed: "PK",
+      sameAs: [WHATSAPP_CHANNEL_URL],
+    },
+  ],
 };
 
 /** Search params arrive as string | string[]; the API only wants scalars. */
@@ -67,6 +104,7 @@ export default async function HomePage({
 
   return (
     <div className="mx-auto max-w-[88rem] px-4 py-6 sm:px-6">
+      <JsonLd data={SITE_SCHEMA} />
       {showHero && <Hero featured={featured.results} />}
 
       <CatalogFilters params={params} platforms={platforms} />

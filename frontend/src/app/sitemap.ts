@@ -25,11 +25,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
   const products = [first, ...rest].flatMap((page) => page.results);
 
+  /* Listings carry a <lastmod> because the model tracks one; the four hand-
+     written pages do not, and a made-up date on them would be worse than the
+     omission — Google demotes a sitemap whose dates it catches out. */
   return [
     { url: SITE_URL },
     { url: `${SITE_URL}/reviews` },
     { url: `${SITE_URL}/faq` },
     { url: `${SITE_URL}/about` },
-    ...products.map((p) => ({ url: `${SITE_URL}/product/${p.slug}` })),
+    ...products.map((p) => ({
+      url: `${SITE_URL}/product/${p.slug}`,
+      lastModified: p.updated_at,
+    })),
   ];
 }

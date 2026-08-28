@@ -48,6 +48,9 @@ export interface Product {
   is_on_sale: boolean;
   is_featured: boolean;
   image: string | null;
+  /** ISO 8601, straight from the model's `auto_now`. Only the sitemap reads
+      it, as each listing's <lastmod>. */
+  updated_at: string;
 }
 
 export interface ProductDetail extends Product {
