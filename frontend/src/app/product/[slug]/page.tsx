@@ -318,6 +318,14 @@ function BuyBox({
           <Perk>Fast delivery after payment</Perk>
           <Perk>Setup instructions included</Perk>
           <Perk>Support on activation issues</Perk>
+          {/* The only place a listing says where it sells and in what. Neither
+              "Pakistan" nor "PKR" appeared anywhere on these pages, and both
+              are how buyers word the search that should find them — the price
+              renders as "Rs" alone, which nobody types. The three methods must
+              agree with /faq and /about, which name the same ones in prose. */}
+          <Perk>
+            Pakistan price in PKR — JazzCash, EasyPaisa or bank transfer
+          </Perk>
         </ul>
       </div>
     </aside>
