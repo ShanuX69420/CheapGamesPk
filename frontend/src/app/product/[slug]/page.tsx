@@ -12,6 +12,7 @@ import { OfflineTerms } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
 import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
+import { typeSection, type Section } from "@/lib/catalog";
 import { CURRENCY, money } from "@/lib/format";
 import { OG_SITE, SITE_URL } from "@/lib/site";
 import type { Product, ProductDetail } from "@/lib/types";
@@ -76,6 +77,12 @@ export default async function ProductPage({ params }: Props) {
     .filter((p) => p.id !== product.id)
     .slice(0, 6);
 
+  /* The section this listing belongs to: "/offline-activations" for an
+     offline account. It is the middle rung of the breadcrumb and where the
+     back link goes — every listing pointing at its section is most of the
+     internal linking the section pages get. */
+  const section = typeSection(product.product_type);
+
   /* Product schema makes the listing eligible for price-rich results. InStock
      is what the buy box says, which is hardcoded too — they agree by design.
      `new URL` absolutizes the image whether the API sent a path or a URL. */
@@ -98,15 +105,26 @@ export default async function ProductPage({ params }: Props) {
           availability: "https://schema.org/InStock",
         },
       },
-      /* Two rungs, not three. The obvious middle one is the account type, but
-         "/?type=offline_account" canonicalises to "/" — naming a URL here that
-         we tell Google elsewhere is not a page of its own is a contradiction
-         it would be right to ignore. */
       {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: product.title, item: url },
+          ...(section
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: section.heading,
+                  item: `${SITE_URL}${section.path}`,
+                },
+              ]
+            : []),
+          {
+            "@type": "ListItem",
+            position: section ? 3 : 2,
+            name: product.title,
+            item: url,
+          },
         ],
       },
     ],
@@ -127,7 +145,7 @@ export default async function ProductPage({ params }: Props) {
         title={product.title}
         price={product.price}
       />
-      <Banner product={product} />
+      <Banner product={product} section={section} />
 
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
@@ -200,7 +218,13 @@ function RelatedProducts({
 }
 
 /** Wide art behind the title, with the portrait cover sitting on top of it. */
-function Banner({ product }: { product: ProductDetail }) {
+function Banner({
+  product,
+  section,
+}: {
+  product: ProductDetail;
+  section: Section | undefined;
+}) {
   const backdrop = product.banner ?? product.image;
 
   return (
@@ -223,10 +247,11 @@ function Banner({ product }: { product: ProductDetail }) {
 
       <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-5 sm:px-6">
         <Link
-          href="/"
+          href={section?.path ?? "/"}
           className="inline-block text-sm text-ink-200 transition-colors hover:text-ink-50"
         >
-          &larr; Back to catalog
+          &larr;{" "}
+          {section ? `All ${section.heading.toLowerCase()}` : "Back to catalog"}
         </Link>
 
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end">

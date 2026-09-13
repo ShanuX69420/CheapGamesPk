@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type Params = Record<string, string | undefined>;
+import { catalogHref, type CatalogParams } from "@/lib/catalog";
 
 /**
  * Page numbers with ellipses: always first and last, plus a window around the
@@ -32,15 +32,9 @@ function pageWindow(current: number, total: number): (number | null)[] {
   return out;
 }
 
-function hrefFor(params: Params, page: number) {
-  const next = new URLSearchParams();
-  for (const [key, value] of Object.entries(params)) {
-    if (value && key !== "page") next.set(key, value);
-  }
-  if (page > 1) next.set("page", String(page));
-
-  const query = next.toString();
-  return query ? `/?${query}` : "/";
+/** Page N of the current view, on whichever section it belongs to. */
+function hrefFor(params: CatalogParams, page: number) {
+  return catalogHref({ ...params, page: String(page) });
 }
 
 const BASE =
@@ -56,7 +50,7 @@ export function Pagination({
   page,
   totalPages,
 }: {
-  params: Params;
+  params: CatalogParams;
   page: number;
   totalPages: number;
 }) {

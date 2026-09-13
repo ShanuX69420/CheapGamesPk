@@ -8,20 +8,25 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Logo } from "@/components/Logo";
 import { MobileNav } from "@/components/MobileNav";
 import { SearchIcon, WhatsAppIcon } from "@/components/icons";
-import { OG_SITE, SITE_URL, WHATSAPP_CHANNEL_URL } from "@/lib/site";
+import { TYPE_SECTIONS } from "@/lib/catalog";
+import {
+  OG_SITE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  WHATSAPP_CHANNEL_URL,
+} from "@/lib/site";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  /* Keyword first, brand last — "cheap pc games pakistan" is the search
-     being targeted, and the domain repeats the brand in the result anyway. */
   title: {
-    default: "Cheap PC Games in Pakistan — Steam Accounts & Keys | cheapgames.pk",
-    template: "%s — cheapgames.pk",
+    default: `${SITE_TITLE} | ${SITE_NAME}`,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    "Buy PC games at a fraction of store price — offline activations, Steam accounts and genuine keys. Fast delivery on WhatsApp, prices in PKR.",
+  description: SITE_DESCRIPTION,
   openGraph: {
     ...OG_SITE,
     /* The default link-preview card — WhatsApp shares live or die on this. */
@@ -29,11 +34,10 @@ export const metadata: Metadata = {
   },
 };
 
-const CATALOG = [
-  { href: "/?type=offline_account", label: "Offline" },
-  { href: "/?type=online_account", label: "Online" },
-  { href: "/?type=key", label: "Keys" },
-];
+const CATALOG = TYPE_SECTIONS.filter((s) => s.inNav).map((s) => ({
+  href: s.path,
+  label: s.tab,
+}));
 
 /* Trust pages: all three in the footer, and the two that close sales —
    reviews and the FAQ — in the header too. */

@@ -12,7 +12,7 @@ import { track, trackViewContent } from "@/lib/pixel";
  * every move after that is a client-side navigation, which swaps the content
  * without reloading anything. So each effect below reports only what it has
  * not reported before, starting from the page the snippet already covered.
- * Filters count as pages: `/?type=key` is a different page to a buyer and to
+ * Filters count as pages: `/keys?platform=steam` is a different page to a buyer and to
  * Meta both.
  *
  * The remembered value is what makes these safe to run twice, which React does

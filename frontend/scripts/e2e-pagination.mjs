@@ -29,7 +29,7 @@ check("page 2 shows different products", p2.length > 0 && p2[0] !== p1[0], p2[0]
 check("prev appears on page 2", (await pager.getByRole("link", { name: /prev/i }).count()) === 1);
 
 // Filters must survive paging.
-await page.goto(`${BASE}/?type=offline_account`, { waitUntil: "networkidle" });
+await page.goto(`${BASE}/offline-activations`, { waitUntil: "networkidle" });
 const filteredPager = page.getByRole("navigation", { name: /pagination/i });
 await filteredPager.getByRole("link", { name: /next/i }).click();
 await page.waitForURL(/page=2/);

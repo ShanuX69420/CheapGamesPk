@@ -31,7 +31,7 @@ check("Escape closes", (await page.locator("#mobile-nav").count()) === 0);
 await toggle.click();
 await page.waitForTimeout(200);
 await page.locator("#mobile-nav a", { hasText: "Keys" }).first().click();
-await page.waitForURL("**/?type=key", { timeout: 10000 });
+await page.waitForURL("**/keys", { timeout: 10000 });
 check("link navigates and closes menu", (await page.locator("#mobile-nav").count()) === 0, page.url());
 
 // Desktop must be unchanged.

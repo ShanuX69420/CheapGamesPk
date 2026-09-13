@@ -1,19 +1,13 @@
 import Link from "next/link";
 
+import { TYPE_SECTIONS, catalogHref, type CatalogParams } from "@/lib/catalog";
 import type { Platform } from "@/lib/types";
 
 /* Tabs are terse; the heading below them says the same thing in full. */
 const TYPES = [
-  { value: "", label: "All", heading: "All products" },
-  { value: "offline_account", label: "Offline", heading: "Offline accounts" },
-  { value: "online_account", label: "Online", heading: "Online accounts" },
-  { value: "key", label: "Keys", heading: "Game keys" },
-  { value: "subscription", label: "Subscriptions", heading: "Subscriptions" },
+  { value: "", label: "All" },
+  ...TYPE_SECTIONS.map((s) => ({ value: s.facet.type, label: s.tab })),
 ];
-
-export function headingForType(type: string | undefined) {
-  return TYPES.find((t) => t.value === (type ?? ""))?.heading ?? "All products";
-}
 
 /* No ordering param means the API default: newest release first. */
 const SORTS = [
@@ -22,19 +16,10 @@ const SORTS = [
   { value: "-price", label: "Priciest" },
 ];
 
-type Params = Record<string, string | undefined>;
-
-/** Build a catalog URL with one key changed, always resetting pagination. */
-function urlWith(current: Params, key: string, value: string) {
-  const next = new URLSearchParams();
-  for (const [k, v] of Object.entries(current)) {
-    if (v && k !== "page") next.set(k, v);
-  }
-  if (value) next.set(key, value);
-  else next.delete(key);
-
-  const query = next.toString();
-  return query ? `/?${query}` : "/";
+/** The URL for the current view with one key changed, always resetting
+    pagination. A type or platform moves the view between sections. */
+function urlWith(current: CatalogParams, key: string, value: string) {
+  return catalogHref({ ...current, [key]: value || undefined, page: undefined });
 }
 
 /* Filtering isn't navigating away: the row you clicked stays under the cursor
@@ -94,7 +79,7 @@ export function CatalogFilters({
   params,
   platforms,
 }: {
-  params: Params;
+  params: CatalogParams;
   platforms: Platform[];
 }) {
   const activeType = params.type ?? "";

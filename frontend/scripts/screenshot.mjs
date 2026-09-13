@@ -8,7 +8,7 @@ const PAGES = [
   { name: "home",     url: "http://localhost:3000/",                                        full: true },
   { name: "product",  url: "http://localhost:3000/product/mortal-kombat-1-premium-edition", full: true },
   { name: "oos",      url: "http://localhost:3000/product/baldurs-gate-3-digital-deluxe",   full: false },
-  { name: "filtered", url: "http://localhost:3000/?type=offline_account",                   full: false },
+  { name: "filtered", url: "http://localhost:3000/offline-activations",                   full: false },
 ];
 
 const browser = await chromium.launch();
