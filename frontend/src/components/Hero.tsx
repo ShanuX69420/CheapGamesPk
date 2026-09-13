@@ -14,10 +14,13 @@ function CoverShelf({ products }: { products: Product[] }) {
           key={product.id}
           className="h-32 w-32 overflow-hidden rounded-md ring-1 ring-ink-700"
         >
+          {/* Lazy so a phone, where the shelf is display:none, never
+              downloads three covers it will not show. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={product.image!}
             alt=""
+            loading="lazy"
             className="h-full w-full object-cover"
           />
         </div>

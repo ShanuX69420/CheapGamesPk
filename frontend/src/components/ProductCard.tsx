@@ -23,7 +23,15 @@ const TYPE_SHORT: Record<string, string> = {
   subscription: "Sub",
 };
 
-export function ProductCard({ product }: { product: Product }) {
+/** `eager` for the first row: those are on screen before anything scrolls,
+    and a lazy image there is one the browser starts late on purpose. */
+export function ProductCard({
+  product,
+  eager = false,
+}: {
+  product: Product;
+  eager?: boolean;
+}) {
   const typeStyle = TYPE_STYLES[product.product_type] ?? "text-ink-200";
 
   return (
@@ -38,8 +46,8 @@ export function ProductCard({ product }: { product: Product }) {
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={product.image}
-            alt=""
-            loading="lazy"
+            alt={product.title}
+            loading={eager ? "eager" : "lazy"}
             className="h-full w-full object-cover"
           />
         ) : (

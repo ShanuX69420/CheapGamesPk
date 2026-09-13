@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return { title: "Product not found" };
 
   const title = product.meta_title || product.title;
-  const description = product.meta_description || product.short_description;
+  const description = product.meta_description || describe(product);
   return {
     /* Absolute, so the layout's "— cheapgames.pk" suffix is not appended.
        Google prints the site name above the result already, and a title with
@@ -52,6 +52,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: product.image ?? "/og.png",
     },
   };
+}
+
+/**
+ * The snippet for a listing nobody has written one for — all 211 of them.
+ *
+ * The short description alone read fine and said nothing a buyer here
+ * searches by: no price, no "Pakistan", no "PKR". Google cuts a snippet at
+ * about 155 characters, so the listing's own facts go first and the payment
+ * line last, where losing it costs nothing.
+ */
+function describe(product: ProductDetail) {
+  return [
+    `${product.title} for ${money(product.price)} in Pakistan.`,
+    product.short_description,
+    "Pay by JazzCash, EasyPaisa or bank transfer; delivered on WhatsApp.",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -262,6 +280,7 @@ function Banner({
                 <img
                   src={product.image}
                   alt={product.name}
+                  fetchPriority="high"
                   className="h-full w-full object-cover"
                 />
               ) : (
