@@ -32,6 +32,17 @@ KNOWN_APPIDS = {
     "Football Manager 2026 + In-Game Editor": 1904540,
     "Cyberpunk 2077: Ultimate Edition": 1091500,
     "Baldur's Gate 3 Digital Deluxe": 1086940,
+    # Steam's names have moved on from ours — renamed after a relaunch, or
+    # sold only as a bigger edition — and a bundle takes the newer of its two
+    # games, which is the one that sets the specs.
+    "Crimson Desert": 3321460,
+    "Sekiro: Shadows Die Twice": 814380,
+    "Control": 870780,
+    "Atlas Fallen": 1230530,
+    "Horizon Forbidden West": 2420110,
+    "Grand Theft Auto V — Rockstar Key": 3240220,
+    "Hollow Knight + Silksong Bundle": 1030300,
+    "Subnautica + Below Zero Bundle": 848450,
 }
 
 TIMEOUT = 15

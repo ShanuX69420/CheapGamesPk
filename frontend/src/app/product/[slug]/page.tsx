@@ -193,8 +193,8 @@ export default async function ProductPage({ params }: Props) {
             )}
 
             {product.system_requirements && (
-              <Section title="System requirements">
-                <Prose text={product.system_requirements} mono />
+              <Section title={`${product.name} system requirements`}>
+                <Requirements text={product.system_requirements} />
               </Section>
             )}
           </div>
@@ -404,14 +404,65 @@ function Section({
   );
 }
 
-/** Admin content is plain text with newlines — render the line breaks. */
-function Prose({ text, mono }: { text: string; mono?: boolean }) {
+/**
+ * Specs as fetch_requirements writes them: blocks split by a blank line, each
+ * headed "Minimum" or "Recommended", then "Label: value" lines — laid out as
+ * one column per block. A block with no such heading, or a line with no
+ * label, is still shown as written, so specs typed freehand in the admin
+ * render too.
+ */
+function Requirements({ text }: { text: string }) {
+  const blocks = text
+    .split(/\r?\n\s*\r?\n/)
+    .map((block) =>
+      block
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean),
+    )
+    .filter((lines) => lines.length > 0)
+    .map((lines) =>
+      /^(minimum|recommended)$/i.test(lines[0])
+        ? { heading: lines[0], lines: lines.slice(1) }
+        : { heading: null, lines },
+    );
+
   return (
-    <div
-      className={`space-y-1.5 leading-relaxed text-ink-200 ${
-        mono ? "font-mono text-xs" : "text-sm"
-      }`}
-    >
+    <div className={`grid gap-5 ${blocks.length > 1 ? "sm:grid-cols-2" : ""}`}>
+      {blocks.map((block, i) => (
+        <div key={i}>
+          {block.heading && (
+            <h3 className="mb-2 text-sm font-semibold text-ink-100">
+              {block.heading}
+            </h3>
+          )}
+          <ul className="space-y-1.5 text-sm leading-relaxed text-ink-200">
+            {block.lines.map((line, j) => {
+              const label = line.match(/^([^:]{1,30}):\s*(.+)$/);
+              return (
+                <li key={j}>
+                  {label ? (
+                    <>
+                      <span className="text-ink-400">{label[1]}:</span>{" "}
+                      {label[2]}
+                    </>
+                  ) : (
+                    line
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Admin content is plain text with newlines — render the line breaks. */
+function Prose({ text }: { text: string }) {
+  return (
+    <div className="space-y-1.5 text-sm leading-relaxed text-ink-200">
       {text
         .split("\n")
         .filter((line) => line.trim())
