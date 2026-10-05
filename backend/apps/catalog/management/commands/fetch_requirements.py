@@ -70,10 +70,21 @@ def _norm(name):
     return " ".join(NUMERALS.get(word, word) for word in name.split())
 
 
+def _numbers(name):
+    return {word for word in _norm(name).split() if word.isdigit()}
+
+
 def queries(name):
-    """The listing's name, then shorter and shorter versions of it."""
+    """
+    The listing's name, then shorter versions of it that keep its numbers.
+
+    "Yakuza Kiwami 3 + Dark Ties" finds nothing (Steam's search chokes on the
+    plus) and may shorten to "Yakuza Kiwami 3", but never to "Yakuza Kiwami",
+    which is another game released two months before it.
+    """
     words = name.split(" — ")[0].split()
-    return [" ".join(words[:n]) for n in range(len(words), 0, -1)]
+    shorter = (" ".join(words[:n]) for n in range(len(words), 0, -1))
+    return [q for q in shorter if _numbers(q) == _numbers(name)]
 
 
 def details(appid):
@@ -89,10 +100,16 @@ def resolve(product):
         return appid, details(appid)
 
     year = product.release_date.year if product.release_date else None
+    full = _norm(product.name.split(" — ")[0])
     for query in queries(product.name):
         time.sleep(PAUSE)
         items = _get(SEARCH_URL.format(urllib.parse.quote(query))).get("items", [])
-        exact = [i for i in items if i.get("type") == "app" and _norm(i["name"]) == _norm(query)]
+        # The whole name first: a shorter query can turn up the listing itself
+        # ("Yakuza Kiwami 3" finds "Yakuza Kiwami 3 & Dark Ties").
+        apps = [i for i in items if i.get("type") == "app"]
+        exact = [i for i in apps if _norm(i["name"]) == full] or [
+            i for i in apps if _norm(i["name"]) == _norm(query)
+        ]
         for item in exact:
             data = details(item["id"])
             if not data:
