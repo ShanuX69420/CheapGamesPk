@@ -32,17 +32,43 @@ KNOWN_APPIDS = {
     "Football Manager 2026 + In-Game Editor": 1904540,
     "Cyberpunk 2077: Ultimate Edition": 1091500,
     "Baldur's Gate 3 Digital Deluxe": 1086940,
-    # Steam's names have moved on from ours — renamed after a relaunch, or
-    # sold only as a bigger edition — and a bundle takes the newer of its two
-    # games, which is the one that sets the specs.
+    # Steam's names have moved on from ours — renamed after a relaunch, sold
+    # only as a bigger edition, or re-released on Steam years later — and a
+    # bundle takes its newest game, which is the one that sets the specs.
     "Crimson Desert": 3321460,
     "Sekiro: Shadows Die Twice": 814380,
     "Control": 870780,
     "Atlas Fallen": 1230530,
     "Horizon Forbidden West": 2420110,
+    "Horizon Zero Dawn": 1151640,
+    "The Witcher 3: Wild Hunt": 292030,
+    # Not "Black Flag Resynced", the remake that now tops the search.
+    "Assassin's Creed IV: Black Flag": 242050,
+    "Dying Light 2": 534380,
+    "Forza Horizon 4": 1293830,
+    "Mandragora: Whispers of the Witch": 1721060,
+    "Football Manager 2024": 2252570,
+    "EA Sports FIFA 23": 1811260,
+    "WWE 2K23": 1942660,
+    "Grand Theft Auto V": 3240220,
     "Grand Theft Auto V — Rockstar Key": 3240220,
+    "Grand Theft Auto IV: The Complete Edition": 12210,
+    "Battlefield Hardline": 1238880,
+    "Vampire: The Masquerade — Bloodlines 2": 532790,
+    "Microsoft Flight Simulator 2020 — Game Pass PC 12 Months": 1250410,
     "Hollow Knight + Silksong Bundle": 1030300,
     "Subnautica + Below Zero Bundle": 848450,
+    "Batman: Arkham Collection": 208650,
+    "Battlefield 1 + Battlefield V": 1238810,
+    "BioShock: The Collection": 8870,
+    "Hellblade 1 + 2 Bundle": 2461850,
+    "Mafia Trilogy": 1030840,
+    "Metro Collection (4 Games)": 412020,
+    "Middle-earth: Shadow of Mordor + Shadow of War Bundle": 356190,
+    "Resident Evil 2 + 3 + 4 Remake Bundle": 2050650,
+    "Resident Evil 2 + 3 Remake Bundle": 952060,
+    "Tomb Raider Trilogy": 750920,
+    "Wolfenstein Collection": 1056960,
 }
 
 TIMEOUT = 15

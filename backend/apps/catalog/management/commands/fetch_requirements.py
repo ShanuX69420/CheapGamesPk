@@ -82,9 +82,11 @@ def queries(name):
     plus) and may shorten to "Yakuza Kiwami 3", but never to "Yakuza Kiwami",
     which is another game released two months before it.
     """
-    words = name.split(" — ")[0].split()
+    base = name.split(" — ")[0]
+    words = base.split()
     shorter = (" ".join(words[:n]) for n in range(len(words), 0, -1))
-    return [q for q in shorter if _numbers(q) == _numbers(name)]
+    # The base, not the name: "— Game Pass PC 12 Months" is not a sequel number.
+    return [q for q in shorter if _numbers(q) == _numbers(base)]
 
 
 def details(appid):
