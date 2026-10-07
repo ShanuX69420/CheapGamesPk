@@ -1,3 +1,9 @@
+import {
+  TermsFooter,
+  TermsList,
+  TermsPanel,
+  TermsWarning,
+} from "@/components/TermsPanel";
 import type { Platform } from "@/lib/types";
 
 /* The house rules for the Game Pass accounts. Every one of these listings
@@ -5,7 +11,8 @@ import type { Platform } from "@/lib/types";
    subscription on it — and only the game a buyer arrived looking for changes.
    So what you get, what is excluded and the rules all live here rather than
    being retyped on each product in admin, and a buyer comparing two Game Pass
-   listings finds the same account of them on both. */
+   listings finds the same account of them on both. The full rules are on
+   /terms; a listing shows what you get and the short version. */
 
 /* A sample of the catalog, not the catalog: Game Pass rotates, so this is
    what is worth naming today. Check it against the live library before adding
@@ -60,63 +67,59 @@ export function isGamePass(platform: Platform | null) {
   return platform?.slug === "xbox-game-pass";
 }
 
-export function GamePassTerms() {
+/** The account itself and what it leaves out — on the listing and on /terms. */
+export function GamePassContents() {
   return (
     <>
-      <Panel title="What you get">
-        <p className="text-sm leading-relaxed text-ink-200">
-          Login details for a Microsoft Store account carrying a 12-month Xbox
-          Game Pass subscription, which is access to over 200 games on PC — not
-          just the one on this page. Games have no regional restrictions.
-        </p>
-        <p className="mt-3 text-sm leading-relaxed text-ink-300">
-          The library includes {INCLUDED.join(", ")}, and many more.
-        </p>
-        {/* The one line a buyer must not skim, so it is the only coloured
-            thing in the panel. */}
-        <p className="mt-4 border-t border-ink-800 pt-3 text-sm leading-relaxed text-deal">
-          Not supported on this product: {UNSUPPORTED.join(", ")}.
-        </p>
-      </Panel>
-
-      <Panel title="Terms of use">
-        <ul className="space-y-1.5 text-sm leading-relaxed text-ink-200">
-          {TERMS.map((term) => (
-            <li key={term} className="flex items-start gap-2.5">
-              <span
-                aria-hidden
-                className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-ink-600"
-              />
-              <span>{term}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 border-t border-ink-800 pt-3 text-sm font-medium text-deal">
-          {WARNING}
-        </p>
-        <p className="mt-3 text-xs leading-relaxed text-ink-500">
-          cheapgames.pk is an independent seller and is not affiliated with,
-          endorsed by, or sponsored by Microsoft Corporation, Xbox or Xbox Game
-          Pass.
-        </p>
-      </Panel>
+      <p className="text-sm leading-relaxed text-ink-200">
+        Login details for a Microsoft Store account carrying a 12-month Xbox
+        Game Pass subscription, which is access to over 200 games on PC — not
+        just the one you bought it for. Games have no regional restrictions.
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-ink-200">
+        The library includes {INCLUDED.join(", ")}, and many more.
+      </p>
+      {/* The one line a buyer must not skim, so it is the only coloured
+          thing in the panel. */}
+      <p className="mt-4 border-t border-ink-800 pt-3 text-sm leading-relaxed text-deal">
+        Not supported on this product: {UNSUPPORTED.join(", ")}.
+      </p>
     </>
   );
 }
 
-function Panel({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+/** The full rules, for /terms. */
+export function GamePassTerms() {
   return (
-    <section className="mb-5 rounded-lg border border-ink-800 bg-ink-900 p-5">
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
-        {title}
-      </h2>
-      {children}
-    </section>
+    <>
+      <TermsList items={TERMS} />
+      <TermsWarning>{WARNING}</TermsWarning>
+    </>
+  );
+}
+
+/** What a buyer decides on, for the listing itself. */
+export function GamePassSummary() {
+  return (
+    <>
+      <TermsPanel title="What you get">
+        <GamePassContents />
+      </TermsPanel>
+
+      <TermsPanel title="Terms of use">
+        <TermsList
+          items={[
+            "You get the login details for a Microsoft Store account we provide, with 12 months of Game Pass on it. It is not a key, and nothing is added to your own Microsoft account.",
+            "It works on 1 PC running Windows 10 or 11. Xbox consoles are not supported.",
+            "The account's password and details must not be changed — doing so ends the service without a refund.",
+            "Once the details are sent the sale is final. If we cannot deliver, you get a full refund.",
+          ]}
+        />
+        <TermsFooter
+          anchor="game-pass"
+          owner="Microsoft Corporation, Xbox or Xbox Game Pass"
+        />
+      </TermsPanel>
+    </>
   );
 }

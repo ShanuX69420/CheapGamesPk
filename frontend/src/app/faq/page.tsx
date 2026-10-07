@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 
 /*
  * The questions every buyer asks in the chat before paying, answered once.
- * Wording must agree with the terms panels on the product pages
- * (OfflineTerms / KeyTerms / FullAccessTerms / GamePassTerms) — if a promise
- * changes there, it changes here too.
+ * Wording must agree with the terms on /terms and the short versions on the
+ * product pages (OfflineTerms / KeyTerms / FullAccessTerms / GamePassTerms) —
+ * if a promise changes there, it changes here too.
  */
 const FAQS: { question: string; answer: React.ReactNode }[] = [
   {
@@ -54,7 +54,14 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
         your own saves, for as long as you like, on one PC. It is the cheapest
         way to play because the account is shared: that is also why online
         features and multiplayer are unavailable, and why the account details
-        must not be changed. The full rules are on every offline listing.
+        must not be changed. The full rules are on our{" "}
+        <Link
+          href="/terms#offline-activations"
+          className="font-medium text-accent-bright transition-colors hover:text-ink-50"
+        >
+          terms page
+        </Link>
+        .
       </>
     ),
   },

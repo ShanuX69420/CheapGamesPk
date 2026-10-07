@@ -1,9 +1,11 @@
+import { TermsFooter, TermsList, TermsPanel } from "@/components/TermsPanel";
 import type { Platform } from "@/lib/types";
 
 /* The house rules for the accounts we sell outright. The opposite trade from
    an offline activation: the buyer gets the account itself, fresh and
-   unplayed, and everything online works. Identical on every such listing, so
-   the words live here rather than being retyped per product in admin. */
+   unplayed, and everything online works. The full set is the same on every
+   such listing, so it lives once, on /terms; a listing shows the short
+   version, which names its own game and client. */
 type Client = {
   /* The client the account is signed into, named as the buyer would say it. */
   name: string;
@@ -23,43 +25,43 @@ const CLIENTS: Record<string, Client> = {
    set is selling. */
 const FALLBACK = CLIENTS.steam;
 
-function termsFor(client: Client) {
-  return [
-    `You receive the login details for a brand-new ${client.name} account made for this sale, with the game already on it and no hours played — not a shared account, and not a key for an account of your own.`,
-    "Details are sent to you on WhatsApp as soon as your payment is confirmed.",
-    "Full access: the account is yours. Online play, multiplayer, cloud saves and achievements all work exactly as they would on any account of your own.",
-    "Change the password as soon as you have signed in, and keep the new one somewhere safe.",
-    "Move the account's email address to your own whenever you like.",
-    "Play on as many of your own PCs as you like. There is no activation limit on an account you own.",
-    "The account is sold once, to you. The same details are not handed to anybody else.",
-    "Assistance with account questions is available for 6 months from the date of purchase.",
-    "Once the account details have been sent, the sale is final. If we cannot deliver, you get a full refund.",
-  ];
+const TERMS = [
+  "You receive the login details for a brand-new account on the client the listing names, made for this sale, with the game already on it and no hours played — not a shared account, and not a key for an account of your own.",
+  "Details are sent to you on WhatsApp as soon as your payment is confirmed.",
+  "Full access: the account is yours. Online play, multiplayer, cloud saves and achievements all work exactly as they would on any account of your own.",
+  "Change the password as soon as you have signed in, and keep the new one somewhere safe.",
+  "Move the account's email address to your own whenever you like.",
+  "Play on as many of your own PCs as you like. There is no activation limit on an account you own.",
+  "The account is sold once, to you. The same details are not handed to anybody else.",
+  "Assistance with account questions is available for 6 months from the date of purchase.",
+  "Once the account details have been sent, the sale is final. If we cannot deliver, you get a full refund.",
+];
+
+/** The full rules, for /terms. */
+export function FullAccessTerms() {
+  return <TermsList items={TERMS} />;
 }
 
-export function FullAccessTerms({ platform }: { platform: Platform | null }) {
+/** What a buyer decides on, for the listing itself. */
+export function FullAccessSummary({
+  game,
+  platform,
+}: {
+  game: string;
+  platform: Platform | null;
+}) {
   const client = (platform && CLIENTS[platform.slug]) || FALLBACK;
 
   return (
-    <section className="mb-5 rounded-lg border border-ink-800 bg-ink-900 p-5">
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
-        Terms of use
-      </h2>
-      <ul className="space-y-1.5 text-sm leading-relaxed text-ink-200">
-        {termsFor(client).map((term) => (
-          <li key={term} className="flex items-start gap-2.5">
-            <span
-              aria-hidden
-              className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-ink-600"
-            />
-            <span>{term}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-4 border-t border-ink-800 pt-3 text-xs leading-relaxed text-ink-500">
-        cheapgames.pk is an independent seller and is not affiliated with,
-        endorsed by, or sponsored by {client.owner}.
-      </p>
-    </section>
+    <TermsPanel title="Terms of use">
+      <TermsList
+        items={[
+          `You get a brand-new ${client.name} account made for this sale, with ${game} already on it — yours outright, not shared with anyone.`,
+          "Online play, multiplayer, cloud saves and achievements all work. Change the password as soon as you sign in, and move the email to your own whenever you like.",
+          "Once the details are sent the sale is final. If we cannot deliver, you get a full refund.",
+        ]}
+      />
+      <TermsFooter anchor="full-access-accounts" owner={client.owner} />
+    </TermsPanel>
   );
 }

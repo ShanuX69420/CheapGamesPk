@@ -47,7 +47,11 @@ export type ProductQuery = {
   on_sale?: string;
   ordering?: string;
   page?: string;
+  page_size?: string;
 };
+
+/* The largest page the API serves — StorefrontPagination.max_page_size. */
+const MAX_PAGE_SIZE = "48";
 
 class ApiError extends Error {
   constructor(
@@ -74,6 +78,21 @@ async function get<T>(path: string, params?: Record<string, string | undefined>)
 
 export function getProducts(query: ProductQuery = {}) {
   return get<Paginated<Product>>("/products/", query);
+}
+
+/**
+ * Every listing a query matches, not one page of them, in catalog order. Page
+ * 1 says how many pages there are; the rest are fetched together.
+ */
+export async function getAllProducts(query: ProductQuery = {}) {
+  const sized = { ...query, page_size: MAX_PAGE_SIZE };
+  const first = await getProducts(sized);
+  const rest = await Promise.all(
+    Array.from({ length: first.total_pages - 1 }, (_, i) =>
+      getProducts({ ...sized, page: String(i + 2) }),
+    ),
+  );
+  return [first, ...rest].flatMap((page) => page.results);
 }
 
 export async function getProduct(slug: string): Promise<ProductDetail | null> {

@@ -51,6 +51,9 @@ export interface Product {
   /** ISO 8601, straight from the model's `auto_now`. Only the sitemap reads
       it, as each listing's <lastmod>. */
   updated_at: string;
+  /** Genre slugs. Only the product page reads them, to rank related
+      listings; the detail view sends the full categories as well. */
+  category_slugs: string[];
 }
 
 export interface ProductDetail extends Product {

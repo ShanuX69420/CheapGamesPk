@@ -4,14 +4,14 @@ import { notFound } from "next/navigation";
 
 import { TrackViewItem } from "@/components/AnalyticsTracker";
 import { BuyActions } from "@/components/BuyActions";
-import { FullAccessTerms } from "@/components/FullAccessTerms";
-import { GamePassTerms, isGamePass } from "@/components/GamePassTerms";
+import { FullAccessSummary } from "@/components/FullAccessTerms";
+import { GamePassSummary, isGamePass } from "@/components/GamePassTerms";
 import { JsonLd } from "@/components/JsonLd";
-import { KeyTerms } from "@/components/KeyTerms";
-import { OfflineTerms } from "@/components/OfflineTerms";
+import { KeySummary } from "@/components/KeyTerms";
+import { OfflineSummary } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
-import { getProduct, getProducts, getStoreConfig, safely } from "@/lib/api";
+import { getAllProducts, getProduct, getStoreConfig, safely } from "@/lib/api";
 import { typeSection, type Section } from "@/lib/catalog";
 import { CURRENCY, money } from "@/lib/format";
 import { OG_SITE, SITE_URL } from "@/lib/site";
@@ -33,25 +33,48 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProduct(slug).catch(() => null);
   if (!product) return { title: "Product not found" };
 
-  const title = product.meta_title || product.title;
   const description = product.meta_description || describe(product);
   return {
     /* Absolute, so the layout's "— cheapgames.pk" suffix is not appended.
        Google prints the site name above the result already, and a title with
        two separators invites it to rewrite the middle away as boilerplate —
        which is how "Dispatch — Steam Offline Activation" became "Dispatch". */
-    title: { absolute: title },
+    title: { absolute: product.meta_title || searchTitle(product) },
     description,
     alternates: { canonical: `/product/${product.slug}` },
     openGraph: {
       ...OG_SITE,
-      title,
+      /* The listing's own title: a WhatsApp preview is read by someone who
+         has already found the game, not searched for it. */
+      title: product.meta_title || product.title,
       description,
       url: `/product/${product.slug}`,
       /* The cover, so a link pasted into WhatsApp shows the game. */
       images: product.image ?? "/og.png",
     },
   };
+}
+
+/**
+ * The game alone, without what the listing sells: "Cuphead" out of "Cuphead
+ * — Steam Offline Activation". Not `name`, which for the listings with no
+ * subtitle is the whole title ("Tekken 8 — Full Access Account").
+ */
+function gameName(product: Product) {
+  return product.title.split(" — ")[0];
+}
+
+/**
+ * "Cuphead Price in Pakistan — Steam Offline Activation", for the <title>.
+ *
+ * "<game> price in Pakistan" is how buyers here word the search, and the
+ * listing title alone matched none of it. The words go straight after the
+ * game, not at the end: Google cuts a title at about 60 characters, and what
+ * it cuts is the tail. The H1 and the share card keep the listing's own title.
+ */
+function searchTitle(product: ProductDetail) {
+  const [game, ...rest] = product.title.split(" — ");
+  return [`${game} Price in Pakistan`, ...rest].join(" — ");
 }
 
 /**
@@ -77,23 +100,15 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProduct(slug).catch(() => null);
   if (!product) notFound();
 
-  /* Same account type reads as "more like this" better than genre would —
-     a buyer shopping offline accounts wants other offline accounts. */
-  const [related, config] = await Promise.all([
-    safely(getProducts({ type: product.product_type }), {
-      count: 0,
-      next: null,
-      previous: null,
-      page: 1,
-      total_pages: 1,
-      page_size: 24,
-      results: [] as Product[],
-    }),
+  /* Related listings stay within the account type — a buyer shopping
+     offline accounts wants other offline accounts — and are ranked by genre
+     within it. */
+  const [sameType, config] = await Promise.all([
+    safely(getAllProducts({ type: product.product_type }), [] as Product[]),
     safely(getStoreConfig(), null),
   ]);
-  const alsoLike = related.results
-    .filter((p) => p.id !== product.id)
-    .slice(0, 6);
+  const alsoLike = relatedTo(product, sameType);
+  const game = gameName(product);
 
   /* The section this listing belongs to: "/offline-activations" for an
      offline account. It is the middle rung of the breadcrumb and where the
@@ -181,19 +196,19 @@ export default async function ProductPage({ params }: Props) {
                 outright, fresh and unplayed; a key involves no account of ours
                 at all; an offline account is none of those. */}
             {isGamePass(product.platform) ? (
-              <GamePassTerms />
+              <GamePassSummary />
             ) : product.product_type === "online_account" ? (
-              <FullAccessTerms platform={product.platform} />
+              <FullAccessSummary game={game} platform={product.platform} />
             ) : product.product_type === "key" ? (
-              <KeyTerms platform={product.platform} />
+              <KeySummary game={game} platform={product.platform} />
             ) : (
               product.product_type === "offline_account" && (
-                <OfflineTerms platform={product.platform} />
+                <OfflineSummary game={game} platform={product.platform} />
               )
             )}
 
             {product.system_requirements && (
-              <Section title={`${product.name} system requirements`}>
+              <Section title={`${game} system requirements`}>
                 <Requirements text={product.system_requirements} />
               </Section>
             )}
@@ -207,13 +222,51 @@ export default async function ProductPage({ params }: Props) {
 
         {alsoLike.length > 0 && (
           <RelatedProducts
-            heading={`More ${product.product_type_display.toLowerCase()}s`}
+            heading={`More games like ${game}`}
             products={alsoLike}
           />
         )}
       </div>
     </div>
   );
+}
+
+/**
+ * The listings most like this one: most genres in common first — each genre
+ * weighted by how rare it is, so two racing games pair up before two of the
+ * hundred action games do — then nearest in the catalog, which runs in
+ * release order.
+ *
+ * It used to be the six newest of the type, the same six on every page, so
+ * those six collected every link a listing gives and the other two hundred
+ * were reachable only through the pager. Ranking from each listing's own
+ * genres and neighbours spreads those links across the whole catalog.
+ */
+function relatedTo(product: ProductDetail, listings: Product[], count = 6) {
+  const own = new Set(product.categories.map((c) => c.slug));
+  const frequency = new Map<string, number>();
+  for (const listing of listings) {
+    for (const slug of listing.category_slugs) {
+      frequency.set(slug, (frequency.get(slug) ?? 0) + 1);
+    }
+  }
+
+  const at = Math.max(
+    listings.findIndex((p) => p.id === product.id),
+    0,
+  );
+  return listings
+    .map((listing, index) => ({
+      listing,
+      shared: listing.category_slugs
+        .filter((slug) => own.has(slug))
+        .reduce((sum, slug) => sum + 1 / frequency.get(slug)!, 0),
+      distance: Math.abs(index - at),
+    }))
+    .filter(({ listing }) => listing.id !== product.id)
+    .sort((a, b) => b.shared - a.shared || a.distance - b.distance)
+    .slice(0, count)
+    .map(({ listing }) => listing);
 }
 
 function RelatedProducts({

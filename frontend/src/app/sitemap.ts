@@ -1,25 +1,19 @@
 import type { MetadataRoute } from "next";
 
-import { getPlatforms, getProducts, safely } from "@/lib/api";
-import { EMPTY_PAGE, TYPE_SECTIONS, platformSection } from "@/lib/catalog";
+import { getAllProducts, getPlatforms, safely } from "@/lib/api";
+import { TYPE_SECTIONS, platformSection } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
 
-/* Every product page, every section with something in it, and the four
+/* Every product page, every section with something in it, and the five
    pages a buyer can land on. Re-cuts of a section (?platform=, ?ordering=)
    and searches stay out — they canonicalize to the section anyway. Deeper
    pages of a section are their own canonical but are reached from page 1,
    which is enough. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [first, platforms] = await Promise.all([
-    safely(getProducts(), EMPTY_PAGE),
+  const [products, platforms] = await Promise.all([
+    safely(getAllProducts(), []),
     safely(getPlatforms(), []),
   ]);
-  const rest = await Promise.all(
-    Array.from({ length: first.total_pages - 1 }, (_, i) =>
-      safely(getProducts({ page: String(i + 2) }), EMPTY_PAGE),
-    ),
-  );
-  const products = [first, ...rest].flatMap((page) => page.results);
 
   /* An empty section is a "nothing matches" page, and noindexed as one. */
   const sections = [
@@ -40,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/reviews` },
     { url: `${SITE_URL}/faq` },
     { url: `${SITE_URL}/about` },
+    { url: `${SITE_URL}/terms` },
     ...products.map((p) => ({
       url: `${SITE_URL}/product/${p.slug}`,
       lastModified: p.updated_at,

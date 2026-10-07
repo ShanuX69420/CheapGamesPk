@@ -39,6 +39,12 @@ class ProductListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     discount_percent = serializers.IntegerField(read_only=True)
     is_on_sale = serializers.BooleanField(read_only=True)
+    # Not for the card — the product page ranks "more games like this" by
+    # shared genres, and reading them off the list saves a call per genre.
+    # The viewset already prefetches categories, so this costs no queries.
+    category_slugs = serializers.SlugRelatedField(
+        source="categories", many=True, read_only=True, slug_field="slug"
+    )
 
     class Meta:
         model = Product
@@ -61,6 +67,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             # Not for the card — the sitemap needs a <lastmod> per listing so
             # Google recrawls what changed instead of the whole catalog.
             "updated_at",
+            "category_slugs",
         ]
 
     def get_image(self, obj):

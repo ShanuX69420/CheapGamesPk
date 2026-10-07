@@ -1,10 +1,16 @@
+import {
+  TermsFooter,
+  TermsList,
+  TermsPanel,
+  TermsWarning,
+} from "@/components/TermsPanel";
 import type { Platform } from "@/lib/types";
 
 /* The house rules for keys. The simplest thing we sell and the only one with
    no account of ours in it: the buyer redeems the code on their own account
-   and owns the game outright. Identical on every key listing — only where the
-   code is pasted moves between storefronts — so the words live here rather
-   than being retyped per product in admin. */
+   and owns the game outright. The full set is the same on every key listing,
+   so it lives once, on /terms, with every store's redeem step; a listing
+   shows the short version, with its own store's. */
 type Store = {
   /* The storefront, named as the buyer would say it. */
   name: string;
@@ -57,49 +63,61 @@ const STORES: Record<string, Store> = {
    set is selling. */
 const FALLBACK = STORES.steam;
 
-function termsFor(store: Store) {
-  return [
-    `You receive a genuine activation key, redeemed on your own ${store.name} account. No account of ours is involved at any point.`,
-    "The key is sent to you on WhatsApp as soon as your payment is confirmed.",
-    store.redeem,
-    "The game is then yours permanently, in your own library — online play, multiplayer, achievements and cloud saves all work, because it is your own account.",
-    "Install it on as many of your own PCs as you like.",
-    "A key redeems once. We check it before it is sent, and if it will not activate you get another one or a full refund.",
-    "Assistance with activation is available for 6 months from the date of purchase.",
-  ];
-}
-
-/* The mistake that cannot be undone, so it is the only coloured thing in the
-   panel. */
+/* The mistake that cannot be undone. */
 const WARNING =
   "Check which store the key is for before you buy: a key for one launcher will not redeem on another, and once a key has been redeemed it cannot be returned.";
 
-export function KeyTerms({ platform }: { platform: Platform | null }) {
+/** The full rules, for /terms. */
+export function KeyTerms() {
+  return (
+    <>
+      <TermsList
+        items={[
+          "You receive a genuine activation key, redeemed on your own account with the store the listing names. No account of ours is involved at any point.",
+          "The key is sent to you on WhatsApp as soon as your payment is confirmed.",
+          <>
+            Where the key goes:
+            <ul className="mt-1.5 space-y-1 text-ink-200">
+              {Object.values(STORES).map((store) => (
+                <li key={store.name}>
+                  <span className="text-ink-200">{store.name}:</span>{" "}
+                  {store.redeem}
+                </li>
+              ))}
+            </ul>
+          </>,
+          "The game is then yours permanently, in your own library — online play, multiplayer, achievements and cloud saves all work, because it is your own account.",
+          "Install it on as many of your own PCs as you like.",
+          "A key redeems once. We check it before it is sent, and if it will not activate you get another one or a full refund.",
+          "Assistance with activation is available for 6 months from the date of purchase.",
+        ]}
+      />
+      <TermsWarning>{WARNING}</TermsWarning>
+    </>
+  );
+}
+
+/** What a buyer decides on, for the listing itself. */
+export function KeySummary({
+  game,
+  platform,
+}: {
+  game: string;
+  platform: Platform | null;
+}) {
   const store = (platform && STORES[platform.slug]) || FALLBACK;
 
   return (
-    <section className="mb-5 rounded-lg border border-ink-800 bg-ink-900 p-5">
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-400">
-        Terms of use
-      </h2>
-      <ul className="space-y-1.5 text-sm leading-relaxed text-ink-200">
-        {termsFor(store).map((term) => (
-          <li key={term} className="flex items-start gap-2.5">
-            <span
-              aria-hidden
-              className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-ink-600"
-            />
-            <span>{term}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-4 border-t border-ink-800 pt-3 text-sm font-medium text-deal">
-        {WARNING}
-      </p>
-      <p className="mt-3 text-xs leading-relaxed text-ink-500">
-        cheapgames.pk is an independent seller and is not affiliated with,
-        endorsed by, or sponsored by {store.owner}.
-      </p>
-    </section>
+    <TermsPanel title="Terms of use">
+      <TermsList
+        items={[
+          `A genuine ${store.name} key for ${game}, redeemed on your own account — the game is yours permanently, and everything online works.`,
+          store.redeem,
+          "A key redeems once. If it will not activate, you get another one or a full refund.",
+        ]}
+      />
+      <TermsWarning>{WARNING}</TermsWarning>
+      <TermsFooter anchor="keys" owner={store.owner} />
+    </TermsPanel>
   );
 }

@@ -39,12 +39,13 @@ const CATALOG = TYPE_SECTIONS.filter((s) => s.inNav).map((s) => ({
   label: s.tab,
 }));
 
-/* Trust pages: all three in the footer, and the two that close sales —
+/* Trust pages: all of them in the footer, and the two that close sales —
    reviews and the FAQ — in the header too. */
 const TRUST = [
   { href: "/reviews", label: "Reviews" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About us" },
+  { href: "/terms", label: "Terms of use" },
 ];
 
 const NAV = [...CATALOG, ...TRUST.slice(0, 2)];
