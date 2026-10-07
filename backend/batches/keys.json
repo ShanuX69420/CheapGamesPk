@@ -4,6 +4,7 @@
     "product_type": "key",
     "platform": "Steam",
     "price": "7200.00",
+    "is_active": false,
     "release_date": "2024-01-26",
     "categories": [
       "Fighting",
