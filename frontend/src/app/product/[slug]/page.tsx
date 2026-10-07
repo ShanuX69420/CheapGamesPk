@@ -11,7 +11,12 @@ import { KeySummary } from "@/components/KeyTerms";
 import { OfflineSummary } from "@/components/OfflineTerms";
 import { TrackViewContent } from "@/components/PixelTracker";
 import { FallbackArt, ProductCard } from "@/components/ProductCard";
-import { getAllProducts, getProduct, getStoreConfig, safely } from "@/lib/api";
+import {
+  getProduct,
+  getRelatedProducts,
+  getStoreConfig,
+  safely,
+} from "@/lib/api";
 import { typeSection, type Section } from "@/lib/catalog";
 import { CURRENCY, money } from "@/lib/format";
 import { OG_SITE, SITE_URL } from "@/lib/site";
@@ -100,14 +105,12 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProduct(slug).catch(() => null);
   if (!product) notFound();
 
-  /* Related listings stay within the account type — a buyer shopping
-     offline accounts wants other offline accounts — and are ranked by genre
-     within it. */
-  const [sameType, config] = await Promise.all([
-    safely(getAllProducts({ type: product.product_type }), [] as Product[]),
+  /* Same account type, ranked by genre — the API does the ranking, see
+     `related` in the catalog views. */
+  const [alsoLike, config] = await Promise.all([
+    safely(getRelatedProducts(product.slug), [] as Product[]),
     safely(getStoreConfig(), null),
   ]);
-  const alsoLike = relatedTo(product, sameType);
   const game = gameName(product);
 
   /* The section this listing belongs to: "/offline-activations" for an
@@ -229,44 +232,6 @@ export default async function ProductPage({ params }: Props) {
       </div>
     </div>
   );
-}
-
-/**
- * The listings most like this one: most genres in common first — each genre
- * weighted by how rare it is, so two racing games pair up before two of the
- * hundred action games do — then nearest in the catalog, which runs in
- * release order.
- *
- * It used to be the six newest of the type, the same six on every page, so
- * those six collected every link a listing gives and the other two hundred
- * were reachable only through the pager. Ranking from each listing's own
- * genres and neighbours spreads those links across the whole catalog.
- */
-function relatedTo(product: ProductDetail, listings: Product[], count = 6) {
-  const own = new Set(product.categories.map((c) => c.slug));
-  const frequency = new Map<string, number>();
-  for (const listing of listings) {
-    for (const slug of listing.category_slugs) {
-      frequency.set(slug, (frequency.get(slug) ?? 0) + 1);
-    }
-  }
-
-  const at = Math.max(
-    listings.findIndex((p) => p.id === product.id),
-    0,
-  );
-  return listings
-    .map((listing, index) => ({
-      listing,
-      shared: listing.category_slugs
-        .filter((slug) => own.has(slug))
-        .reduce((sum, slug) => sum + 1 / frequency.get(slug)!, 0),
-      distance: Math.abs(index - at),
-    }))
-    .filter(({ listing }) => listing.id !== product.id)
-    .sort((a, b) => b.shared - a.shared || a.distance - b.distance)
-    .slice(0, count)
-    .map(({ listing }) => listing);
 }
 
 function RelatedProducts({

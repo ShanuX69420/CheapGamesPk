@@ -1,8 +1,12 @@
+from collections import Counter
+
 import django_filters
 from django.db.models import Count, F, Prefetch, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.response import Response
 
 from .models import Category, Platform, Product, ProductImage
 from .serializers import (
@@ -71,6 +75,47 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == "retrieve":
             return ProductDetailSerializer
         return ProductListSerializer
+
+    @action(detail=True)
+    def related(self, request, slug=None):
+        """
+        The six listings most like this one, for "More games like X".
+
+        Same account type — a buyer shopping offline accounts wants other
+        offline accounts — ranked by genres in common, each weighted by how
+        rare it is in that type, so two racing games pair up before two of
+        the hundred action games do; ties go to the nearest in catalog
+        order, which is release order.
+
+        It used to be the six newest of the type, the same six on every
+        page: they collected every link a listing gives, and the other two
+        hundred were reachable only through the pager. Ranking from each
+        listing's own genres and neighbours spreads the links across the
+        catalog. Done here rather than in the product page because the page
+        would need the whole type to rank it — five list calls a render, on
+        one CPU.
+        """
+        product = self.get_object()
+        siblings = list(
+            self.get_queryset()
+            .filter(product_type=product.product_type)
+            .order_by(F("release_date").desc(nulls_last=True), "-created_at")
+        )
+
+        genres = {p.id: {c.id for c in p.categories.all()} for p in siblings}
+        own = {c.id for c in product.categories.all()}
+        frequency = Counter(g for ids in genres.values() for g in ids)
+        position = {p.id: i for i, p in enumerate(siblings)}
+        at = position.get(product.id, 0)
+
+        def rank(p):
+            shared = sum(1 / frequency[g] for g in genres[p.id] & own)
+            # Rounded, so listings sharing the same genres tie exactly and
+            # fall through to the distance.
+            return (-round(shared, 9), abs(position[p.id] - at))
+
+        ranked = sorted((p for p in siblings if p.id != product.id), key=rank)
+        return Response(self.get_serializer(ranked[:6], many=True).data)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):

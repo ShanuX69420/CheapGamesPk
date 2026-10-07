@@ -104,6 +104,12 @@ export async function getProduct(slug: string): Promise<ProductDetail | null> {
   }
 }
 
+/** The six listings most like this one — ranked by the API, see `related`
+    in the catalog views. */
+export function getRelatedProducts(slug: string) {
+  return get<Product[]>(`/products/${slug}/related/`);
+}
+
 export function getCategories() {
   return get<Category[]>("/categories/");
 }
