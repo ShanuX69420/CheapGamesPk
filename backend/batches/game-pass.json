@@ -71,5 +71,19 @@
     ],
     "short_description": "A 12-month Xbox Game Pass account on PC — Gears of War: E-Day and the other 200+ games in the library.",
     "description": "Emergence Day, fourteen years before the original Gears of War: a young Marcus Fenix and Dom Santiago on the day the Locust came up through the ground, rebuilt in Unreal Engine 5. Played here on a Microsoft Store account carrying a 12-month Xbox Game Pass subscription, so the rest of the library comes with it."
+  },
+  {
+    "name": "Dune: Awakening — Game Pass PC 12 Months",
+    "platform": "Xbox Game Pass",
+    "appid": 1172710,
+    "price": "1500.00",
+    "release_date": "2025-06-10",
+    "categories": [
+      "Survival",
+      "Open World",
+      "RPG"
+    ],
+    "short_description": "A 12-month Xbox Game Pass account on PC — Dune: Awakening and the other 200+ games in the library.",
+    "description": "Survival on Arrakis: keep out of the sun and out of the way of the sandworms, and build up from a stillsuit and a cutteray to a base and an ornithopter of your own, with a story about the missing Fremen running through it. Played here on a Microsoft Store account carrying a 12-month Xbox Game Pass subscription, so the rest of the library comes with it."
   }
 ]

@@ -39,5 +39,19 @@
     ],
     "short_description": "Emergence Day, fourteen years before the first game — Marcus and Dom's origin story. Campaign only.",
     "description": "The day the Locust came up through the ground, fourteen years before the original Gears of War, played as a young Marcus Fenix and Dom Santiago. Rebuilt in Unreal Engine 5 with a darker tone that leans towards horror, the cover shooting the series is known for, and new movement — vaulting, sliding, flanking — on top of it. Horde Siege, Versus and online co-op need a live connection, so an offline account is the campaign, played solo."
+  },
+  {
+    "name": "Phantom Blade Zero Digital Deluxe Edition",
+    "appid": 4115450,
+    "cover_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4115450/471e77854910665c03eb9a53ad06f2ac12903acd/library_capsule_2x.jpg",
+    "banner_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4115450/1cd52ca84a3d974c4206e9cb90231956324c5999/library_hero.jpg",
+    "price": "999.00",
+    "release_date": "2026-10-28",
+    "categories": [
+      "Action",
+      "RPG"
+    ],
+    "short_description": "Pre-order, out 28 October 2026. Kungfupunk action with thirty-odd weapons — the Deluxe adds two outfits, the artbook and the soundtrack.",
+    "description": "Soul is framed for his master's murder and left with sixty-six days to live, and spends them cutting through the Wulin after the people behind it. S-Game's action RPG is wuxia cinema crossed with punk machinery: over thirty weapons, twenty-odd Phantom Edges taken off fallen enemies, and fights choreographed by martial-arts film veterans and decided on the parry. The Digital Deluxe Edition adds the Wulin Legend and Blood-Steel Form outfits, the digital artbook and the soundtrack. The game releases on 28 October 2026; until then this is a pre-order. Single-player."
   }
 ]
