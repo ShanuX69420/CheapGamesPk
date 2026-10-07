@@ -58,5 +58,18 @@
     ],
     "short_description": "A 12-month Xbox Game Pass account on PC — Forza Motorsport and the other 200+ games in the library.",
     "description": "Forza's circuit side rather than its open-world one: real tracks driven through changing light and weather, cars built up part by part across a career, and practice and qualifying that actually matter. Played here on a Microsoft Store account carrying a 12-month Xbox Game Pass subscription, so the rest of the library comes with it."
+  },
+  {
+    "name": "Gears of War: E-Day — Game Pass PC 12 Months",
+    "platform": "Xbox Game Pass",
+    "appid": 3010850,
+    "price": "1500.00",
+    "release_date": "2026-10-06",
+    "categories": [
+      "Action",
+      "Shooter"
+    ],
+    "short_description": "A 12-month Xbox Game Pass account on PC — Gears of War: E-Day and the other 200+ games in the library.",
+    "description": "Emergence Day, fourteen years before the original Gears of War: a young Marcus Fenix and Dom Santiago on the day the Locust came up through the ground, rebuilt in Unreal Engine 5. Played here on a Microsoft Store account carrying a 12-month Xbox Game Pass subscription, so the rest of the library comes with it."
   }
 ]

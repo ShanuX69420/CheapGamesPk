@@ -1,0 +1,43 @@
+[
+  {
+    "name": "Control Resonant",
+    "appid": 3669870,
+    "cover_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3669870/7d4b4f430dc4d07e6562eb445456f9615cb52f77/library_capsule_2x.jpg",
+    "banner_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3669870/6800d1c970b28815caa97e694ce811ca090f82e2/library_hero.jpg",
+    "price": "999.00",
+    "release_date": "2026-09-24",
+    "categories": [
+      "Action",
+      "Adventure",
+      "RPG"
+    ],
+    "short_description": "The sequel to Control — Dylan Faden loose in a Manhattan the Hiss has broken open, with a weapon that changes shape mid-fight.",
+    "description": "Remedy's sequel to Control. Jesse's lockdown on the Oldest House has failed, and her brother Dylan, years a test subject of the Bureau, is let out into a Manhattan that the Hiss and the Mold are rewriting street by street. Gravity tilts, buildings fold in on themselves, and the Aberrant — a melee weapon that goes from a two-handed hammer to twin blades on demand — does the work alongside his powers, which grow the way you choose. Single-player from start to finish."
+  },
+  {
+    "name": "Silent Hill: Townfall",
+    "appid": 1636440,
+    "cover_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1636440/cdad5ea5a7f19f1394a6393416c83720664ecf81/library_capsule_2x.jpg",
+    "banner_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1636440/ba12dc2318482d99bb6d7cd161ba18d268955f09/library_hero.jpg",
+    "price": "999.00",
+    "release_date": "2026-09-23",
+    "categories": [
+      "Horror",
+      "Adventure"
+    ],
+    "short_description": "The first Silent Hill played in first person — a fog-bound Scottish island town in 1996, and a pocket TV that picks up what happened there.",
+    "description": "Simon Ordell goes back to St. Amelia, an island town off the coast of Scotland, to put something right, and finds it under fog and not quite empty. Sneak past what you can, fight what you cannot with a few melee weapons and guns, and tune the CRTV — a portable television standing in for the series' old radio — into signals that warn of what is close and replay the town's past. A self-contained story, so no earlier Silent Hill is needed. Single-player."
+  },
+  {
+    "name": "Gears of War: E-Day",
+    "appid": 3010850,
+    "price": "999.00",
+    "release_date": "2026-10-06",
+    "categories": [
+      "Action",
+      "Shooter"
+    ],
+    "short_description": "Emergence Day, fourteen years before the first game — Marcus and Dom's origin story. Campaign only.",
+    "description": "The day the Locust came up through the ground, fourteen years before the original Gears of War, played as a young Marcus Fenix and Dom Santiago. Rebuilt in Unreal Engine 5 with a darker tone that leans towards horror, the cover shooting the series is known for, and new movement — vaulting, sliding, flanking — on top of it. Horde Siege, Versus and online co-op need a live connection, so an offline account is the campaign, played solo."
+  }
+]
