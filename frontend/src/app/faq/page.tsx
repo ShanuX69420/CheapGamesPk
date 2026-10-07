@@ -69,8 +69,8 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
         <li>
           <strong>Online account</strong> — a brand-new account with the game
           on it, sold outright. Everything works: multiplayer, achievements,
-          cloud saves. You change the password immediately and the email after
-          a month.
+          cloud saves. You change the password immediately and the email
+          whenever you like.
         </li>
         <li>
           <strong>Key</strong> — a genuine code you redeem on your own account.
