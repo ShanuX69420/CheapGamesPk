@@ -130,8 +130,8 @@ function Footer() {
         <div>
           <Logo className="h-7" />
           <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-400">
-            Offline activations, online accounts and genuine keys for PC —
-            delivered fast.
+            Offline activations, online accounts and genuine keys for PC,
+            delivered on WhatsApp.
           </p>
           <a
             href={WHATSAPP_CHANNEL_URL}

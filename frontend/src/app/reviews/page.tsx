@@ -19,17 +19,17 @@ export default function ReviewsPage() {
           Reviews from our buyers
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-200">
-          Every screenshot below is a real chat — a buyer paying, getting their
-          game, and confirming it works. We have been selling this way since
-          2024, first on{" "}
+          Every screenshot below is a real chat with a buyer who paid, got
+          their game and confirmed it works. We&rsquo;ve been selling this way
+          since 2024, first on{" "}
           <Link
             href="/about"
             className="font-medium text-accent-bright transition-colors hover:text-ink-50"
           >
             Instagram
           </Link>{" "}
-          and now here. Names and numbers are hidden for privacy. Tap any chat
-          to enlarge it.
+          and now here. Names and numbers are hidden for privacy. Tap a chat
+          to see it bigger.
         </p>
       </div>
 
@@ -39,10 +39,10 @@ export default function ReviewsPage() {
 
       <div className="mt-10 rounded-lg border border-ink-800 bg-ink-900 p-6 text-center">
         <p className="text-base font-semibold text-ink-50">
-          Your game could be the next screenshot.
+          Looking for a game?
         </p>
         <p className="mx-auto mt-1.5 max-w-md text-sm text-ink-400">
-          Pick a game, pay on WhatsApp, and play today — with setup help on
+          Pick a game, pay on WhatsApp, and play today. We help you set up
           every order.
         </p>
         <Link

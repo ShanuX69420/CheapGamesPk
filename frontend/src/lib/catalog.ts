@@ -67,7 +67,7 @@ export const TYPE_SECTIONS: TypeSection[] = [
     description:
       "The cheapest way to play a PC game: sign in to an account of ours that owns it, switch to offline mode, and play with your own saves. Priced in PKR, delivered on WhatsApp.",
     intro:
-      "The cheapest way to play a PC game in Pakistan. You get login details for a Steam, Ubisoft Connect or EA App account that already owns the game — sign in, download, switch the client to offline mode, and play on one PC with your own saves, for as long as you like. Prices are in PKR; pay by JazzCash, EasyPaisa or bank transfer and the details arrive on WhatsApp, usually within minutes.",
+      "The cheapest way to play a PC game in Pakistan. You get the login details for a Steam, Ubisoft Connect or EA App account that already owns the game. Sign in, download it, switch the client to offline mode, and play on one PC with your own saves for as long as you like. Prices are in PKR. Pay by JazzCash, EasyPaisa or bank transfer, and the details usually arrive on WhatsApp within minutes.",
   },
   {
     path: "/online-accounts",
@@ -79,7 +79,7 @@ export const TYPE_SECTIONS: TypeSection[] = [
     description:
       "Brand-new accounts with the game already on them, sold outright — online play, multiplayer and cloud saves all work. Xbox Game Pass too. Priced in PKR, delivered on WhatsApp.",
     intro:
-      "Accounts sold outright, not shared. Each one is brand new and made for the sale, with the game already on it and no hours played — online play, multiplayer, cloud saves and achievements all work as they would on any account of your own. Xbox Game Pass subscriptions are listed here too. Prices are in PKR; pay by JazzCash, EasyPaisa or bank transfer and the login details arrive on WhatsApp.",
+      "Accounts sold to you outright, not shared. Each one is brand new and made for the sale, with the game already on it and no hours played. Online play, multiplayer, cloud saves and achievements all work as they would on your own account. Xbox Game Pass subscriptions are listed here too. Prices are in PKR. Pay by JazzCash, EasyPaisa or bank transfer, and the login details arrive on WhatsApp.",
   },
   {
     path: "/keys",
@@ -91,7 +91,7 @@ export const TYPE_SECTIONS: TypeSection[] = [
     description:
       "Genuine PC game keys at Pakistani prices — redeem the code on your own account and the game is yours for good. Priced in PKR, delivered on WhatsApp.",
     intro:
-      "The simplest thing we sell: a genuine key you redeem on your own account — Steam, or the game's own launcher — so the game is yours outright, with no account of ours involved. Prices are in PKR; pay by JazzCash, EasyPaisa or bank transfer and the key arrives on WhatsApp, with instructions for where to paste it.",
+      "The simplest thing we sell: a genuine key you redeem on your own account, on Steam or the game's own launcher. The game is yours for good, and no account of ours is involved. Prices are in PKR. Pay by JazzCash, EasyPaisa or bank transfer, and the key arrives on WhatsApp with instructions for where to paste it.",
   },
   {
     path: "/subscriptions",

@@ -65,7 +65,7 @@ const FALLBACK = STORES.steam;
 
 /* The mistake that cannot be undone. */
 const WARNING =
-  "Check which store the key is for before you buy: a key for one launcher will not redeem on another, and once a key has been redeemed it cannot be returned.";
+  "Check which store the key is for before you buy. A key for one launcher will not work on another, and a redeemed key cannot be returned.";
 
 /** The full rules, for /terms. */
 export function KeyTerms() {
@@ -73,7 +73,7 @@ export function KeyTerms() {
     <>
       <TermsList
         items={[
-          "You receive a genuine activation key, redeemed on your own account with the store the listing names. No account of ours is involved at any point.",
+          "You get a genuine activation key for the store the listing names, and you redeem it on your own account. No account of ours is involved.",
           "The key is sent to you on WhatsApp as soon as your payment is confirmed.",
           <>
             Where the key goes:
@@ -86,10 +86,10 @@ export function KeyTerms() {
               ))}
             </ul>
           </>,
-          "The game is then yours permanently, in your own library — online play, multiplayer, achievements and cloud saves all work, because it is your own account.",
+          "The game is then yours for good, in your own library. Online play, multiplayer, achievements and cloud saves all work, because it is your own account.",
           "Install it on as many of your own PCs as you like.",
-          "A key redeems once. We check it before it is sent, and if it will not activate you get another one or a full refund.",
-          "Assistance with activation is available for 6 months from the date of purchase.",
+          "Each key works once. We check it before we send it, and if it will not activate you get a new one or a full refund.",
+          "We help with activation for 6 months after you buy.",
         ]}
       />
       <TermsWarning>{WARNING}</TermsWarning>
@@ -111,9 +111,9 @@ export function KeySummary({
     <TermsPanel title="Terms of use">
       <TermsList
         items={[
-          `A genuine ${store.name} key for ${game}, redeemed on your own account — the game is yours permanently, and everything online works.`,
+          `A genuine ${store.name} key for ${game} that you redeem on your own account. The game is yours for good, and everything online works.`,
           store.redeem,
-          "A key redeems once. If it will not activate, you get another one or a full refund.",
+          "Each key works once. If it will not activate, you get a new one or a full refund.",
         ]}
       />
       <TermsWarning>{WARNING}</TermsWarning>

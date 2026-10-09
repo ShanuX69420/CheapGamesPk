@@ -29,24 +29,24 @@ const CLIENTS: Record<string, Client> = {
 const FALLBACK = CLIENTS.steam;
 
 const TERMS = [
-  "You receive the login details for an account we provide — this is not a game key, and the game is not added to your own Steam, Ubisoft or EA account.",
+  "You get the login details for an account we provide. It is not a game key, and the game is not added to your own Steam, Ubisoft or EA account.",
   "Details are sent to you on WhatsApp as soon as your payment is confirmed.",
   "The account is for offline use only.",
-  "Use of Steam's Family Library Sharing feature is prohibited.",
-  "Sharing account details with third parties is prohibited.",
-  "Any changes to account details are strictly prohibited.",
-  "One activation — 1 PC.",
-  "The game can be played indefinitely after setting up offline mode.",
-  "Your saves are yours to keep, with no time limit on finishing the game.",
-  "You can switch back to your own account without any problems.",
-  "Any online features of the game will be unavailable.",
-  "Activation is not possible for playing via PlayKey, GFN, Google Stadia, Loudplay, Drova, or other cloud services.",
-  "Assistance with product issues is available for 6 months from the date of purchase (only activation-related questions).",
+  "You may not use Steam Family Library Sharing on the account.",
+  "You may not share the account details with anyone else.",
+  "You may not change any of the account's details.",
+  "One purchase works on one PC.",
+  "Once offline mode is set up, you can play for as long as you like.",
+  "Your saves are yours to keep, and there is no deadline for finishing the game.",
+  "You can switch back to your own account whenever you want.",
+  "The game's online features will not work.",
+  "It cannot be played through cloud gaming services such as PlayKey, GeForce Now, Loudplay or Drova.",
+  "We help with activation problems for 6 months after you buy.",
   "Once the account details have been sent, the sale is final. If we cannot deliver, you get a full refund.",
 ];
 
 const WARNING =
-  "Any violation of these conditions will result in service denial without a refund.";
+  "If you break any of these rules, we stop the service and you do not get a refund.";
 
 /** The full rules, for /terms. */
 export function OfflineTerms() {
@@ -74,8 +74,8 @@ export function OfflineSummary({
         items={[
           `You get the login details for a ${client.account} account of ours that owns ${game}. It is not a key, and the game is not added to your own account.`,
           "You play in offline mode on 1 PC, with your own saves, for as long as you like. Online features do not work.",
-          "The account's details must not be changed or shared with anyone — doing so ends the service without a refund.",
-          "Once the details are sent the sale is final. If we cannot deliver, you get a full refund.",
+          "Do not change the account's details or share them with anyone. If you do, the service ends with no refund.",
+          "Once the details are sent, the sale is final. If we cannot deliver, you get a full refund.",
         ]}
       />
       <TermsFooter anchor="offline-activations" owner={client.owner} />

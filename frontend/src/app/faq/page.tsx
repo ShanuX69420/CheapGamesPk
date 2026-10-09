@@ -19,10 +19,10 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "How do I buy a game?",
     answer: (
       <>
-        Pick a game and press <strong>Buy now on WhatsApp</strong>. The chat
-        opens with your order already written — send it, and we take it from
-        there. You pay in the chat, and your game is delivered in the same
-        conversation. There is no checkout form and no account to create.
+        Pick a game and press <strong>Buy now on WhatsApp</strong>. WhatsApp
+        opens with your order already typed out. Send it, pay in the chat, and
+        we send your game in the same chat. There&rsquo;s no checkout form and
+        no account to create.
       </>
     ),
   },
@@ -30,7 +30,7 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "Which payment methods do you accept?",
     answer: (
       <>
-        JazzCash, EasyPaisa and bank transfer. We confirm the details with you
+        JazzCash, EasyPaisa and bank transfer. We give you the payment details
         in the chat before you send anything.
       </>
     ),
@@ -39,9 +39,9 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "How fast is delivery?",
     answer: (
       <>
-        As soon as your payment is confirmed, usually within minutes — the
-        details arrive in the same WhatsApp chat, along with step-by-step setup
-        instructions. We are online almost all day, every day.
+        Usually within minutes of your payment being confirmed. Your details
+        arrive in the same WhatsApp chat, with step-by-step setup instructions.
+        We&rsquo;re online most of the day, every day.
       </>
     ),
   },
@@ -49,12 +49,13 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "What is an offline activation?",
     answer: (
       <>
-        You get login details for an account of ours that owns the game. You
-        sign in, download, switch the client to offline mode, and play — with
-        your own saves, for as long as you like, on one PC. It is the cheapest
-        way to play because the account is shared: that is also why online
-        features and multiplayer are unavailable, and why the account details
-        must not be changed. The full rules are on our{" "}
+        You get the login details for one of our accounts that owns the game.
+        You sign in, download the game, switch the client to offline mode and
+        play. It works on one PC, your saves are your own, and there&rsquo;s no
+        time limit. It&rsquo;s the cheapest way to play because the account is
+        shared. That&rsquo;s also why online features and multiplayer
+        don&rsquo;t work, and why you must not change the account details. The
+        full rules are on our{" "}
         <Link
           href="/terms#offline-activations"
           className="font-medium text-accent-bright transition-colors hover:text-ink-50"
@@ -70,18 +71,18 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     answer: (
       <ul className="list-disc space-y-1.5 pl-5">
         <li>
-          <strong>Offline activation</strong> — cheapest. Our account, your PC,
-          offline play only.
+          <strong>Offline activation:</strong> the cheapest. Our account, on
+          your PC, offline play only.
         </li>
         <li>
-          <strong>Online account</strong> — a brand-new account with the game
-          on it, sold outright. Everything works: multiplayer, achievements,
-          cloud saves. You change the password immediately and the email
-          whenever you like.
+          <strong>Online account:</strong> a brand-new account with the game on
+          it, sold to you outright. Multiplayer, achievements and cloud saves
+          all work. Change the password straight away, and the email whenever
+          you like.
         </li>
         <li>
-          <strong>Key</strong> — a genuine code you redeem on your own account.
-          The game is permanently yours, no account of ours involved.
+          <strong>Key:</strong> a genuine code you redeem on your own account.
+          The game is yours for good, and no account of ours is involved.
         </li>
       </ul>
     ),
@@ -90,7 +91,7 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "Is this legit? How do I know I can trust you?",
     answer: (
       <>
-        We have been selling since 2024 — first on Instagram, where our page
+        We&rsquo;ve been selling since 2024, first on Instagram, where our page
         reached 3,800+ followers, and now here.{" "}
         <Link
           href="/reviews"
@@ -98,20 +99,20 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
         >
           The reviews page
         </Link>{" "}
-        is full of real chat screenshots: buyers paying, receiving their game,
-        and confirming it runs. Delivery happens in a WhatsApp chat with a real
-        person, and the chat stays as your receipt.
+        is full of real chat screenshots of buyers paying, getting their game
+        and showing it running. You deal with a real person on WhatsApp, and
+        the chat is your record of the order.
       </>
     ),
   },
   {
-    question: "The game stopped working — what now?",
+    question: "The game stopped working. What now?",
     answer: (
       <>
-        Message the same WhatsApp chat you bought in. Activation help is
-        included with every order for 6 months from purchase — most problems
-        are a missed step in offline-mode setup and are fixed in minutes. Keys
-        that fail to activate are replaced, or refunded in full.
+        Message us in the same WhatsApp chat you bought in. Activation help is
+        included for 6 months after you buy. Most problems are a missed step in
+        the offline-mode setup, and we fix them in minutes. If a key
+        won&rsquo;t activate, we replace it or refund you in full.
       </>
     ),
   },
@@ -119,10 +120,10 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "Can I get a refund?",
     answer: (
       <>
-        If we cannot deliver what you paid for, you get a full refund. Once
-        working details or a key have been delivered the sale is final — that
-        is standard for digital goods, and it is why we confirm what you are
-        buying in the chat before you pay.
+        If we can&rsquo;t deliver what you paid for, you get a full refund.
+        Once working details or a key have been sent, the sale is final.
+        That&rsquo;s standard for digital products, and it&rsquo;s why we
+        confirm exactly what you&rsquo;re buying in the chat before you pay.
       </>
     ),
   },
@@ -130,9 +131,9 @@ const FAQS: { question: string; answer: React.ReactNode }[] = [
     question: "Do you sell for consoles?",
     answer: (
       <>
-        The store is PC-first: Steam, EA, Ubisoft, Epic and Microsoft. Some
-        keys and Game Pass subscriptions also work on Xbox — the listing says
-        so when they do. If you are unsure, ask in the chat before paying.
+        Our games are for PC: Steam, EA, Ubisoft, Epic and Microsoft. A few
+        keys also work on Xbox, and those listings say so. Game Pass accounts
+        work on PC only. Not sure? Ask in the chat before you pay.
       </>
     ),
   },
@@ -145,8 +146,8 @@ export default function FaqPage() {
         Frequently asked questions
       </h1>
       <p className="mt-3 text-[15px] leading-relaxed text-ink-200">
-        Everything buyers usually ask us on WhatsApp before their first order.
-        Anything else — just message us, that is what the chat is for.
+        The questions buyers ask us most before their first order. If yours
+        isn&rsquo;t here, message us on WhatsApp.
       </p>
 
       <div className="mt-8 space-y-3">

@@ -204,8 +204,8 @@ export async function Catalog({
             <div>
               <h2 className="text-base font-semibold">Reviews from our buyers</h2>
               <p className="mt-1 text-sm text-ink-400">
-                Real chats, selling since 2024 — names hidden for privacy. Tap
-                to enlarge.
+                Real chats with buyers since 2024. Names are hidden for
+                privacy. Tap one to see it bigger.
               </p>
             </div>
             <Link

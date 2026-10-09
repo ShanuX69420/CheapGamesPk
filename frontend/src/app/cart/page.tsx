@@ -210,8 +210,8 @@ export default function CartPage() {
                   {busy ? "Starting…" : "Order on WhatsApp"}
                 </button>
                 <p className="mt-2 text-center text-xs leading-relaxed text-ink-400">
-                  We create your order and open a chat with the details — you
-                  agree it and pay there.
+                  WhatsApp opens with your order typed out. You confirm it and
+                  pay in the chat.
                 </p>
               </>
             )}

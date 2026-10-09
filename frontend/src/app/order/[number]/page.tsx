@@ -109,12 +109,13 @@ function StatusPanel({ order }: { order: Order }) {
         {onWhatsApp ? (
           <p>
             We sent your details in the WhatsApp chat. Message us there if
-            anything needs sorting.
+            you need help.
           </p>
         ) : (
           <p>
-            Your details are below. Follow the setup steps exactly — especially
-            switching the client to offline mode before launching.
+            Your details are below. Follow the setup steps exactly,
+            especially switching the client to offline mode before you launch
+            the game.
           </p>
         )}
       </Panel>
@@ -284,11 +285,11 @@ function NotFound({ reason }: { reason: string }) {
     <div className="mx-auto max-w-xl px-4 py-20 text-center sm:px-6">
       <h1 className="text-xl font-bold">Order not found</h1>
       <p className="mt-2 text-sm text-ink-400">
-        {reason} Check that you used the full link we gave you — it includes an
+        {reason} Check that you used the full link we gave you. It includes an
         access code after the order number.
       </p>
       <p className="mt-2 text-sm text-ink-400">
-        Still stuck? The whole order is in your WhatsApp chat with us — message
+        Still stuck? Your whole order is in your WhatsApp chat with us. Message
         us there and we&rsquo;ll sort it out.
       </p>
       <div className="mt-6 flex justify-center">

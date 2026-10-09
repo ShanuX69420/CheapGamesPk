@@ -26,14 +26,14 @@ const CLIENTS: Record<string, Client> = {
 const FALLBACK = CLIENTS.steam;
 
 const TERMS = [
-  "You receive the login details for a brand-new account on the client the listing names, made for this sale, with the game already on it and no hours played — not a shared account, and not a key for an account of your own.",
+  "You get the login details for a brand-new account on the platform the listing names, made for this sale. The game is already on it, with no hours played. It is not a shared account, and not a key for your own account.",
   "Details are sent to you on WhatsApp as soon as your payment is confirmed.",
-  "Full access: the account is yours. Online play, multiplayer, cloud saves and achievements all work exactly as they would on any account of your own.",
+  "The account is fully yours. Online play, multiplayer, cloud saves and achievements all work as they would on any account of your own.",
   "Change the password as soon as you have signed in, and keep the new one somewhere safe.",
   "Move the account's email address to your own whenever you like.",
   "Play on as many of your own PCs as you like. There is no activation limit on an account you own.",
-  "The account is sold once, to you. The same details are not handed to anybody else.",
-  "Assistance with account questions is available for 6 months from the date of purchase.",
+  "The account is sold once, to you. Nobody else gets the same details.",
+  "We help with account questions for 6 months after you buy.",
   "Once the account details have been sent, the sale is final. If we cannot deliver, you get a full refund.",
 ];
 
@@ -56,9 +56,9 @@ export function FullAccessSummary({
     <TermsPanel title="Terms of use">
       <TermsList
         items={[
-          `You get a brand-new ${client.name} account made for this sale, with ${game} already on it — yours outright, not shared with anyone.`,
+          `You get a brand-new ${client.name} account made for this sale, with ${game} already on it. It is yours outright and not shared with anyone.`,
           "Online play, multiplayer, cloud saves and achievements all work. Change the password as soon as you sign in, and move the email to your own whenever you like.",
-          "Once the details are sent the sale is final. If we cannot deliver, you get a full refund.",
+          "Once the details are sent, the sale is final. If we cannot deliver, you get a full refund.",
         ]}
       />
       <TermsFooter anchor="full-access-accounts" owner={client.owner} />

@@ -63,16 +63,16 @@ export default function TermsPage() {
         Terms of use
       </h1>
       <p className="mt-3 text-[15px] leading-relaxed text-ink-200">
-        Which rules apply depends on what a listing sells — the label on every
-        listing says which. If anything here is unclear, ask in the WhatsApp
-        chat before you pay; the{" "}
+        The rules depend on what you are buying, and every listing is labelled
+        with its type. If anything here is unclear, ask us on WhatsApp before
+        you pay. The{" "}
         <Link
           href="/faq"
           className="font-medium text-accent-bright transition-colors hover:text-ink-50"
         >
           FAQ
         </Link>{" "}
-        answers the usual questions.
+        answers the common questions.
       </p>
 
       <nav className="mt-6 flex flex-wrap gap-2">

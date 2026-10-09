@@ -26,7 +26,7 @@ export function WhatsAppHandoff({
       </p>
       <p className="mt-1.5 text-xs leading-relaxed text-ink-200">
         {opened
-          ? "WhatsApp is open with your order details — send the message and we'll take it from there."
+          ? "WhatsApp is open with your order typed out. Send the message and we'll reply in the chat."
           : "Your browser blocked the WhatsApp tab. Open the chat below and send us the message."}
       </p>
 
