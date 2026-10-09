@@ -33,44 +33,52 @@ export default async function AboutPage() {
       <div className="grid items-start gap-10 lg:grid-cols-[1fr_20rem]">
         <div className="max-w-2xl">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Selling games since 2024. Now on our own store.
+            Selling games since 2024. Now on our own website.
           </h1>
 
           <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink-200">
             <p>
-              cheapgames.pk started on Instagram as{" "}
-              <span className="font-medium text-ink-50">@cheappcgames.pk</span>{" "}
-              — one seller, offline activations, and buyers who kept coming
-              back. Over two years that page grew to 3,800+ followers and
-              hundreds of delivered orders, with our price-list reel passing a
-              million views.
+              We started on Instagram as{" "}
+              <span className="font-medium text-ink-50">@cheappcgames.pk</span>,
+              selling offline activations. In two years the page grew to 3,800+
+              followers, we delivered hundreds of orders, and our price-list
+              reel passed a million views.
             </p>
             <p>
-              Instagram suspends seller accounts all the time, and eventually
-              ours got caught in that sweep too — nothing to do with our
-              buyers, who you can see happily playing in the{" "}
+              Then Instagram suspended the account. It happens to a lot of
+              sellers. Instead of starting a new page from zero, we built this
+              website, where every game is listed with its price and you can
+              search for it.
+            </p>
+            <p>Buying works the same as before:</p>
+            <ol className="list-decimal space-y-2 pl-5 marker:text-ink-400">
+              <li>
+                <span className="font-medium text-ink-50">Pick a game.</span>{" "}
+                The site opens WhatsApp with your order already typed out.
+              </li>
+              <li>
+                <span className="font-medium text-ink-50">Pay</span> with
+                JazzCash, EasyPaisa or bank transfer.
+              </li>
+              <li>
+                <span className="font-medium text-ink-50">Get your game</span>{" "}
+                in the same chat. We&rsquo;ll help you set it up until it runs.
+              </li>
+            </ol>
+            <p>
+              If anything goes wrong during activation, message the same number
+              and a real person will reply.
+            </p>
+            <p>
+              Every{" "}
               <Link
                 href="/reviews"
                 className="font-medium text-accent-bright transition-colors hover:text-ink-50"
               >
-                review screenshots
-              </Link>
-              . So instead of starting a third page from zero, we built the
-              thing an Instagram page never gave us: our own store, with every
-              game listed, priced and searchable.
-            </p>
-            <p>
-              The way you buy hasn&rsquo;t changed. You pick a game, the site
-              opens WhatsApp with your order written out, you pay however suits
-              you — JazzCash, EasyPaisa, bank transfer — and your game arrives
-              in the same chat, with setup help until it runs. The chat is your
-              receipt, and if anything breaks during activation, you message
-              the same number and a real person answers.
-            </p>
-            <p>
-              Every review on this site is a screenshot of that exact flow,
-              because that is the only kind of proof that matters: someone paid,
-              got their game, and it works.
+                review on this site
+              </Link>{" "}
+              is a screenshot of a real chat like this one: someone paid, got
+              their game, and played it.
             </p>
           </div>
 
@@ -97,8 +105,7 @@ export default async function AboutPage() {
             className="w-full rounded-lg ring-1 ring-ink-700"
           />
           <figcaption className="mt-2 text-center text-xs text-ink-400">
-            Our Instagram profile before the suspension — the same store, the
-            same seller.
+            Our Instagram profile before it was suspended.
           </figcaption>
         </figure>
       </div>
