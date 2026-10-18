@@ -68,5 +68,19 @@
     ],
     "short_description": "Open-world dark fantasy from the director of The Witcher 3 — human by day, vampire by night, and not enough time to save everyone.",
     "description": "Fourteenth-century Europe, with the Black Death thinning out the living and vampires stepping out of the shadows to take what is left. Coen has been turned into a Dawnwalker, a man by day and a vampire by night, and his family's days are numbered. Every quest moves the clock forward, so you choose whom to help and whom to leave behind. By day it is sword and magic; by night, vampire powers that ignore gravity — each with its own strengths, and the fights change with them. Rebel Wolves' first game, led by The Witcher 3's director, built in Unreal Engine 5. Single-player."
+  },
+  {
+    "name": "Call of Duty: Modern Warfare 4",
+    "appid": 4435490,
+    "cover_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4435490/c71bc2cb60e440d1a0d2435d0c06c4d4a4050edf/library_capsule_2x.jpg",
+    "banner_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4435490/4138eadd1bb476b0499f6ee7690aba461fdf179c/library_hero.jpg",
+    "price": "999.00",
+    "release_date": "2026-10-22",
+    "categories": [
+      "Action",
+      "Shooter"
+    ],
+    "short_description": "Pre-order, out 22 October 2026. North Korea invades the South, and Captain Price is fighting off the books. Campaign only.",
+    "description": "Infinity Ward's Modern Warfare 4. North Korea launches a full-scale invasion of the South, and the campaign follows Private Park, a young South Korean soldier seeing combat for the first time with his squad, while Captain Price, now an outlaw, wages his own war from the shadows one step ahead of the people hunting him. Missions run from trench warfare in Korea and close-quarters fighting in New York to chases through Paris and SAS night raids in Mumbai. The game releases on 22 October 2026; until then this is a pre-order. Multiplayer, DMZ and co-op need a live connection, so an offline account is the campaign, played solo."
   }
 ]
