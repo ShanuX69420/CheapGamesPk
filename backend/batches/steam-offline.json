@@ -82,5 +82,19 @@
     ],
     "short_description": "North Korea invades the South, and Captain Price is fighting off the books. The campaign is playable now.",
     "description": "Infinity Ward's Modern Warfare 4. North Korea launches a full-scale invasion of the South, and the campaign follows Private Park, a young South Korean soldier seeing combat for the first time with his squad, while Captain Price, now an outlaw, wages his own war from the shadows one step ahead of the people hunting him. Missions run from trench warfare in Korea and close-quarters fighting in New York to chases through Paris and SAS night raids in Mumbai. The campaign is playable now, ahead of the full launch on 22 October. Multiplayer, DMZ and co-op need a live connection, so an offline account is the campaign, played solo."
+  },
+  {
+    "name": "Valor Mortis",
+    "appid": 2828710,
+    "cover_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2828710/deef1b198941015428f5b3d3e29e819f7ef86abc/library_capsule_2x.jpg",
+    "banner_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2828710/fcaf991a4097da7178b0f27c41176f0dd62ae4cc/library_hero.jpg",
+    "price": "999.00",
+    "release_date": "2026-10-13",
+    "categories": [
+      "Action",
+      "RPG"
+    ],
+    "short_description": "A first-person soulslike from the makers of Ghostrunner — a soldier of Napoleon's army raised from the dead, in a Europe eaten by plague.",
+    "description": "William fought in Napoleon's Grande Armée and was buried on the battlefield. He wakes up in a 19th-century Europe gone wrong: a plague is spreading across the continent, and its power now runs through his own veins. One More Level's first-person soulslike is built on parries, dashes and finishers across a range of weapons, with supernatural abilities unlocked as you go, and every death is a chance to come back stronger. The world hides secrets that help you survive, and the plague-ridden Eternal Guard stands between William and the truth about why he was brought back. Single-player."
   }
 ]
